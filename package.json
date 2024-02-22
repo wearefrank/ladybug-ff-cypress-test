@@ -1,0 +1,14 @@
+{
+  "name": "ladybug-ff-cypress-test",
+  "version": "1.0.0",
+  "description": "Tests for Ladybug in combination with the F!F",
+  "main": "index.ts",
+  "repository": "https://github.com/wearefrank/ladybug-ff-cypress-test",
+  "author": "Martijn Dirkse <martijn@integrationpartners.nl>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "cypress": "^13.6.5",
+    "typescript": "^5.3.3"
+  }
+}
