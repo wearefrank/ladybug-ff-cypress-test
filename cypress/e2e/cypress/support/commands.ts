@@ -23,3 +23,22 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+declare namespace Cypress {
+	interface Chainable<Subject = any> {
+		runInTestAPipeline(): Chainable<any>;
+	}
+}
+
+Cypress.Commands.add('runInTestAPipeline', () => {
+	cy.get('[data-cy-main="testing"]').click();
+	cy.get('[data-cy-main="testingRunPipeline"]').click();
+	cy.get('[data-cy-test-pipeline="selectConfig"]')
+		.select('Frank2Example');
+	cy.get('[data-cy-test-pipeline="selectAdapter"]')
+		.select('HelloWorld');
+	cy.get('[data-cy-test-pipeline="message"]')
+		.type('Hello world');
+	cy.get('[data-cy-test-pipeline="send"]').click();
+	cy.get('[data-cy-test-pipeline="runResult"]').should('contain', 'SUCCESS');
+});

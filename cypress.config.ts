@@ -5,5 +5,7 @@ module.exports = defineConfig({
     setupNodeEvents(on, config) {
       // implement node event listeners here
     },
+    supportFile: 'cypress/e2e/cypress/support/e2e.ts',
+    baseUrl: 'http://localhost',
   },
 });
