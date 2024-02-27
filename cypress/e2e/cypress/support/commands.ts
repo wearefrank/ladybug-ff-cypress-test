@@ -31,8 +31,8 @@ declare namespace Cypress {
 }
 
 Cypress.Commands.add('runInTestAPipeline', () => {
-	cy.get('[data-cy-main="testing"]').click();
-	cy.get('[data-cy-main="testingRunPipeline"]').click();
+	cy.get('[data-cy-nav="testing"]').click();
+	cy.get('[data-cy-nav="testingRunPipeline"]').click();
 	cy.get('[data-cy-test-pipeline="selectConfig"]')
 		.select('Frank2Example');
 	cy.get('[data-cy-test-pipeline="selectAdapter"]')
