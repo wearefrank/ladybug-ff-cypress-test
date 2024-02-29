@@ -26,9 +26,34 @@
 
 declare namespace Cypress {
 	interface Chainable<Subject = any> {
+		getIframeBody(): Chainable<any>;
+		getNumLadybugReports(): Chainable<any>;
 		runInTestAPipeline(config: string, adapter: string, message: string): Chainable<any>;
 	}
 }
+
+// From the internet.
+Cypress.Commands.add('getIframeBody', () => {
+	return cy
+		.get('iframe')
+		.its('0.contentDocument').should('exist')
+		.its('body').should('not.be.undefined')
+		.then(cy.wrap);
+});
+
+Cypress.Commands.add('getNumLadybugReports', () => {
+	cy.get('[data-cy-nav="testing"]').click();
+	cy.intercept('GET', 'iaf/ladybug/api/metadata/Logging/count').as('apiGetReports');
+	cy.get('[data-cy-nav="testingLadybug"]').click();
+	cy.getIframeBody().find('[data-cy-nav-tab="debugTab"]').click();
+	cy.wait('@apiGetReports');
+	cy.intercept('GET', 'iaf/ladybug/api/metadata/Logging/count').as('apiGetReports_2');
+	cy.getIframeBody().find('[data-cy-debug="refresh"]').click();
+	cy.wait('@apiGetReports_2').then(interception => {
+		let count: number = interception.response.body;
+		return cy.wrap(count);
+	});
+})
 
 Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, message: string) => {
 	cy.get('[data-cy-nav="testing"]').click();
