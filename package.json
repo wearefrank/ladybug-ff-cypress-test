@@ -12,8 +12,7 @@
     "typescript": "^5.3.3"
   },
   "scripts": {
-    "for-builtFF-batch": "cypress run --spec cypress/e2e/cypress/forBuiltFF/**/*.cy.ts",
-    "for-downloadedFF-batch": "cypress run --spec cypress/e2e/cypress/forDownloadedFF/**/*.cy.ts",
+    "batch": "cypress run",
     "interactive": "cypress open"
   }
 }

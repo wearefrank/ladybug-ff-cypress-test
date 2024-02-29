@@ -26,19 +26,19 @@
 
 declare namespace Cypress {
 	interface Chainable<Subject = any> {
-		runInTestAPipeline(): Chainable<any>;
+		runInTestAPipeline(config: string, adapter: string, message: string): Chainable<any>;
 	}
 }
 
-Cypress.Commands.add('runInTestAPipeline', () => {
+Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, message: string) => {
 	cy.get('[data-cy-nav="testing"]').click();
 	cy.get('[data-cy-nav="testingRunPipeline"]').click();
 	cy.get('[data-cy-test-pipeline="selectConfig"]')
-		.select('Frank2Example');
+		.select(config);
 	cy.get('[data-cy-test-pipeline="selectAdapter"]')
-		.select('HelloWorld');
+		.select(adapter);
 	cy.get('[data-cy-test-pipeline="message"]')
-		.type('Hello world');
+		.type(message);
 	cy.get('[data-cy-test-pipeline="send"]').click();
 	cy.get('[data-cy-test-pipeline="runResult"]').should('contain', 'SUCCESS');
 });
