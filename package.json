@@ -13,6 +13,7 @@
     "typescript": "*"
   },
   "scripts": {
+    "prepare": "npx husky install",
     "lint": "eslint **/*.ts",
     "batch": "cypress run",
     "interactive": "cypress open"
