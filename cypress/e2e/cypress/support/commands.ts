@@ -33,6 +33,7 @@ declare namespace Cypress {
     createReportInLadybug(config: string, adapter: string, message: string): Chainable<number>
     getAllStorageIdsInTable(): Chainable<number[]>
     guardedCopyReportToTestTab(alias: string)
+    checkTestTabHasReportNamed(name: string)
   }
 }
 
@@ -126,7 +127,7 @@ Cypress.Commands.add('createReportInLadybug', (config: string, adapter: string, 
 
 Cypress.Commands.add('getAllStorageIdsInTable', () => {
   const storageIds: number[] = []
-  cy.get('[data-cy-debug="tableBody"] tr').each($row => {
+  cy.getIframeBody().find('[data-cy-debug="tableBody"]').find('tr').each($row => {
     cy.wrap($row).find('td:eq(1)').invoke('text').then(s => {
       storageIds.push(parseInt(s))
     })
@@ -143,11 +144,20 @@ Cypress.Commands.add('guardedCopyReportToTestTab', (alias) => {
     url: /\/api\/report\/store\/*?/g,
     times: 1
   }).as(alias)
-  cy.get('[data-cy-debug-editor="copy"]').click()
+  cy.getIframeBody().find('[data-cy-debug-editor="copy"]').click()
   cy.wait(`@${alias}`).then((res) => {
     cy.wrap(res).its('request.url').should('contain', 'Test')
     cy.wrap(res).its('request.body').as('requestBody')
-    cy.get('@requestBody').its('Debug').should('have.length', 1)
+    cy.get('@requestBody').its('Logging').should('have.length', 1)
     cy.wrap(res).its('response.statusCode').should('equal', 200)
+  })
+})
+
+Cypress.Commands.add('checkTestTabHasReportNamed', (name) => {
+  cy.intercept('GET', 'iaf/ladybug/api/metadata/Test/count').as('apiGetTestReports')
+  cy.getIframeBody().find('[data-cy-nav-tab="testTab"]').click()
+  cy.wait('@apiGetTestReports')
+  cy.getIframeBody().find('[data-cy-test="table"] tr').should('have.length', 1).within(() => {
+    cy.find('td:eq(3)').should('contain', name)
   })
 })
