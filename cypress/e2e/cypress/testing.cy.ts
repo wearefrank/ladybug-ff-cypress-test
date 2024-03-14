@@ -3,10 +3,9 @@ describe('Test user stories about testing with Ladybug', () => {
     cy.visit('')
     cy.request({
       method: 'DELETE',
-      url: 'ladybug/api/report/all/Test',
-      headers: {
-        Authorization: 'Basic ' + btoa(unescape(encodeURIComponent('IbisDataAdmin' + ':' + 'IbisDataAdmin')))
-      }
+      url: 'http://localhost/iaf/ladybug/api/report/all/Test'
+    }).then(result => {
+      expect(result.status).to.equal(200)
     })
   })
 

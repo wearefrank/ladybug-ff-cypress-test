@@ -48,12 +48,12 @@ Cypress.Commands.add('getIframeBody', () => {
 
 Cypress.Commands.add('getNumLadybugReports', () => {
   cy.get('[data-cy-nav="testing"]').click()
-  cy.intercept('GET', 'iaf/ladybug/api/metadata/Logging/count').as('apiGetReports')
+  cy.intercept('GET', 'iaf/ladybug/api/metadata/Debug/count').as('apiGetReports')
   cy.get('[data-cy-nav="testingLadybug"]').click()
   cy.wait(200)
   cy.getIframeBody().find('[data-cy-nav-tab="debugTab"]').click()
   cy.wait('@apiGetReports')
-  cy.intercept('GET', 'iaf/ladybug/api/metadata/Logging/count').as('apiGetReports_2')
+  cy.intercept('GET', 'iaf/ladybug/api/metadata/Debug/count').as('apiGetReports_2')
   cy.getIframeBody().find('[data-cy-debug="refresh"]').click()
   cy.wait('@apiGetReports_2').then(interception => {
     const count: number = interception.response.body
@@ -148,16 +148,24 @@ Cypress.Commands.add('guardedCopyReportToTestTab', (alias) => {
   cy.wait(`@${alias}`).then((res) => {
     cy.wrap(res).its('request.url').should('contain', 'Test')
     cy.wrap(res).its('request.body').as('requestBody')
-    cy.get('@requestBody').its('Logging').should('have.length', 1)
+    cy.get('@requestBody').its('Debug').should('have.length', 1)
     cy.wrap(res).its('response.statusCode').should('equal', 200)
   })
 })
 
 Cypress.Commands.add('checkTestTabHasReportNamed', (name) => {
-  cy.intercept('GET', 'iaf/ladybug/api/metadata/Test/count').as('apiGetTestReports')
+  cy.intercept({
+    method: 'GET',
+    hostname: 'localhost',
+    url: /\/iaf\/ladybug\/api\/metadata\/Test*/g
+  }).as('apiGetTestReports')
+  cy.wait(100)
   cy.getIframeBody().find('[data-cy-nav-tab="testTab"]').click()
   cy.wait('@apiGetTestReports')
-  cy.getIframeBody().find('[data-cy-test="table"] tr').should('have.length', 1).within(() => {
-    cy.find('td:eq(3)').should('contain', name)
-  })
+  cy.getIframeBody().find('[data-cy-test="table"] tr')
+    .should('have.length', 1)
+    .as('testtabReportRow')
+  cy.get('@testtabReportRow').find('td:eq(2)').should('contain', name)
+  cy.get('@testtabReportRow').find('td:eq(4)').should('be.empty')
+  // TODO: Run the report and check the run result.
 })
