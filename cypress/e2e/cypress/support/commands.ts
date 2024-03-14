@@ -159,7 +159,6 @@ Cypress.Commands.add('checkTestTabHasReportNamed', (name) => {
     hostname: 'localhost',
     url: /\/iaf\/ladybug\/api\/metadata\/Test*/g
   }).as('apiGetTestReports')
-  cy.wait(100)
   cy.getIframeBody().find('[data-cy-nav-tab="testTab"]').click()
   cy.wait('@apiGetTestReports')
   cy.getIframeBody().find('[data-cy-test="table"] tr')
