@@ -4,8 +4,8 @@ describe('Test user stories about testing with Ladybug', () => {
     cy.request({
       method: 'DELETE',
       url: 'http://localhost/iaf/ladybug/api/report/all/Test'
-    }).then(result => {
-      expect(result.status).to.equal(200)
+    }).then(response => {
+      cy.wrap(response).its('status').should('equal', 200)
     })
   })
 

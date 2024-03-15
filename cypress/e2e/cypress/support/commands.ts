@@ -145,11 +145,11 @@ Cypress.Commands.add('guardedCopyReportToTestTab', (alias) => {
     times: 1
   }).as(alias)
   cy.getIframeBody().find('[data-cy-debug-editor="copy"]').click()
-  cy.wait(`@${alias}`).then((res) => {
-    cy.wrap(res).its('request.url').should('contain', 'Test')
-    cy.wrap(res).its('request.body').as('requestBody')
+  cy.wait(`@${alias}`).then((interception) => {
+    cy.wrap(interception).its('request.url').should('contain', 'Test')
+    cy.wrap(interception).its('request.body').as('requestBody')
     cy.get('@requestBody').its('Debug').should('have.length', 1)
-    cy.wrap(res).its('response.statusCode').should('equal', 200)
+    cy.wrap(interception).its('response.statusCode').should('equal', 200)
   })
 })
 
