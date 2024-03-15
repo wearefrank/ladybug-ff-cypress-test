@@ -9,7 +9,6 @@ describe('Test user stories about testing with Ladybug', () => {
     })
   })
 
-  // 'DELETE', 'ladybug/api/report/all/Test'}).then(res => {
   it('Run report', () => {
     cy.createReportInLadybug('Example1a', 'Adapter1a', 'xxx').then(storageId => {
       cy.getIframeBody().find('[data-cy-debug="tableBody"]')
