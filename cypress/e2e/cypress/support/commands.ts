@@ -33,7 +33,7 @@ declare namespace Cypress {
     createReportInLadybug(config: string, adapter: string, message: string): Chainable<number>
     getAllStorageIdsInTable(): Chainable<number[]>
     guardedCopyReportToTestTab(alias: string)
-    checkTestTabHasReportNamed(name: string)
+    checkTestTabHasReportNamed(name: string): Cypress.Chainable<any>
   }
 }
 
@@ -166,5 +166,5 @@ Cypress.Commands.add('checkTestTabHasReportNamed', (name) => {
     .as('testtabReportRow')
   cy.get('@testtabReportRow').find('td:eq(2)').should('contain', name)
   cy.get('@testtabReportRow').find('td:eq(4)').should('be.empty')
-  // TODO: Run the report and check the run result.
+  return cy.get('@testtabReportRow')
 })

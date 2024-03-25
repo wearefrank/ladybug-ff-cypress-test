@@ -19,7 +19,10 @@ describe('Test user stories about testing with Ladybug', () => {
         })
       cy.getIframeBody().find('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 1)
       cy.guardedCopyReportToTestTab('apiCopyTheReportToTestTab')
-      cy.checkTestTabHasReportNamed('Pipeline Adapter1a')
+      cy.checkTestTabHasReportNamed('Pipeline Adapter1a').as('testTabReportRow')
+        .find('[data-cy-test="runReport"]').click()
+      // TODO: Use data-cy. This can only be done if there is a data-cy* tag to request
+      cy.get('@testTabReportRow').find('td:eq(4)').should('contain', 'stubbed')
     })
   })
 })
