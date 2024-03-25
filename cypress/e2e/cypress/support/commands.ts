@@ -44,12 +44,12 @@ Cypress.Commands.add('getIframeBody', () => {
 
 Cypress.Commands.add('getNumLadybugReports', () => {
   cy.get('[data-cy-nav="testing"]').click()
-  cy.intercept('GET', 'iaf/ladybug/api/metadata/Logging/count').as('apiGetReports')
+  cy.intercept('GET', 'iaf/ladybug/api/metadata/Debug/count').as('apiGetReports')
   cy.get('[data-cy-nav="testingLadybug"]').click()
   cy.wait(200)
   cy.getIframeBody().find('[data-cy-nav-tab="debugTab"]').click()
   cy.wait('@apiGetReports')
-  cy.intercept('GET', 'iaf/ladybug/api/metadata/Logging/count').as('apiGetReports_2')
+  cy.intercept('GET', 'iaf/ladybug/api/metadata/Debug/count').as('apiGetReports_2')
   cy.getIframeBody().find('[data-cy-debug="refresh"]').click()
   cy.wait('@apiGetReports_2').then(interception => {
     const count: number = interception.response.body
@@ -68,11 +68,11 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
   cy.get('[data-cy-nav="testing"]').click()
   cy.get('[data-cy-nav="testingRunPipeline"]').click()
   cy.get('[data-cy-test-pipeline="selectConfig"]')
-    .select(config)
+    .clear().type(config)
   cy.get('[data-cy-test-pipeline="selectAdapter"]')
-    .select(adapter)
+    .clear().type(adapter)
   cy.get('[data-cy-test-pipeline="message"]')
-    .type(message)
+    .clear().type(message)
   cy.get('[data-cy-test-pipeline="send"]').click()
   cy.get('[data-cy-test-pipeline="runResult"]').should('contain', 'SUCCESS')
 })
