@@ -29,7 +29,11 @@ declare namespace Cypress {
     getIframeBody(): Chainable<any>
     getNumLadybugReports(): Chainable<any>
     runInTestAPipeline(config: string, adapter: string, message: string): Chainable<any>
-    getNumLadybugReportsForNameFilter(name: string, expectReports: boolean): Chainable<any>
+    getNumLadybugReportsForNameFilter(name: string, expectReports: boolean): Chainable<number>
+    createReportInLadybug(config: string, adapter: string, message: string): Chainable<number>
+    getAllStorageIdsInTable(): Chainable<number[]>
+    guardedCopyReportToTestTab(alias: string)
+    checkTestTabHasReportNamed(name: string): Cypress.Chainable<any>
   }
 }
 
@@ -107,4 +111,60 @@ Cypress.Commands.add('getNumLadybugReportsForNameFilter', (name, expectReports) 
     cy.getIframeBody().find('[data-cy-debug="tableFilterRow"]').should('not.exist')
     return cy.wrap(filteredNumReports)
   }
+})
+
+Cypress.Commands.add('createReportInLadybug', (config: string, adapter: string, message: string) => {
+  cy.getNumLadybugReports().then(numBefore => {
+    cy.runInTestAPipeline(config, adapter, message)
+    cy.getNumLadybugReports().should('equal', numBefore + 1)
+    cy.getAllStorageIdsInTable().then(storageIds => {
+      const storageId = Math.max.apply(null, storageIds)
+      cy.log(`Last created report has storageId ${storageId.toString()}`)
+      return cy.wrap(storageId)
+    })
+  })
+})
+
+Cypress.Commands.add('getAllStorageIdsInTable', () => {
+  const storageIds: number[] = []
+  cy.getIframeBody().find('[data-cy-debug="tableBody"]').find('tr').each($row => {
+    cy.wrap($row).find('td:eq(1)').invoke('text').then(s => {
+      storageIds.push(parseInt(s))
+    })
+  }).then(() => {
+    cy.log(`Ladybug debug tab table has storage ids: ${storageIds.toString()}`)
+    return cy.wrap(storageIds)
+  })
+})
+
+Cypress.Commands.add('guardedCopyReportToTestTab', (alias) => {
+  cy.intercept({
+    method: 'PUT',
+    hostname: 'localhost',
+    url: /\/api\/report\/store\/*?/g,
+    times: 1
+  }).as(alias)
+  cy.getIframeBody().find('[data-cy-debug-editor="copy"]').click()
+  cy.wait(`@${alias}`).then((interception) => {
+    cy.wrap(interception).its('request.url').should('contain', 'Test')
+    cy.wrap(interception).its('request.body').as('requestBody')
+    cy.get('@requestBody').its('Debug').should('have.length', 1)
+    cy.wrap(interception).its('response.statusCode').should('equal', 200)
+  })
+})
+
+Cypress.Commands.add('checkTestTabHasReportNamed', (name) => {
+  cy.intercept({
+    method: 'GET',
+    hostname: 'localhost',
+    url: /\/iaf\/ladybug\/api\/metadata\/Test*/g
+  }).as('apiGetTestReports')
+  cy.getIframeBody().find('[data-cy-nav-tab="testTab"]').click()
+  cy.wait('@apiGetTestReports')
+  cy.getIframeBody().find('[data-cy-test="table"] tr')
+    .should('have.length', 1)
+    .as('testtabReportRow')
+  cy.get('@testtabReportRow').find('td:eq(2)').should('contain', name)
+  cy.get('@testtabReportRow').find('td:eq(4)').should('be.empty')
+  return cy.get('@testtabReportRow')
 })
