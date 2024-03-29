@@ -16,7 +16,9 @@
     "prepare": "npx husky install",
     "lint": "eslint **/*.ts",
     "batch": "cypress run",
-    "interactive": "cypress open"
+    "interactive": "cypress open",
+    "installFrankRunnerEnv": "cd ../frank-runner && ./env.sh > installFrankRunnerEnv.log",
+    "startServer": "cd ../frank-runner && ./restart.sh -Dupdate.strategy=none > serverStartLog.log"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.4.0",

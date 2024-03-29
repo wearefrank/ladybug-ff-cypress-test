@@ -1,0 +1,117 @@
+name: Testing
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  testing:
+    name: Cypress tests of ladybug + Frank!Framework
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Frank!Runner
+        uses: actions/checkout@v4
+        with:
+          repository: wearefrank/frank-runner
+          path: frank-runner
+      - name: Checkout ladybug-ff-cypress-test
+        uses: actions/checkout@v4
+        with:
+          path: ladybug-ff-cypress-test
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 20.x
+          cache: "yarn"
+          cache-dependency-path: "**/yarn.lock"
+      - name: "change version"
+        uses: reedyuk/npm-version@1.1.1
+        with:
+          version: "8.1.2"
+          package: "ladybug-ff-cypress-test"
+      - name: Update yarn
+        run: corepack enable
+        working-directory: "ladybug-ff-cypress-test"
+      - name: Show npm version
+        run: npm -v
+        working-directory: "ladybug-ff-cypress-test"
+      - name: Show node version
+        run: node -v
+        working-directory: "ladybug-ff-cypress-test"
+      - name: Show yarn version
+        run: yarn -v
+        working-directory: "ladybug-ff-cypress-test"
+      - name: Install packages
+        run: yarn install --immutable
+        working-directory: ladybug-ff-cypress-test
+      - name: Cache Frank!Runner dependencies - build
+        uses: actions/cache@v3
+        with:
+          path: frank-runner/build
+          key: ${{ runner.os }}-frank-runner-build
+          restore-keys: |
+            ${{ runner.os }}-frank-runner-build
+      - name: Cache Frank!Runner dependencies - download
+        uses: actions/cache@v3
+        with:
+          path: frank-runner/download
+          key: ${{ runner.os }}-frank-runner-download
+          restore-keys: |
+            ${{ runner.os }}-frank-runner-download
+      - name: Show current time, allows you to check that logs are not old
+        run: date
+      - name: Remove old catalina.out
+        run: rm -rf frank-runner/build/apache-tomcat-9.0.56/logs/catalina.out
+      - name: Let Frank!Runner do its downloads
+        run: yarn run installFrankRunnerEnv
+        working-directory: ladybug-ff-cypress-test
+      - name: Start server using Frank!Runner in background
+        run: yarn run startServer &
+        working-directory: ladybug-ff-cypress-test
+      - name: Run cypress with chrome browser
+        uses: cypress-io/github-action@v6.6.0
+        with:
+          working-directory: ladybug-ff-cypress-test
+          start: |
+            yarn batch
+          wait-on: "http://0.0.0.0:80, http://0.0.0.0:4200"
+          wait-on-timeout: 240
+          browser: chrome
+      - name: Show files
+        run: tree -d -L 5 .
+        if: always()
+      - name: Store log of Frank!Runner downloads
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: installFrankRunnerEnv.log
+          path: frank-runner/installFrankRunnerEnv.log
+      - name: Store log of starting the server with the Frank!Runner
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: serverStartLog.log
+          path: frank-runner/serverStartLog.log
+      - name: Store build.properties
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: specials_build.properties
+          path: frank-runner/build.properties
+      - name: Store Apache Tomcat log
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: logs
+          path: frank-runner/build/*/logs/*
+      - name: Store Cypress screenshots
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: screenshots
+          path: ladybug-ff-cypress-test/cypress/screenshots/
+      - name: Store Cypress videos
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: videos
+          path: ladybug-ff-cypress-test/cypress/videos/
