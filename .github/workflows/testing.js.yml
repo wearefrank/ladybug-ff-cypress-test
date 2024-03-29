@@ -47,20 +47,20 @@ jobs:
       - name: Install packages
         run: yarn install --immutable
         working-directory: ladybug-ff-cypress-test
-      - name: Cache Frank!Runner dependencies - build
-        uses: actions/cache@v3
-        with:
-          path: frank-runner/build
-          key: ${{ runner.os }}-frank-runner-build
-          restore-keys: |
-            ${{ runner.os }}-frank-runner-build
-      - name: Cache Frank!Runner dependencies - download
-        uses: actions/cache@v3
-        with:
-          path: frank-runner/download
-          key: ${{ runner.os }}-frank-runner-download
-          restore-keys: |
-            ${{ runner.os }}-frank-runner-download
+      # - name: Cache Frank!Runner dependencies - build
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: frank-runner/build
+      #     key: ${{ runner.os }}-frank-runner-build
+      #     restore-keys: |
+      #       ${{ runner.os }}-frank-runner-build
+      # - name: Cache Frank!Runner dependencies - download
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: frank-runner/download
+      #     key: ${{ runner.os }}-frank-runner-download
+      #     restore-keys: |
+      #       ${{ runner.os }}-frank-runner-download
       - name: Show current time, allows you to check that logs are not old
         run: date
       - name: Remove old catalina.out
