@@ -13,6 +13,9 @@ jobs:
         with:
           repository: wearefrank/frank-runner
           path: frank-runner
+      - name: See commit number of checked-out frank-runner
+        run: git log -1
+        working-directory: frank-runner
       - name: Set port where Frank!Framework is served
         run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
       - name: Set debug to true
