@@ -13,6 +13,8 @@ jobs:
         with:
           repository: wearefrank/frank-runner
           path: frank-runner
+      - name: Set port where ladybug-test-webapp is served
+        run: echo "tomcat.connector.port=8090" > frank-runner/build.properties  
       - name: Checkout ladybug-ff-cypress-test
         uses: actions/checkout@v4
         with:
@@ -72,8 +74,8 @@ jobs:
         with:
           working-directory: ladybug-ff-cypress-test
           start: |
-            yarn batch
-          wait-on: "http://0.0.0.0:80, http://0.0.0.0:4200"
+            yarn batch_cicd
+          wait-on: "http://0.0.0.0:8090"
           wait-on-timeout: 240
           browser: chrome
       - name: Show files
