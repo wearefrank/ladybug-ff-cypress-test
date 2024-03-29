@@ -59,7 +59,11 @@ Cypress.Commands.add('getNumLadybugReports', () => {
   cy.wait(200)
   cy.getIframeBody().find('[data-cy-nav-tab="debugTab"]').click()
   cy.wait('@apiGetReports')
-  cy.intercept('GET', 'iaf/ladybug/api/metadata/Debug/count', { times: 1 }).as('apiGetReports_2')
+  cy.intercept({
+    method: 'GET',
+    url: 'iaf/ladybug/api/metadata/Debug/count',
+    times: 1
+  }).as('apiGetReports_2')
   cy.getIframeBody().find('[data-cy-debug="refresh"]').click()
   cy.wait('@apiGetReports_2').then(interception => {
     const count: number = interception.response.body
