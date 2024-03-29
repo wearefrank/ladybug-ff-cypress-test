@@ -13,8 +13,10 @@ jobs:
         with:
           repository: wearefrank/frank-runner
           path: frank-runner
-      - name: Set port where ladybug-test-webapp is served
-        run: echo "tomcat.connector.port=8090" > frank-runner/build.properties  
+      - name: Set port where Frank!Framework is served
+        run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
+      - name: Set debug to true
+        run: echo "debug=true" >> frank-runner/build.properties
       - name: Checkout ladybug-ff-cypress-test
         uses: actions/checkout@v4
         with:
@@ -62,7 +64,7 @@ jobs:
       - name: Show current time, allows you to check that logs are not old
         run: date
       - name: Remove old catalina.out
-        run: rm -rf frank-runner/build/apache-tomcat-9.0.56/logs/catalina.out
+        run: rm -rf frank-runner/build/apache-tomcat-9.0.84/logs/catalina.out
       - name: Let Frank!Runner do its downloads
         run: yarn run installFrankRunnerEnv
         working-directory: ladybug-ff-cypress-test
@@ -97,7 +99,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: specials_build.properties
+          name: build.properties
           path: frank-runner/build.properties
       - name: Store Apache Tomcat log
         uses: actions/upload-artifact@v3
