@@ -17,7 +17,7 @@
     "lint": "eslint **/*.ts",
     "batch": "cypress run",
     "interactive": "cypress open",
-    "batch_cicd": "CYPRESS_BASE_URL=http://0.0.0.0:8090 cypress run",
+    "batch_cicd": "export CYPRESS_BASE_URL=http://0.0.0.0:8090 && cypress run",
     "installFrankRunnerEnv": "cd ../frank-runner && ./env.sh > installFrankRunnerEnv.log",
     "startServer": "cd ../frank-runner && ./restart.sh -Dupdate.strategy=none > serverStartLog.log"
   },
