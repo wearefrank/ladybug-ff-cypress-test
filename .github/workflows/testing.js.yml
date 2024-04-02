@@ -74,12 +74,14 @@ jobs:
       - name: Start server using Frank!Runner in background
         run: yarn run startServer &
         working-directory: ladybug-ff-cypress-test
+      - name: Copy cypress.config_cicd.ts to cypress.config.ts to listen to correct port
+        run: cp cypress.config_cicd.ts cypress.config.ts
       - name: Run cypress with chrome browser
         uses: cypress-io/github-action@v6.6.0
         with:
           working-directory: ladybug-ff-cypress-test
           start: |
-            yarn batch_cicd
+            yarn batch
           wait-on: "http://0.0.0.0:8090"
           wait-on-timeout: 240
           browser: chrome
