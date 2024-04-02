@@ -76,6 +76,7 @@ jobs:
         working-directory: ladybug-ff-cypress-test
       - name: Copy cypress.config_cicd.ts to cypress.config.ts to listen to correct port
         run: cp cypress.config_cicd.ts cypress.config.ts
+        working-directory: ladybug-ff-cypress-test
       - name: Run cypress with chrome browser
         uses: cypress-io/github-action@v6.6.0
         with:
