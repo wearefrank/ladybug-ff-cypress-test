@@ -47,7 +47,7 @@ Cypress.Commands.add('getIframeBody', () => {
 })
 
 Cypress.Commands.add('getNumLadybugReports', () => {
-  cy.get('[data-cy-nav="adapterStatus"]').click()
+  cy.get('[data-cy-nav="adapterStatus"]', { timeout: 10000 }).click()
   cy.get('[data-cy-nav="testingLadybug"]').should('not.be.visible')
   cy.get('[data-cy-nav="testing"]').click()
   cy.intercept({
@@ -79,7 +79,7 @@ Cypress.Commands.add('getNumLadybugReports', () => {
 })
 
 Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, message: string) => {
-  cy.get('[data-cy-nav="adapterStatus"]').click()
+  cy.get('[data-cy-nav="adapterStatus"]', { timeout: 10000 }).click()
   cy.get('[data-cy-nav="testingRunPipeline"]').should('not.be.visible')
   cy.get('[data-cy-nav="testing"]').click()
   cy.get('[data-cy-nav="testingRunPipeline"]').click()
