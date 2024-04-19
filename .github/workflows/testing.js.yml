@@ -80,7 +80,7 @@ jobs:
       - name: Run cypress with chrome browser
         uses: cypress-io/github-action@v6.6.0
         with:
-          working-directory: ladybug-ff-cypress-test
+          working-directory: ladybug-ff-cypress-test/ladybug-ff-cypress-test
           start: |
             yarn batch
           wait-on: "http://0.0.0.0:8090"
