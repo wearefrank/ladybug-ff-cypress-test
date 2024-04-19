@@ -85,9 +85,10 @@ jobs:
             yarn batch
           wait-on: "http://0.0.0.0:8090"
           wait-on-timeout: 240
+          config: baseUrl=http://localhost:8090/
           browser: chrome
       - name: Try to access server directly with curl
-        run: curl -i -X DELETE http://localhost:8090/iaf/ladybug/api/report/all/Test
+        run: curl -v -i -X DELETE http://localhost:8090/iaf/ladybug/api/report/all/Test
         if: always()
       - name: Show files
         run: tree -d -L 5 .
