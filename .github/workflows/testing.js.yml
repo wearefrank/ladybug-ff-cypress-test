@@ -87,7 +87,7 @@ jobs:
           wait-on-timeout: 240
           browser: chrome
       - name: Try to access server directly with curl
-        run: curl -X DELETE http://localhost:8090/iaf/ladybug/api/report/all/Test
+        run: curl -i -X DELETE http://localhost:8090/iaf/ladybug/api/report/all/Test
         if: always()
       - name: Show files
         run: tree -d -L 5 .
