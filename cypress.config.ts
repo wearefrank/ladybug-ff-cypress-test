@@ -6,7 +6,7 @@ module.exports = defineConfig({
       // implement node event listeners here
     },
     supportFile: 'cypress/e2e/cypress/support/e2e.ts',
-    baseUrl: 'http://localhost',
+    baseUrl: 'http://localhost/',
     video: true
   }
 })
