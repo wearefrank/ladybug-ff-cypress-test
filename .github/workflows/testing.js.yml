@@ -95,7 +95,7 @@ jobs:
         run: curl -v -i -X DELETE http://localhost:8090/iaf/ladybug/api/report/all/Test
         if: always()
       - name: Show files
-        run: tree -d -L 5 .
+        run: tree -L 5 .
         if: always()
       - name: Store log of Frank!Runner downloads
         uses: actions/upload-artifact@v3
