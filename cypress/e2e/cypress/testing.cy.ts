@@ -3,7 +3,7 @@ describe('Test user stories about testing with Ladybug', () => {
     cy.visit('')
     cy.request({
       method: 'DELETE',
-      url: Cypress.config('baseUrl') + '/iaf/ladybug/api/report/all/Test'
+      url: Cypress.config('baseUrl') + 'iaf/ladybug/api/report/all/Test'
     }).then(response => {
       cy.wrap(response).its('status').should('equal', 200)
     })
