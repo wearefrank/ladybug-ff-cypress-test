@@ -7,7 +7,7 @@
   "author": "Martijn Dirkse <martijn@integrationpartners.nl>",
   "license": "MIT",
   "dependencies": {
-    "cypress": "^13.6.5",
+    "cypress": "^13.7.3",
     "husky": "^9.0.11",
     "typescript": "*"
   },
