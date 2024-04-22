@@ -79,15 +79,12 @@ jobs:
       - name: Start server using Frank!Runner in background
         run: yarn run startServer &
         working-directory: ladybug-ff-cypress-test
-      - name: Run cypress with chrome browser
-        uses: cypress-io/github-action@v6.6.1
-        with:
-          working-directory: ladybug-ff-cypress-test
-          start: |
-            yarn batch
-          wait-on: "http://0.0.0.0:8090"
-          wait-on-timeout: 240
-          browser: chrome
+      - name: Wait for server to be available
+        run: ./waitForUrl.sh http://localhost:8090 240
+        working-directory: ladybug-ff-cypress-test/.github/workflows
+      - name: Run the tests
+        run: yarn batch
+        working-directory: ladybug-ff-cypress-test
       - name: Try to access server directly with curl
         run: curl -v -i -X DELETE http://localhost:8090/iaf/ladybug/api/report/all/Test
         if: always()
