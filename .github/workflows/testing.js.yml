@@ -22,8 +22,6 @@ jobs:
         run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
       - name: Set debug to true
         run: echo "debug=true" >> frank-runner/build.properties
-      - name: Set update strategy to latest
-        run: echo "update.strategy=latest" >> frank-runner/build.properties
       - name: Checkout ladybug-ff-cypress-test
         uses: actions/checkout@v4
         with:
