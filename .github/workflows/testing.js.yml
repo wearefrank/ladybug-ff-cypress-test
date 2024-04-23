@@ -78,7 +78,7 @@ jobs:
         run: yarn run installFrankRunnerEnv
         working-directory: ladybug-ff-cypress-test
       - name: Check that there is only one version of Tomcat
-        run: [[ $(ls build/apache-tomcat* | wc -w) -eq 1 ]]
+        run: test $(ls build/apache-tomcat* | wc -w) -eq 1
         working-directory: frank-runner
       - name: Delete old Ladybug test reports
         run: find . -path './build/apache-tomcat*/logs/testtool*' -delete
