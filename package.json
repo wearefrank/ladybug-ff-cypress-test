@@ -13,7 +13,7 @@
   },
   "scripts": {
     "prepare": "npx husky install",
-    "lint": "eslint **/*.ts",
+    "lint": "eslint cypress/**/*.ts",
     "batch": "cypress run",
     "batch_cicd": "cypress run --browser chrome",
     "interactive": "cypress open",
