@@ -127,6 +127,7 @@ jobs:
       - name: Store Cypress videos
         uses: actions/upload-artifact@v2
         if: always()
+
         with:
           name: videos
           path: ladybug-ff-cypress-test/cypress/videos/
