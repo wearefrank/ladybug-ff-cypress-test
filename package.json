@@ -8,9 +8,11 @@
   "license": "MIT",
   "dependencies": {
     "cypress": "^13.7.3",
+    "husky": "^9.0.11",
     "typescript": "*"
   },
   "scripts": {
+    "prepare": "npx husky install",
     "lint": "eslint **/*.ts",
     "batch": "cypress run",
     "batch_cicd": "cypress run --browser chrome",
