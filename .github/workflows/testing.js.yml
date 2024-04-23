@@ -74,11 +74,18 @@ jobs:
             ${{ runner.os }}-frank-runner-download
       - name: Show current time, allows you to check that logs are not old
         run: date
-      - name: Remove old catalina.out
-        run: rm -rf frank-runner/build/apache-tomcat-9.0.84/logs/catalina.out
       - name: Let Frank!Runner do its downloads
         run: yarn run installFrankRunnerEnv
         working-directory: ladybug-ff-cypress-test
+      - name: Check that there is only one version of Tomcat
+        run: [[ $(ls build/apache-tomcat* | wc -w) -eq 1 ]]
+        working-directory: frank-runner
+      - name: Delete old Ladybug test reports
+        run: find . -path './build/apache-tomcat*/logs/testtool*' -delete
+        working-directory: frank-runner
+      - name: Remove old catalina.out
+        run: find . -path './build/apache-tomcat*/catalina.out' -delete
+        working-directory: frank-runner
       - name: Start server using Frank!Runner in background
         run: yarn run startServer &
         working-directory: ladybug-ff-cypress-test
