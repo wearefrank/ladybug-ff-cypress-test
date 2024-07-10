@@ -96,8 +96,8 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
 Cypress.Commands.add('getNumLadybugReportsForNameFilter', (name, expectReports) => {
   cy.getNumLadybugReports().then(totalNumReports => {
     cy.getIframeBody().find('[data-cy-debug="filter"]').click()
-    cy.getIframeBody().find('[data-cy-debug="tableFilterRow"]')
-    cy.getIframeBody().find('[data-cy-debug="tableFilter"]:eq(3)')
+    cy.getIframeBody().find('app-filter-side-drawer').find('label:contains(Name)')
+      .parent().find('input')
       .type(name + '{enter}')
     if (expectReports) {
       cy.getIframeBody().find('[data-cy-debug="tableBody"] tr').then(nodes => {
@@ -120,7 +120,7 @@ Cypress.Commands.add('getNumLadybugReportsForNameFilter', (name, expectReports) 
       cy.getIframeBody().find('[data-cy-debug="tableBody"] tr').should('have.length', totalNumReports)
     }
     cy.getIframeBody().find('[data-cy-debug="filter"]').click()
-    cy.getIframeBody().find('[data-cy-debug="tableFilterRow"]').should('not.exist')
+    cy.getIframeBody().find('app-filter-side-drawer').should('not.exist')
     return cy.wrap(filteredNumReports)
   }
 })
