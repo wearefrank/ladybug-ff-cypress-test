@@ -17,7 +17,7 @@ describe('Test user stories about testing with Ladybug', () => {
             cy.wrap($cell).click()
           }
         })
-      cy.getIframeBody().find('[data-cy-debug-tree="root"] .jqx-tree-dropdown-root > li').should('have.length', 1)
+      cy.getIframeBody().find('[data-cy-debug-tree="root"]').contains('Pipeline Adapter1a').should('have.length', 2)
       cy.guardedCopyReportToTestTab('apiCopyTheReportToTestTab')
       cy.checkTestTabHasReportNamed('Pipeline Adapter1a').as('testTabReportRow')
         .find('[data-cy-test="runReport"]').click()
