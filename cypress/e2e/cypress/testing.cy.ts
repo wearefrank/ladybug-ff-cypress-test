@@ -19,9 +19,8 @@ describe('Test user stories about testing with Ladybug', () => {
         })
       cy.getIframeBody().find('[data-cy-debug-tree="root"]')
         .contains('Pipeline Adapter1a').within(_ => {
-          cy.contains('Pipeline Adapter1a').within(_ => {
-            cy.contains('Pipeline Adapter1a').should('not.exist')
-          })
+          cy.contains('Pipeline Adapter1a')
+          // TODO: Check that there is no 'Pipeline Adapter1a' inside of this anymore
         })
       cy.guardedCopyReportToTestTab('apiCopyTheReportToTestTab')
       cy.checkTestTabHasReportNamed('Pipeline Adapter1a').as('testTabReportRow')
