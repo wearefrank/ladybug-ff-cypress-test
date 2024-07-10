@@ -99,6 +99,8 @@ Cypress.Commands.add('getNumLadybugReportsForNameFilter', (name, expectReports) 
     cy.getIframeBody().find('app-filter-side-drawer').find('label:contains(Name)')
       .parent().find('input')
       .type(name + '{enter}')
+    cy.getIframeBody().find('app-filter-side-drawer').find('button:contains(Close)').click()
+    cy.getIframeBody().find('app-filter-side-drawer').should('not.exist')
     if (expectReports) {
       cy.getIframeBody().find('[data-cy-debug="tableBody"] tr').then(nodes => {
         wrapUp(totalNumReports, nodes.length)
@@ -111,15 +113,14 @@ Cypress.Commands.add('getNumLadybugReportsForNameFilter', (name, expectReports) 
   })
 
   function wrapUp (totalNumReports, filteredNumReports: number): Cypress.Chainable<number> {
-    cy.getIframeBody().find('[data-cy-debug="tableFilter"]:eq(3)')
-      .clear()
-      .type('{enter}')
     if (totalNumReports === 0) {
       cy.getIframeBody().find('[data-cy-debug="tableBody"] tr').should('not.exist')
     } else {
       cy.getIframeBody().find('[data-cy-debug="tableBody"] tr').should('have.length', totalNumReports)
     }
     cy.getIframeBody().find('[data-cy-debug="filter"]').click()
+    cy.getIframeBody().find('app-filter-side-drawer').find('button:contains(Clear)').click()
+    cy.getIframeBody().find('app-filter-side-drawer').find('button:contains(Close)').click()
     cy.getIframeBody().find('app-filter-side-drawer').should('not.exist')
     return cy.wrap(filteredNumReports)
   }
