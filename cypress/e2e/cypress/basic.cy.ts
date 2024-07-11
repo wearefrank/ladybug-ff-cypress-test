@@ -12,10 +12,10 @@ describe('Basic tests', () => {
     cy.runInTestAPipeline('Example1a', 'Adapter1a', 'xxx')
     cy.runInTestAPipeline('Example1b', 'Adapter1b', 'xxx')
     cy.getNumLadybugReports().should('at.least', 2).then(total => {
-      cy.getNumLadybugReportsForNameFilter('Adapter1a', true).then(reportsA => {
+      cy.getNumLadybugReportsForNameFilter('Adapter1a').then(reportsA => {
         expect(reportsA).not.to.be.undefined
         expect(reportsA).to.be.lessThan(total as number)
-        cy.getNumLadybugReportsForNameFilter('Adapter1b', true).then(reportsB => {
+        cy.getNumLadybugReportsForNameFilter('Adapter1b').then(reportsB => {
           expect(reportsB).to.be.lessThan(total as number)
           expect(reportsA + reportsB).to.equal(total)
         })

@@ -29,7 +29,7 @@ declare namespace Cypress {
     getIframeBody(): Chainable<any>
     getNumLadybugReports(): Chainable<any>
     runInTestAPipeline(config: string, adapter: string, message: string): Chainable<any>
-    getNumLadybugReportsForNameFilter(name: string, expectReports: boolean): Chainable<number>
+    getNumLadybugReportsForNameFilter(name: string): Chainable<number>
     createReportInLadybug(config: string, adapter: string, message: string): Chainable<number>
     getAllStorageIdsInTable(): Chainable<number[]>
     guardedCopyReportToTestTab(alias: string)
@@ -93,37 +93,23 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
   cy.get('[data-cy-test-pipeline="runResult"]').should('contain', 'SUCCESS')
 })
 
-Cypress.Commands.add('getNumLadybugReportsForNameFilter', (name, expectReports) => {
+// Only works if some reports are expected to be omitted because of the filter
+Cypress.Commands.add('getNumLadybugReportsForNameFilter', (name) => {
   cy.getNumLadybugReports().then(totalNumReports => {
     cy.getIframeBody().find('[data-cy-debug="filter"]').click()
     cy.getIframeBody().find('app-filter-side-drawer').find('label:contains(Name)')
       .parent().find('input')
       .type(name + '{enter}')
-    cy.getIframeBody().find('app-filter-side-drawer').find('button:contains(Close)').click()
-    cy.getIframeBody().find('app-filter-side-drawer').find('label').should('not.exist')
-    if (expectReports) {
-      cy.getIframeBody().find('[data-cy-debug="tableBody"] tr').then(nodes => {
-        wrapUp(totalNumReports, nodes.length)
+    cy.getIframeBody().find('[data-cy-debug="tableBody"] tr').its('length')
+      .should('be.lessThan', totalNumReports).then(result => {
+        cy.getIframeBody().find('app-filter-side-drawer').find('label:contains(Name)')
+          .parent().find('button:contains(Clear)').click()
+        cy.getIframeBody().find('[data-cy-debug="tableBody"] tr').should('have.length', totalNumReports)
+        cy.getIframeBody().find('app-filter-side-drawer').find('button:contains(Close)').click()
+        cy.getIframeBody().find('app-filter-side-drawer').find('label').should('not.exist')
+        return cy.wrap(result)
       })
-    } else {
-      cy.getIframeBody().find('[data-cy-debug="tableBody"] tr').should('not.exist').then(() => {
-        wrapUp(totalNumReports, 0)
-      })
-    }
   })
-
-  function wrapUp (totalNumReports, filteredNumReports: number): Cypress.Chainable<number> {
-    if (totalNumReports === 0) {
-      cy.getIframeBody().find('[data-cy-debug="tableBody"] tr').should('not.exist')
-    } else {
-      cy.getIframeBody().find('[data-cy-debug="tableBody"] tr').should('have.length', totalNumReports)
-    }
-    cy.getIframeBody().find('[data-cy-debug="filter"]').click()
-    cy.getIframeBody().find('app-filter-side-drawer').find('button:contains(Clear)').click()
-    cy.getIframeBody().find('app-filter-side-drawer').find('button:contains(Close)').click()
-    cy.getIframeBody().find('app-filter-side-drawer').find('label').should('not.exist')
-    return cy.wrap(filteredNumReports)
-  }
 })
 
 Cypress.Commands.add('createReportInLadybug', (config: string, adapter: string, message: string) => {
