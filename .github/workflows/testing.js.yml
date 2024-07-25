@@ -63,6 +63,12 @@ jobs:
             ${{ runner.os }}-frank-runner-download
       - name: Show current time, allows you to check that logs are not old
         run: date
+      - name: Remove old Tomcat versions that may have come from the cache - download
+        run: rm -rf download/apache-tomcat-9*
+        working-directory: frank-runner
+      - name: Remove old Tomcat versions that may have come from the cache - build
+        run: rm -rf build/apache-tomcat-9*
+        working-directory: frank-runner
       - name: Let Frank!Runner do its downloads
         run: yarn run installFrankRunnerEnv
         working-directory: ladybug-ff-cypress-test
