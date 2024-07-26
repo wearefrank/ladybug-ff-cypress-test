@@ -66,6 +66,12 @@ jobs:
       - name: Let Frank!Runner do its downloads
         run: yarn run installFrankRunnerEnv
         working-directory: ladybug-ff-cypress-test
+      - name: Remove old Tomcat versions - download
+        run: rm -rf download/apache-tomcat-9*
+        working-directory: frank-runner
+      - name: Remove old Tomcat versions - build
+        run: rm -rf build/apache-tomcat-9*
+        working-directory: frank-runner
       - name: Show apache-tomcat directories
         run: find . -path './build/*' -name 'apache-tomcat*'
         working-directory: frank-runner
