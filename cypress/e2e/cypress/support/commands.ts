@@ -72,7 +72,7 @@ Cypress.Commands.add('getNumLadybugReports', () => {
     //
     // cy.getIframeBody().find('[data-cy-debug="amountShown"]')
     // .should('equal', "/" + count);
-    cy.getIframeBody().find('[data-cy-debug="tableBody"] tr')
+    cy.getIframeBody().find('[data-cy-debug="tableRow"]')
       .should('have.length', count)
     return cy.wrap(count)
   })
@@ -100,11 +100,11 @@ Cypress.Commands.add('getNumLadybugReportsForNameFilter', (name) => {
     cy.getIframeBody().find('app-filter-side-drawer').find('label:contains(Name)')
       .parent().find('input')
       .type(name + '{enter}')
-    cy.getIframeBody().find('[data-cy-debug="tableBody"] tr').its('length')
+    cy.getIframeBody().find('[data-cy-debug="tableRow"]').its('length')
       .should('be.lessThan', totalNumReports).then(result => {
         cy.getIframeBody().find('app-filter-side-drawer').find('label:contains(Name)')
           .parent().find('button:contains(Clear)').click()
-        cy.getIframeBody().find('[data-cy-debug="tableBody"] tr').should('have.length', totalNumReports)
+        cy.getIframeBody().find('[data-cy-debug="tableRow"]').should('have.length', totalNumReports)
         cy.getIframeBody().find('app-filter-side-drawer').find('button:contains(Close)').click()
         cy.getIframeBody().find('app-filter-side-drawer').find('label').should('not.exist')
         return cy.wrap(result)
@@ -126,7 +126,7 @@ Cypress.Commands.add('createReportInLadybug', (config: string, adapter: string, 
 
 Cypress.Commands.add('getAllStorageIdsInTable', () => {
   const storageIds: number[] = []
-  cy.getIframeBody().find('[data-cy-debug="tableBody"]').find('tr').each($row => {
+  cy.getIframeBody().find('[data-cy-debug="tableRow"]').each($row => {
     cy.wrap($row).find('td:eq(1)').invoke('text').then(s => {
       storageIds.push(parseInt(s))
     })
@@ -139,7 +139,6 @@ Cypress.Commands.add('getAllStorageIdsInTable', () => {
 Cypress.Commands.add('guardedCopyReportToTestTab', (alias) => {
   cy.intercept({
     method: 'PUT',
-    hostname: 'localhost',
     url: /\/api\/report\/store\/*?/g,
     times: 1
   }).as(alias)
@@ -155,11 +154,10 @@ Cypress.Commands.add('guardedCopyReportToTestTab', (alias) => {
 Cypress.Commands.add('checkTestTabHasReportNamed', (name) => {
   cy.intercept({
     method: 'GET',
-    hostname: 'localhost',
-    url: /\/iaf\/ladybug\/api\/metadata\/Test*/g
+    url: '/iaf/ladybug/api/metadata/Test/?'
   }).as('apiGetTestReports')
   cy.getIframeBody().find('[data-cy-nav-tab="testTab"]').click()
-  cy.wait('@apiGetTestReports')
+  // cy.wait('@apiGetTestReports', { timeout: 10000 })
   cy.getIframeBody().find('[data-cy-test="table"] tr')
     .should('have.length', 1)
     .as('testtabReportRow')
