@@ -142,6 +142,10 @@ Cypress.Commands.add('guardedCopyReportToTestTab', (alias) => {
     url: /\/api\/report\/store\/*?/g,
     times: 1
   }).as(alias)
+  cy.intercept({
+    method: 'GET',
+    url: /\/iaf\/ladybug\/api\/metadata\/Test*/g
+  }).as('apiGetTestReports')
   cy.getIframeBody().find('[data-cy-debug-editor="copy"]').click()
   cy.wait(`@${alias}`).then((interception) => {
     cy.wrap(interception).its('request.url').should('contain', 'Test')
@@ -149,15 +153,11 @@ Cypress.Commands.add('guardedCopyReportToTestTab', (alias) => {
     cy.get('@requestBody').its('Debug').should('have.length', 1)
     cy.wrap(interception).its('response.statusCode').should('equal', 200)
   })
+  cy.wait('@apiGetTestReports', { timeout: 30000 })
 })
 
 Cypress.Commands.add('checkTestTabHasReportNamed', (name) => {
-  cy.intercept({
-    method: 'GET',
-    url: '/iaf/ladybug/api/metadata/Test/?'
-  }).as('apiGetTestReports')
   cy.getIframeBody().find('[data-cy-nav-tab="testTab"]').click()
-  // cy.wait('@apiGetTestReports', { timeout: 10000 })
   cy.getIframeBody().find('[data-cy-test="table"] tr')
     .should('have.length', 1)
     .as('testtabReportRow')
