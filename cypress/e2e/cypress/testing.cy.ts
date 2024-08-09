@@ -11,8 +11,8 @@ describe('Test user stories about testing with Ladybug', () => {
 
   it('Run report', () => {
     cy.createReportInLadybug('Example1a', 'Adapter1a', 'xxx').then(storageId => {
-      cy.getIframeBody().find('[data-cy-debug="tableBody"]')
-        .find('tr > td:nth-child(2)').each($cell => {
+      cy.getIframeBody().find('[data-cy-debug="tableRow"]')
+        .find('td:nth-child(2)').each($cell => {
           if (parseInt($cell.text()) === storageId) {
             cy.wrap($cell).click()
           }
@@ -26,7 +26,7 @@ describe('Test user stories about testing with Ladybug', () => {
       cy.checkTestTabHasReportNamed('Pipeline Adapter1a').as('testTabReportRow')
         .find('[data-cy-test="runReport"]').click()
       // TODO: Use data-cy. This can only be done if there is a data-cy* tag to request
-      cy.get('@testTabReportRow').find('td:eq(4)').should('contain', 'stubbed')
+      cy.get('@testTabReportRow').find('td:eq(5)').should('contain', 'stubbed')
     })
   })
 })
