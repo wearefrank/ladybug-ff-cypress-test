@@ -87,8 +87,10 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
     .clear().type(config)
   cy.get('[data-cy-test-pipeline="selectAdapter"]')
     .clear().type(adapter)
+  // Requires special treatment because the Monaco editor has to be
+  // accessed here.
   cy.get('[data-cy-test-pipeline="message"]')
-    .clear().type(message)
+    .type('{ctrl}a').type(message)
   cy.get('[data-cy-test-pipeline="send"]').click()
   cy.get('[data-cy-test-pipeline="runResult"]').should('contain', 'SUCCESS')
 })
