@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - bumpUploadAction
   pull_request:
   workflow_dispatch:
 jobs:
@@ -23,6 +22,10 @@ jobs:
         run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
       - name: Set debug to true
         run: echo "debug=true" >> frank-runner/build.properties
+      - name: Load configurations from ladybug-ff-cypress-test
+        run: |
+            echo "projects.dir=.." >> frank-runner/build.properties
+            echo "project.dir=ladybug-ff-cypress-test/Frank2Ladybug" >> frank-runner/build.properties
       - name: Checkout ladybug-ff-cypress-test
         uses: actions/checkout@v4
         with:
@@ -133,7 +136,6 @@ jobs:
       - name: Store Cypress videos
         uses: actions/upload-artifact@v4.4.0
         if: always()
-
         with:
           name: videos
           path: ladybug-ff-cypress-test/cypress/videos/
