@@ -1,6 +1,9 @@
 describe('Basic tests', () => {
-  it('Basic test', () => {
+  beforeEach(() => {
     cy.visit('')
+  })
+
+  it('Basic test', () => {
     cy.getNumLadybugReports().then(numReports => {
       cy.runInTestAPipeline('Example1a', 'Adapter1a', 'xxx')
       cy.getNumLadybugReports().should('equal', numReports + 1)
@@ -8,7 +11,6 @@ describe('Basic tests', () => {
   })
 
   it('Filter no regex', () => {
-    cy.visit('')
     cy.runInTestAPipeline('Example1a', 'Adapter1a', 'xxx')
     cy.runInTestAPipeline('Example1b', 'Adapter1b', 'xxx')
     cy.getNumLadybugReports().should('at.least', 2).then(total => {
@@ -21,5 +23,12 @@ describe('Basic tests', () => {
         })
       })
     })
+  })
+
+  it('To be captured', () => {
+    /* ==== Generated with Cypress Studio ==== */
+    cy.get('[data-cy-nav="testing"]').click()
+    cy.get('[data-cy-nav="testingLadybug"] > a').click()
+    /* ==== End Cypress Studio ==== */
   })
 })
