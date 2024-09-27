@@ -5,6 +5,12 @@ on:
       - main
   pull_request:
   workflow_dispatch:
+    inputs:
+      buildLatestFFandLadybugCode:
+        description: If true, build code of frankframework, ladybug and ladybug-frontend and start server from frank-runner/specials/ladybug
+        type: boolean
+        default: false
+        required: true
 jobs:
   testing:
     name: Cypress tests of ladybug + Frank!Framework
@@ -22,10 +28,12 @@ jobs:
         run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
       - name: Set debug to true
         run: echo "debug=true" >> frank-runner/build.properties
+      # If buildLatestFFandLadybugCode, then we configure this in specials/iaf-webapp/build.properties
       - name: Load configurations from ladybug-ff-cypress-test
         run: |
             echo "projects.dir=.." >> frank-runner/build.properties
             echo "project.dir=ladybug-ff-cypress-test/Frank2Ladybug" >> frank-runner/build.properties
+        if: ${{ github.event.inputs.buildLatestFFandLadybugCode == 'false' }}
       - name: Checkout ladybug-ff-cypress-test
         uses: actions/checkout@v4
         with:
@@ -88,6 +96,21 @@ jobs:
       - name: Remove old catalina.out
         run: find . -path './build/apache-tomcat*/catalina.out' -delete
         working-directory: frank-runner
+      # Build the latest code if buildLatestFFandLadybugCode
+      - name: Cache Maven downloads
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository/
+          key: ${{ runner.os }}-maven
+          restore-keys: |
+            ${{ runner.os }}-maven
+        if: ${{ github.event.inputs.buildLatestFFandLadybugCode == 'true' }}
+      # TODO: Add logic to frank-runner to execute ladybug-frontend Maven build and call that here.
+      # TODO: Checkout these three projects in that case.
+      # TODO: Update the pom.xml files using the ANT script in frank-runner.
+      # TODO: Make build.properties of frank-runner/specials/ladybug.
+      # TODO: Make build.properties of frank-runner/specials/iaf-webapp.
+      # TODO: Start the server by running frank-runner/specials/ladybug/restart.sh
       - name: Start server using Frank!Runner in background
         run: yarn run startServer &
         working-directory: ladybug-ff-cypress-test
