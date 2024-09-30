@@ -139,7 +139,7 @@ jobs:
         working-directory: ladybug-ff-cypress-test/.github/workflows
         if: ${{ github.event.inputs.buildLatestFFandLadybugCode == 'true' }}
       - name: Put build.properties in ladybug
-        run: cp guild-ladybug.properties ../../../frank-runner/specials/ladybug/build.properties
+        run: cp build-ladybug.properties ../../../frank-runner/specials/ladybug/build.properties
         working-directory: ladybug-ff-cypress-test/.github/workflows
         if: ${{ github.event.inputs.buildLatestFFandLadybugCode == 'true' }}
       # TODO: Start the server by running frank-runner/specials/ladybug/restart.sh
