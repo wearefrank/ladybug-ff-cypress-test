@@ -169,12 +169,18 @@ jobs:
         with:
           name: installFrankRunnerEnv.log
           path: frank-runner/installFrankRunnerEnv.log
-      - name: Store log of starting the server with the Frank!Runner
+      - name: Store log of starting the server with the Frank!Runner (official release)
         uses: actions/upload-artifact@v4.4.0
-        if: always()
+        if: ${{ always() && (github.event.inputs.buildLatestFFandLadybugCode != 'true') }}
         with:
           name: serverStartLog.log
           path: frank-runner/serverStartLog.log
+      - name: Store log of starting the server with the Frank!Runner (local build)
+        uses: actions/upload-artifact@v4.4.0
+        if: ${{ always() && (github.event.inputs.buildLatestFFandLadybugCode == 'true') }}
+        with:
+          name: serverStartLog.log
+          path: frank-runner/specials/ladybug/serverStartLog.log
       - name: Store build.properties
         uses: actions/upload-artifact@v4.4.0
         if: always()
