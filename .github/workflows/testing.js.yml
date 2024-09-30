@@ -16,6 +16,8 @@ jobs:
     name: Cypress tests of ladybug + Frank!Framework
     runs-on: ubuntu-latest
     steps:
+      - name: Show input
+        run: echo "${{ github.event.inputs.buildLatestFFandLadybugCode }}"
       - name: Checkout Frank!Runner
         uses: actions/checkout@v4
         with:
@@ -129,7 +131,7 @@ jobs:
         working-directory: frank-runner/specials/util/syncPomVersions
         if: ${{ github.event.inputs.buildLatestFFandLadybugCode == 'true' }}
       - name: Build ladybug-frontend
-        run: build.sh
+        run: ./build.sh
         working-directory: frank-runner/specials/ladybug-frontend
         if: ${{ github.event.inputs.buildLatestFFandLadybugCode == 'true' }}
       - name: Put build.properties in iaf-webapp
