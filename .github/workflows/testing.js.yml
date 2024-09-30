@@ -105,17 +105,52 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven
         if: ${{ github.event.inputs.buildLatestFFandLadybugCode == 'true' }}
-      # TODO: Add logic to frank-runner to execute ladybug-frontend Maven build and call that here.
-      # TODO: Checkout these three projects in that case.
-      # TODO: Update the pom.xml files using the ANT script in frank-runner.
-      # TODO: Make build.properties of frank-runner/specials/ladybug.
-      # TODO: Make build.properties of frank-runner/specials/iaf-webapp.
+      - name: Checkout ladybug-frontend
+        uses: actions/checkout@v4
+        with:
+          repository: wearefrank/ladybug-frontend
+          path: ladybug-frontend
+        if: ${{ github.event.inputs.buildLatestFFandLadybugCode == 'true' }}
+      - name: Checkout ladybug (backend)
+        uses: actions/checkout@v4
+        with:
+          repository: wearefrank/ladybug
+          path: ladybug
+        if: ${{ github.event.inputs.buildLatestFFandLadybugCode == 'true' }}
+      - name: Checkout frankframework
+        uses: actions/checkout@v4
+        with:
+          repository: frankframework/frankframework
+          path: frankframework
+        if: ${{ github.event.inputs.buildLatestFFandLadybugCode == 'true' }}
+      - name: Adjust pom.xml files so that ladybug-frontend, ladybug and frankframework reference each other
+        # TODO: If lastest PR on frank-runner is merged, run.sh can be called instead.
+        run: ../../../ant.sh bump-ladybug-in-ff
+        working-directory: frank-runner/specials/util/syncPomVersions
+        if: ${{ github.event.inputs.buildLatestFFandLadybugCode == 'true' }}
+      - name: Build ladybug-frontend
+        run: build.sh
+        working-directory: frank-runner/specials/ladybug-frontend
+        if: ${{ github.event.inputs.buildLatestFFandLadybugCode == 'true' }}
+      - name: Put build.properties in iaf-webapp
+        run: cp build-iaf-webapp.properties ../../../frank-runner/specials/iaf-webapp/build.properties
+        working-directory: ladybug-ff-cypress-test/.github.workflows
+        if: ${{ github.event.inputs.buildLatestFFandLadybugCode == 'true' }}
+      - name: Put build.properties in ladybug
+        run: cp guild-ladybug.properties ../../../frank-runner/specials/ladybug/build.properties
+        working-directory: ladybug-ff-cypress-test/.github.workflows
+        if: ${{ github.event.inputs.buildLatestFFandLadybugCode == 'true' }}
       # TODO: Start the server by running frank-runner/specials/ladybug/restart.sh
-      - name: Start server using Frank!Runner in background
+      - name: Start server using Frank!Runner in background (official release)
         run: yarn run startServer &
         working-directory: ladybug-ff-cypress-test
+        if: ${{ github.event.inputs.buildLatestFFandLadybugCode == 'false' }}
+      - name: Start server of locally-built code
+        run: yarn run startServerLocalBuild &
+        working-directory: ladybug-ff-cypress-test
+        if: ${{ github.event.inputs.buildLatestFFandLadybugCode == 'true' }}
       - name: Wait for server to be available
-        run: ./waitForUrl.sh http://localhost:8090 240
+        run: ./waitForUrl.sh http://localhost:8090 1000
         working-directory: ladybug-ff-cypress-test/.github/workflows
       - name: Run the tests
         run: yarn batch
