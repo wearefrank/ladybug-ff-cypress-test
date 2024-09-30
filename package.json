@@ -18,7 +18,8 @@
     "batch_cicd": "cypress run --browser chrome",
     "interactive": "cypress open",
     "installFrankRunnerEnv": "cd ../frank-runner && ./env.sh > installFrankRunnerEnv.log",
-    "startServer": "cd ../frank-runner && ./restart.sh > serverStartLog.log"
+    "startServer": "cd ../frank-runner && ./restart.sh > serverStartLog.log",
+    "startServerLocalBuild": "cd ../frank-runner/specials/ladybug && ./restart.sh serverStart.log"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.4.0",
