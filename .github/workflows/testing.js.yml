@@ -33,7 +33,7 @@ jobs:
         run: |
             echo "projects.dir=.." >> frank-runner/build.properties
             echo "project.dir=ladybug-ff-cypress-test/Frank2Ladybug" >> frank-runner/build.properties
-        if: ${{ github.event.inputs.buildLatestFFandLadybugCode == 'false' }}
+        if: ${{ github.event.inputs.buildLatestFFandLadybugCode != 'true' }}
       - name: Checkout ladybug-ff-cypress-test
         uses: actions/checkout@v4
         with:
@@ -144,7 +144,7 @@ jobs:
       - name: Start server using Frank!Runner in background (official release)
         run: yarn run startServer &
         working-directory: ladybug-ff-cypress-test
-        if: ${{ github.event.inputs.buildLatestFFandLadybugCode == 'false' }}
+        if: ${{ github.event.inputs.buildLatestFFandLadybugCode != 'true' }}
       - name: Start server of locally-built code
         run: yarn run startServerLocalBuild &
         working-directory: ladybug-ff-cypress-test
