@@ -52,7 +52,7 @@ Cypress.Commands.add('getNumLadybugReports', () => {
   cy.get('[data-cy-nav="testing"]').click()
   cy.intercept({
     method: 'GET',
-    url: 'iaf/ladybug/api/metadata/Debug/count',
+    url: 'iaf/ladybug/api/metadata/FileDebugStorage/count',
     times: 1
   }).as('apiGetReports')
   cy.get('[data-cy-nav="testingLadybug"]').click()
@@ -61,7 +61,7 @@ Cypress.Commands.add('getNumLadybugReports', () => {
   cy.wait('@apiGetReports')
   cy.intercept({
     method: 'GET',
-    url: 'iaf/ladybug/api/metadata/Debug/count',
+    url: 'iaf/ladybug/api/metadata/FileDebugStorage/count',
     times: 1
   }).as('apiGetReports_2')
   cy.getIframeBody().find('[data-cy-debug="refresh"]').click()
