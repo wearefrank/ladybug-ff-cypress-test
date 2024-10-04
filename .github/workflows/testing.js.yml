@@ -16,8 +16,11 @@ jobs:
     name: Cypress tests of ladybug + Frank!Framework
     runs-on: ubuntu-latest
     steps:
-      - name: Show input
-        run: echo "${{ github.event.inputs.buildLatestFFandLadybugCode }}"
+      - name: Decide about building the code
+        id: decideAboutBuildCode
+        run: if [[ "${{ github.events.inputs.buildLatestFFandLadybugCode }}" == "" ]]; then echo "false"; else echo "${{ github.events.inputs.buildLatestFFandLadybugCode }}"; fi > temp; echo "buildCode=$(cat temp)" >> $GITHUB_OUTPUT
+      - name: Show decision
+        run: echo "buildCode is ${{ steps.decideAboutBuildCode.outputs.buildCode }}"
       - name: Checkout Frank!Runner
         uses: actions/checkout@v4
         with:
