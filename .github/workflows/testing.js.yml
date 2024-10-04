@@ -38,7 +38,7 @@ jobs:
         run: |
             echo "projects.dir=.." >> frank-runner/build.properties
             echo "project.dir=ladybug-ff-cypress-test/Frank2Ladybug" >> frank-runner/build.properties
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode != 'true' }}
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'false' }}
       - name: Checkout ladybug-ff-cypress-test
         uses: actions/checkout@v4
         with:
@@ -149,7 +149,7 @@ jobs:
       - name: Start server using Frank!Runner in background (official release)
         run: yarn run startServer &
         working-directory: ladybug-ff-cypress-test
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode != 'true' }}
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'false' }}
       - name: Start server of locally-built code
         run: yarn run startServerLocalBuild &
         working-directory: ladybug-ff-cypress-test
@@ -174,7 +174,7 @@ jobs:
           path: frank-runner/installFrankRunnerEnv.log
       - name: Store log of starting the server with the Frank!Runner (official release)
         uses: actions/upload-artifact@v4.4.0
-        if: ${{ always() && (steps.decideAboutBuildCode.outputs.buildCode != 'true') }}
+        if: ${{ always() && (steps.decideAboutBuildCode.outputs.buildCode == 'false') }}
         with:
           name: serverStartLog.log
           path: frank-runner/serverStartLog.log
