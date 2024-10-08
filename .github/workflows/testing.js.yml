@@ -129,8 +129,7 @@ jobs:
           path: frankframework
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
       - name: Adjust pom.xml files so that ladybug-frontend, ladybug and frankframework reference each other
-        # TODO: If lastest PR on frank-runner is merged, run.sh can be called instead.
-        run: ../../../ant.sh bump-ladybug-in-ff
+        run: ./run.sh
         working-directory: frank-runner/specials/util/syncPomVersions
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
       - name: Build ladybug-frontend
@@ -145,7 +144,6 @@ jobs:
         run: cp build-ladybug.properties ../../../frank-runner/specials/ladybug/build.properties
         working-directory: ladybug-ff-cypress-test/.github/workflows
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
-      # TODO: Start the server by running frank-runner/specials/ladybug/restart.sh
       - name: Start server using Frank!Runner in background (official release)
         run: yarn run startServer &
         working-directory: ladybug-ff-cypress-test
