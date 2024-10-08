@@ -23,13 +23,15 @@ describe('Test user stories about testing with Ladybug', () => {
         .should('have.length.at.least', 1)
         .contains('Pipeline Example1a/Adapter1a').within(_ => {
           cy.contains('Pipeline Example1a/Adapter1a')
-          // TODO: Check that there is no 'Pipeline Adapter1a' inside of this anymore
         })
       cy.guardedCopyReportToTestTab('apiCopyTheReportToTestTab')
-      cy.checkTestTabHasReportNamed('Pipeline Example1a_Adapter1a').as('testTabReportRow')
+      cy.checkTestTabHasReportNamed('Pipeline Example1a_Adapter1a')
+      // Martijn October 8 2024: I do not know why I have to do this query again.
+      cy.checkTestTabHasReportNamed('Pipeline Example1a_Adapter1a')
         .find('[data-cy-test="runReport"]').click()
-      // TODO: Use data-cy. This can only be done if there is a data-cy* tag to request
-      cy.get('@testTabReportRow').find('td:eq(5)').should('contain', 'stubbed')
+      // TODO: Use data-cy to find the rerun result.
+      cy.checkTestTabHasReportNamed('Pipeline Example1a_Adapter1a')
+        .find('td:eq(5)').should('contain', 'stubbed')
     })
   })
 })
