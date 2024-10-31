@@ -1,7 +1,10 @@
 describe('Basic tests', () => {
   beforeEach(() => {
     // This URL is wrong, intercept it to suppress network error
-    // cy.intercept('GET', '/assets/monaco/vs/base/worker/workerMain.js', { body: '' })
+    cy.intercept('GET', '/assets/monaco/vs/base/worker/workerMain.js', (req) => {
+      req.url = '/ladybug/assets/monaco/vs/base/worker/workerMain.js'
+      req.continue()
+    })
   })
 
   it('Basic test', () => {
