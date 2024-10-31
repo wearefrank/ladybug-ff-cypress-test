@@ -86,7 +86,9 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
   cy.intercept('GET', '/assets/monaco/vs/base/worker/workerMain.js').as('monacoAsksWorkerMain')
   cy.get('[data-cy-test-pipeline="selectConfig"]')
     .clear().type(config)
-  cy.wait('@monacoAsksWorkerMain')
+  cy.wait('@monacoAsksWorkerMain').then((interception) => {
+    cy.wrap(interception.response.statusCode).should('equal', 404)
+  })
   cy.get('[data-cy-test-pipeline="selectAdapter"]')
     .clear().type(adapter)
   // Requires special treatment because the Monaco editor has to be
