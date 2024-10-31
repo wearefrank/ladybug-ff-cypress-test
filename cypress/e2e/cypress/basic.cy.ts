@@ -1,4 +1,9 @@
 describe('Basic tests', () => {
+  beforeEach(() => {
+    // This URL is wrong, intercept it to suppress network error
+    cy.intercept('GET', '/assets/monaco/vs/base/worker/workerMain.js', { body: '' })
+  })
+
   it('Basic test', () => {
     cy.visit('')
     cy.getNumLadybugReports().then(numReports => {
