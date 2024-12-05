@@ -35,7 +35,7 @@ declare namespace Cypress {
     guardedCopyReportToTestTab(alias: string)
     checkTestTabHasReportNamed(name: string): Cypress.Chainable<any>
     apiDeleteAll(storageName: string)
-    selectDebugTreeNode(path: number[], text: string)
+    selectTreeNode(path: NodeSelection[]): Cypress.Chainable<any>
   }
 }
 
@@ -177,22 +177,45 @@ Cypress.Commands.add('apiDeleteAll', (storageName: string) => {
   })
 })
 
-Cypress.Commands.add('selectDebugTreeNode', (path: number[], text: string) => {
-  const head = path.shift()
-  cy.get(`[data-cy-debug-tree="root"] > app-tree-item:eq(${head})`).then((element) => {
-    logAppTreeItemText(element)
-    return selectDebugTreeNodeImpl(element, path, text)
+interface TextWithSeq {
+  text: string
+  seq: number
+}
+
+type NodeSelection = TextWithSeq | string
+
+function normalizeNodeSelection (input: NodeSelection): TextWithSeq {
+  if (typeof input === 'string') {
+    return { text: input, seq: 0 }
+  } else {
+    return input
+  }
+}
+
+Cypress.Commands.add('selectTreeNode', (path: NodeSelection[]) => {
+  const head = normalizeNodeSelection(path.shift())
+  cy.getIframeBody().find(`[data-cy-debug-tree="root"] > app-tree-item > div > div:nth-child(1):contains(${head.text})`).then((elementsWithTexts) => {
+    const chosen = elementsWithTexts[head.seq]
+    return cy.wrap(chosen).parent().parent().then((element) => {
+      if (path.length === 0) {
+        return cy.wrap(element)
+      } else {
+        return selectTreeNodeImpl(element, path)
+      }
+    })
   })
 })
 
-function selectDebugTreeNodeImpl (subject: JQuery<HTMLElement>, path: number[], text: string): Cypress.Chainable<any> | void {
-  const head = path.shift()
-  cy.wrap(subject).find(`> div > div > div > app-tree-item:eq(${head})`).then((element) => {
-    logAppTreeItemText(element)
+function selectTreeNodeImpl (subject: JQuery<HTMLElement>, path: NodeSelection[]): Cypress.Chainable<any> | void {
+  const head = normalizeNodeSelection(path.shift())
+  cy.wrap(subject).find(`> div > div > div > app-tree-item > div > div:nth-child(1):contains(${head.text})`).then((elementsWithTexts) => {
+    const chosen = elementsWithTexts[head.seq]
     if (path.length === 0) {
-      return cy.wrap(element).find(`> div > div:contains("${text}")`)
+      return cy.wrap(chosen)
     } else {
-      return selectDebugTreeNodeImpl(element, path, text)
+      cy.wrap(chosen).parent().parent().then((element) => {
+        return selectTreeNodeImpl(element, path)
+      })
     }
   })
 }
