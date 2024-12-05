@@ -34,6 +34,8 @@ declare namespace Cypress {
     getAllStorageIdsInTable(): Chainable<number[]>
     guardedCopyReportToTestTab(alias: string)
     checkTestTabHasReportNamed(name: string): Cypress.Chainable<any>
+    apiDeleteAll(storageName: string)
+    selectDebugTreeNode(path: number[], text: string)
   }
 }
 
@@ -165,3 +167,38 @@ Cypress.Commands.add('checkTestTabHasReportNamed', (name) => {
   cy.get('@testtabReportRow').find('td:eq(4)').should('be.empty')
   return cy.get('@testtabReportRow')
 })
+
+Cypress.Commands.add('apiDeleteAll', (storageName: string) => {
+  cy.request({
+    method: 'DELETE',
+    url: `/iaf/ladybug/api/report/all/${storageName}`
+  }).then(response => {
+    cy.wrap(response).its('status').should('equal', 200)
+  })
+})
+
+Cypress.Commands.add('selectDebugTreeNode', (path: number[], text: string) => {
+  const head = path.shift()
+  cy.get(`[data-cy-debug-tree="root"] > app-tree-item:eq(${head})`).then((element) => {
+    logAppTreeItemText(element)
+    return selectDebugTreeNodeImpl(element, path, text)
+  })
+})
+
+function selectDebugTreeNodeImpl (subject: JQuery<HTMLElement>, path: number[], text: string): Cypress.Chainable<any> | void {
+  const head = path.shift()
+  cy.wrap(subject).find(`> div > div > div > app-tree-item:eq(${head})`).then((element) => {
+    logAppTreeItemText(element)
+    if (path.length === 0) {
+      return cy.wrap(element).find(`> div > div:contains("${text}")`)
+    } else {
+      return selectDebugTreeNodeImpl(element, path, text)
+    }
+  })
+}
+
+function logAppTreeItemText (subject: JQuery<HTMLElement>): void {
+  cy.wrap(subject).find('> div > div:eq(0)', { log: false }).then((elementOfText) => {
+    cy.log(`Have element with HTML: ${elementOfText.text()}`)
+  })
+}
