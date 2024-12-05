@@ -219,9 +219,3 @@ function selectTreeNodeImpl (subject: JQuery<HTMLElement>, path: NodeSelection[]
     }
   })
 }
-
-function logAppTreeItemText (subject: JQuery<HTMLElement>): void {
-  cy.wrap(subject).find('> div > div:eq(0)', { log: false }).then((elementOfText) => {
-    cy.log(`Have element with HTML: ${elementOfText.text()}`)
-  })
-}
