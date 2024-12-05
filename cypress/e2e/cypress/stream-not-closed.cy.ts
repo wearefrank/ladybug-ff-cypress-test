@@ -1,4 +1,10 @@
-describe('Stream not closed prematurely', () => {
+// This test actually checks that an existing bug is detected.
+// The expected behavior is that a stream is NOT closed
+// prematurily.
+//
+// This test will be adjusted when the bug
+// will have been fixed.
+describe('Stream IS closed prematurely', () => {
   beforeEach(() => {
     cy.apiDeleteAll('FileDebugStorage')
     cy.apiDeleteAll('Test')
