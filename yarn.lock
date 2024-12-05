@@ -847,6 +847,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cypress-iframe@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "cypress-iframe@npm:1.0.1"
+  peerDependencies:
+    "@types/cypress": ^1.1.0
+  checksum: 10c0/90b4d5bc8583806254418d90bbbfd6c3c70c7be21894f11dc47073d646e5b6e4f944eff45578fe7817d999a93171737d4903d161fe06576db0aad0ce2d7a47cb
+  languageName: node
+  linkType: hard
+
 "cypress@npm:^13.7.3":
   version: 13.8.0
   resolution: "cypress@npm:13.8.0"
@@ -2299,6 +2308,7 @@ __metadata:
   dependencies:
     "@typescript-eslint/eslint-plugin": "npm:^6.4.0"
     cypress: "npm:^13.7.3"
+    cypress-iframe: "npm:^1.0.1"
     eslint: "npm:^8.0.1"
     eslint-config-standard-with-typescript: "npm:^43.0.1"
     eslint-plugin-import: "npm:^2.25.2"

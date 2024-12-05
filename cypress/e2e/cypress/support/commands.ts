@@ -24,6 +24,8 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
+import 'cypress-iframe'
+
 declare namespace Cypress {
   interface Chainable<Subject = any> {
     getIframeBody(): Chainable<any>

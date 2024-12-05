@@ -8,6 +8,7 @@
   "license": "MIT",
   "dependencies": {
     "cypress": "^13.7.3",
+    "cypress-iframe": "^1.0.1",
     "husky": "^9.0.11",
     "typescript": "*"
   },
