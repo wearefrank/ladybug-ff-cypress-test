@@ -1,12 +1,8 @@
 describe('Test user stories about testing with Ladybug', () => {
   beforeEach(() => {
+    cy.apiDeleteAll('FileDebugStorage')
+    cy.apiDeleteAll('Test')
     cy.visit('')
-    cy.request({
-      method: 'DELETE',
-      url: '/iaf/ladybug/api/report/all/Test'
-    }).then(response => {
-      cy.wrap(response).its('status').should('equal', 200)
-    })
   })
 
   it('Run report', () => {

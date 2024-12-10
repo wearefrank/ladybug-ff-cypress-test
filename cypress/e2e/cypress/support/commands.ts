@@ -34,6 +34,8 @@ declare namespace Cypress {
     getAllStorageIdsInTable(): Chainable<number[]>
     guardedCopyReportToTestTab(alias: string)
     checkTestTabHasReportNamed(name: string): Cypress.Chainable<any>
+    apiDeleteAll(storageName: string)
+    selectTreeNode(path: NodeSelection[]): Cypress.Chainable<any>
   }
 }
 
@@ -165,3 +167,55 @@ Cypress.Commands.add('checkTestTabHasReportNamed', (name) => {
   cy.get('@testtabReportRow').find('td:eq(4)').should('be.empty')
   return cy.get('@testtabReportRow')
 })
+
+Cypress.Commands.add('apiDeleteAll', (storageName: string) => {
+  cy.request({
+    method: 'DELETE',
+    url: `/iaf/ladybug/api/report/all/${storageName}`
+  }).then(response => {
+    cy.wrap(response).its('status').should('equal', 200)
+  })
+})
+
+interface TextWithSeq {
+  text: string
+  seq: number
+}
+
+type NodeSelection = TextWithSeq | string
+
+function normalizeNodeSelection (input: NodeSelection): TextWithSeq {
+  if (typeof input === 'string') {
+    return { text: input, seq: 0 }
+  } else {
+    return input
+  }
+}
+
+Cypress.Commands.add('selectTreeNode', (path: NodeSelection[]) => {
+  const head = normalizeNodeSelection(path.shift())
+  cy.getIframeBody().find(`[data-cy-debug-tree="root"] > app-tree-item > div > div:nth-child(1):contains(${head.text})`).then((elementsWithTexts) => {
+    const chosen = elementsWithTexts[head.seq]
+    return cy.wrap(chosen).parent().parent().then((element) => {
+      if (path.length === 0) {
+        return cy.wrap(element)
+      } else {
+        return selectTreeNodeImpl(element, path)
+      }
+    })
+  })
+})
+
+function selectTreeNodeImpl (subject: JQuery<HTMLElement>, path: NodeSelection[]): Cypress.Chainable<any> | void {
+  const head = normalizeNodeSelection(path.shift())
+  cy.wrap(subject).find(`> div > div > div > app-tree-item > div > div:nth-child(1):contains(${head.text})`).then((elementsWithTexts) => {
+    const chosen = elementsWithTexts[head.seq]
+    if (path.length === 0) {
+      return cy.wrap(chosen)
+    } else {
+      cy.wrap(chosen).parent().parent().then((element) => {
+        return selectTreeNodeImpl(element, path)
+      })
+    }
+  })
+}
