@@ -33,12 +33,8 @@ jobs:
         run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
       - name: Set debug to true
         run: echo "debug=true" >> frank-runner/build.properties
-      # If buildLatestFFandLadybugCode, then we configure this in specials/iaf-webapp/build.properties
       - name: Load configurations from ladybug-ff-cypress-test
-        run: |
-            echo "projects.dir=.." >> frank-runner/build.properties
-            echo "project.dir=ladybug-ff-cypress-test/Frank2Ladybug" >> frank-runner/build.properties
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'false' }}
+        run: echo "configurations.dir=../ladybug-ff-cypress-test/Frank2Ladybug/configurations" >> frank-runner/build.properties
       - name: Checkout ladybug-ff-cypress-test
         uses: actions/checkout@v4
         with:
