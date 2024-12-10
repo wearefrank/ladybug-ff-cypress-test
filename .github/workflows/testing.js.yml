@@ -150,7 +150,7 @@ jobs:
         working-directory: ladybug-ff-cypress-test
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
       - name: Wait for server to be available
-        run: ./waitForUrl.sh http://localhost:8090 1800
+        run: ./waitForUrl.sh http://localhost:8090 900
         working-directory: ladybug-ff-cypress-test/.github/workflows
       - name: Run the tests
         run: yarn batch
