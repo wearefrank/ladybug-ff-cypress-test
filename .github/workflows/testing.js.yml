@@ -21,10 +21,6 @@ jobs:
         run: if [[ "${{ github.event.inputs.buildLatestFFandLadybugCode }}" == "" ]]; then echo "false"; else echo "${{ github.event.inputs.buildLatestFFandLadybugCode }}"; fi > temp; echo "buildCode=$(cat temp)" >> $GITHUB_OUTPUT
       - name: Show decision
         run: echo "buildCode is ${{ steps.decideAboutBuildCode.outputs.buildCode }}"
-      - name: Checkout ladybug-ff-cypress-test
-        uses: actions/checkout@v4
-        with:
-          path: ladybug-ff-cypress-test
       - name: Checkout Frank!Runner
         uses: actions/checkout@v4
         with:
@@ -43,6 +39,10 @@ jobs:
         working-directory: ladybug-ff-cypress-test/Frank2Ladybug/configurations
       - name: Load configurations from ladybug-ff-cypress-test
         run: echo "override.configurations.dir=${{ steps.get-config-dir.outputs.conig-dir }}" >> frank-runner/build.properties
+      - name: Checkout ladybug-ff-cypress-test
+        uses: actions/checkout@v4
+        with:
+          path: ladybug-ff-cypress-test
       - name: Copy cypress.config_cicd.ts to cypress.config.ts to listen to correct port
         run: cp cypress.config_cicd.ts cypress.config.ts
         working-directory: ladybug-ff-cypress-test
