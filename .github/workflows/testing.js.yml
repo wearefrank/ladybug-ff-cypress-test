@@ -16,8 +16,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - test-app: false
-          - test-app: true
+          - test-app: "false"
+          - test-app: "true"
     name: Cypress tests of ladybug + Frank!Framework, test-app = ${{ matrix.test-app }}
     runs-on: ubuntu-latest
     steps:
