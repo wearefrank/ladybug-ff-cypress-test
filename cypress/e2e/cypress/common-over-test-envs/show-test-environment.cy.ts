@@ -4,7 +4,9 @@ describe('Information to check the test environment', () => {
     cy.wait(3000)
     cy.getNumLadybugReports().then(() => {
       cy.getIframeBody().find('#version').invoke('text').then((s) => {
-        cy.log(`Ladybug version is: ${s}`)
+        cy.log('Ladybug version is:')
+        cy.log(`${s}`)
+        cy.wait(3000)
       })
     })
   })
