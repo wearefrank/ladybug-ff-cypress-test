@@ -18,7 +18,7 @@ jobs:
         include:
           - test-app: "false"
           - test-app: "true"
-    name: Cypress tests of ladybug + Frank!Framework, test-app = ${{ matrix.test-app }}
+    name: Ladybug + Frank!Framework, test-app = ${{ matrix.test-app }}
     runs-on: ubuntu-latest
     steps:
       - name: Decide about building the code
@@ -179,11 +179,11 @@ jobs:
       - name: Start server using Frank!Runner in background (official release) - with ladybug-ff-test-webapp
         run: ./restart.sh > serverStartLog.log &
         working-directory: ladybug-ff-test-webapp
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'false' && matrix.test-app == 'false' }}
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'false' && matrix.test-app == 'true' }}
       - name: Start server of locally-built code - with ladybug-ff-test-webapp
         run: ./restart.sh > serverStartLog.log &
         working-directory: frank-runner/specials/ladybug-ff-test-webapp
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'false' }}
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'true' }}
       - name: Wait for server to be available
         run: ./waitForUrl.sh http://localhost:8090 900
         working-directory: ladybug-ff-cypress-test/.github/workflows
