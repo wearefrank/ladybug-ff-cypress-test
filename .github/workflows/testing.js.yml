@@ -146,11 +146,11 @@ jobs:
         working-directory: ladybug-ff-cypress-test/.github/workflows
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
       - name: Start server using Frank!Runner in background (official release)
-        run: ./restart.sh > serverStartLog.log
+        run: ./restart.sh > serverStartLog.log &
         working-directory: frank-runner
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'false' }}
       - name: Start server of locally-built code
-        run: ./restart.sh > serverStartLog.log
+        run: ./restart.sh > serverStartLog.log &
         working-directory: frank-runner/specials/ladybug
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
       - name: Wait for server to be available
