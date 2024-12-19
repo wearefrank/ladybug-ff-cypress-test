@@ -150,10 +150,7 @@ jobs:
         run: ./run.sh
         working-directory: frank-runner/specials/util/syncPomVersions
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'false' }}
-      - name: Adjust pom.xml files so that ladybug-ff-test-webapp can find newest Nexus FF!
-        run: ./runOnlyLadybugFfTestWebapp.sh
-        working-directory: frank-runner/specials/util/syncPomVersions
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'false' && matrix.test-app == 'true' }}
+      # If use the latest FF! build for ladybug-ff-test-webapp, we do not need to sync. Version is just referred as LATEST.
       - name: Adjust pom.xml files so that ladybug-ff-test-webapp, FF!, ladybug and ladybug-frontend can find each other
         run: ./runIncludingLadybugFfTestWebapp.sh
         working-directory: frank-runner/specials/util/syncPomVersions
