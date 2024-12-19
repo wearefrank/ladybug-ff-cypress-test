@@ -258,6 +258,12 @@ jobs:
         uses: actions/upload-artifact@v4.4.0
         if: always()
         with:
+          name: catalina.properties - test app = ${{ matrix.test-app }}
+          path: frank-runner/build/apache-tomcat-*/conf/catalina.properties
+      - name: Store Apache Tomcat log
+        uses: actions/upload-artifact@v4.4.0
+        if: always()
+        with:
           name: logs - test app = ${{ matrix.test-app }}
           path: frank-runner/build/*/logs/*
       - name: Store Cypress screenshots
