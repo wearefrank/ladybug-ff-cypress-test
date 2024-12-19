@@ -209,9 +209,9 @@ jobs:
         with:
           name: installFrankRunnerEnv.log - test app = ${{ matrix.test-app }}
           path: frank-runner/installFrankRunnerEnv.log
-      - name: Store log of starting the server with the Frank!Runner (official release)
+      - name: Store log of starting the server with the Frank!Runner (official release) - no test webapp
         uses: actions/upload-artifact@v4.4.0
-        if: ${{ always() && (steps.decideAboutBuildCode.outputs.buildCode == 'false') }}
+        if: ${{ always() && (steps.decideAboutBuildCode.outputs.buildCode == 'false' && matrix.test-app == ' false' ) }}
         with:
           name: serverStartLog.log - test app = ${{ matrix.test-app }}
           path: frank-runner/serverStartLog.log
@@ -221,12 +221,18 @@ jobs:
         with:
           name: buildIafWebapp.log - test app = ${{ matrix.test-app }}
           path: frank-runner/buildIafWebapp.log
-      - name: Store log of starting the server with the Frank!Runner (local build)
+      - name: Store log of starting the server with the Frank!Runner (local build) - no test webapp
         uses: actions/upload-artifact@v4.4.0
-        if: ${{ always() && (steps.decideAboutBuildCode.outputs.buildCode == 'true') }}
+        if: ${{ always() && (steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'false' ) }}
         with:
           name: serverStartLog.log - test app = ${{ matrix.test-app }}
           path: frank-runner/specials/ladybug/serverStartLog.log
+      - name: Store log of starting the server with the Frank!Runner - test webapp
+        uses: actions/upload-artifact@v4.4.0
+        if: ${{ always() && matrix.test-app == 'true' }}
+        with:
+          name: serverStartLog.log - test app = ${{ matrix.test-app }}
+          path: ladybug-ff-test-webapp/serverStartLog.log
       - name: Store build.properties
         uses: actions/upload-artifact@v4.4.0
         if: always()
