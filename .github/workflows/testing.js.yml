@@ -211,7 +211,7 @@ jobs:
           path: frank-runner/installFrankRunnerEnv.log
       - name: Store log of starting the server with the Frank!Runner (official release) - no test webapp
         uses: actions/upload-artifact@v4.4.0
-        if: ${{ always() && (steps.decideAboutBuildCode.outputs.buildCode == 'false' && matrix.test-app == ' false' ) }}
+        if: ${{ always() && (steps.decideAboutBuildCode.outputs.buildCode == 'false' && matrix.test-app == 'false' ) }}
         with:
           name: serverStartLog.log - test app = ${{ matrix.test-app }}
           path: frank-runner/serverStartLog.log
