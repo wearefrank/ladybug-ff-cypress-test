@@ -203,6 +203,24 @@ jobs:
       - name: Show files
         run: tree -L 5 .
         if: always()
+      - name: Store ladybug (backend) pom.xml
+        if: ${{ always() && steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
+        uses: actions/upload-artifact@v4.4.0
+        with:
+          name: ladybug pom.xml test-app = ${{ matrix.test-app }}
+          path: ladybug/pom.xml
+      - name: Store frankframework/ladybug/pom.xml
+        if: ${{ always() && steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
+        uses: actions/upload-artifact@v4.4.0
+        with:
+          name: frankframework ladybug pom.xml test-app = ${{ matrix.test-app }}
+          path: frankframework/ladybug/pom.xml
+      - name: Store ladybug-ff-test-webapp/pom.xml
+        if: ${{ always() && matrix.test-app == 'true' }}
+        uses: actions/upload-artifact@v4.4.0
+        with:
+          name: ladybug-ff-test-webapp pom.xml test-app = ${{ matrix.test-app }}
+          path: ladybug-ff-test-webapp/pom.xml
       - name: Store log of Frank!Runner downloads
         uses: actions/upload-artifact@v4.4.0
         if: always()
