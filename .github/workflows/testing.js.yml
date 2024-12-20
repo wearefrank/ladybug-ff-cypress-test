@@ -45,10 +45,10 @@ jobs:
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'false' && matrix.test-app == 'false' }}
         run: echo "override.configurations.dir=../../../ladybug-ff-cypress-test/FrankApps/Frank2Ladybug/configurations" >> frank-runner/build.properties
       - name: Load configurations from ladybug-ff-cypress-test - with project ladybug-ff-test-webapp
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'false' && matrix.test-app == 'true' }}
-        run: echo "override.configurations.dir=../../../ladybug-ff-cypress-test/FrankApps/Frank2Ladybug/configurations" >> frank-runner/build.properties
-      - name: Load configurations TODO test this
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
+        if: ${{ matrix.test-app == 'true' }}
+        run: echo "override.configurations.dir=../ladybug-ff-cypress-test/FrankApps/Frank2Ladybug/configurations" >> frank-runner/build.properties
+      - name: Load configurations from ladybug-ff-cypress-test - with project.dir is frankframework/webapp
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'false' }}
         run: echo "override.configurations.dir=../../ladybug-ff-cypress-test/FrankApps/Frank2Ladybug/configurations" >> frank-runner/build.properties
       - name: Checkout ladybug-ff-cypress-test
         uses: actions/checkout@v4
