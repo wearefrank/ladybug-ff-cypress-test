@@ -3,6 +3,7 @@ describe('Check test environment', () => {
     // cy.visit('/iaf/ladybug')
     // cy.get('[data-cy-change-view-dropdown]').select('White box view with less metadata')
     cy.visit('')
+    cy.wait(3000)
     cy.getNumLadybugReports().then(() => {
       cy.getIframeBody().find('[data-cy-change-view-dropdown]').select('White box view with less metadata')
     })
