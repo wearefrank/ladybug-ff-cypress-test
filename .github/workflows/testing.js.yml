@@ -263,6 +263,12 @@ jobs:
         with:
           name: build.properties - test app = ${{ matrix.test-app }}
           path: frank-runner/build.properties
+      - name: Store build.properties of frank-runner/specials/iaf-webapp/build.properties
+        uses: actions/upload-artifact@v4.4.0
+        if: ${{ always() && matrix.test-app == 'true' }}
+        with:
+          name: iaf-webapp-build.properties - test app = ${{ matrix.test-app }}
+          path: frank-runner/specials/iaf-webapp/build.properties
       - name: Store Apache Tomcat log
         uses: actions/upload-artifact@v4.4.0
         if: always()
