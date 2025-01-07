@@ -40,7 +40,7 @@ jobs:
       - name: Set port where Frank!Framework is served
         run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
       - name: Set secure port
-        run: echo "tomcat.secure.port=8091" > frank-runner/build.properties
+        run: echo "tomcat.secure.port=8091" >> frank-runner/build.properties
       - name: Set debug to true
         run: echo "debug=true" >> frank-runner/build.properties
       # Path is relative to project.dir, which depends on the way the FF! is started.
