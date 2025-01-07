@@ -22,4 +22,12 @@ describe('Information to check the test environment', () => {
       cy.wait(3000)
     })
   })
+
+  it('See property ibistesttool.custom', () => {
+    cy.visit('')
+    cy.contains('Environment Variables').click()
+    cy.get('input[name=search]').type('ibistesttool.custom{enter}')
+    // See the result in the video
+    cy.wait(3000)
+  })
 })
