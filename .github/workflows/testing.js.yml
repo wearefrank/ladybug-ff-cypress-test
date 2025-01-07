@@ -14,6 +14,7 @@ on:
 jobs:
   testing:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - test-app: "false"
@@ -194,6 +195,10 @@ jobs:
       - name: Wait for server to be available
         run: ./waitForUrl.sh http://localhost:8090 900
         working-directory: ladybug-ff-cypress-test/.github/workflows
+      - name: Be sure there are no old videos
+        run: rm -rf ladybug-ff-cypress-test/cypress/videos
+      - name: Be sure there are no old screenshots
+        run: rm -rf ladybug-ff-cypress-test/cypress/screenshots
       - name: Run the tests
         run: yarn cypress run --spec "${{ matrix.specs }}"
         working-directory: ladybug-ff-cypress-test

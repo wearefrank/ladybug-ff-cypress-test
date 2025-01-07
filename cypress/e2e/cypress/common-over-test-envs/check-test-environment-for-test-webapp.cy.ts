@@ -6,6 +6,8 @@ describe('Check test environment for use test webapp', () => {
     cy.wait(3000)
     cy.getNumLadybugReports().then(() => {
       cy.getIframeBody().find('[data-cy-change-view-dropdown]').select('White box view with less metadata')
+      // Wait so that you see this situation in the video
+      cy.wait(3000)
     })
   })
 })
