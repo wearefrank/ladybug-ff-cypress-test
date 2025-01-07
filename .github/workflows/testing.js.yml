@@ -39,6 +39,8 @@ jobs:
         working-directory: frank-runner
       - name: Set port where Frank!Framework is served
         run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
+      - name: Set secure port
+        run: echo "tomcat.secure.port=8091" > frank-runner/build.properties
       - name: Set debug to true
         run: echo "debug=true" >> frank-runner/build.properties
       # Path is relative to project.dir, which depends on the way the FF! is started.
@@ -199,12 +201,11 @@ jobs:
         run: rm -rf ladybug-ff-cypress-test/cypress/videos
       - name: Be sure there are no old screenshots
         run: rm -rf ladybug-ff-cypress-test/cypress/screenshots
+      - name: Try to access server directly with curl
+        run: curl -v -i http://localhost:8090
       - name: Run the tests
         run: yarn cypress run --spec "${{ matrix.specs }}"
         working-directory: ladybug-ff-cypress-test
-      - name: Try to access server directly with curl
-        run: curl -v -i -X DELETE http://localhost:8090/iaf/ladybug/api/report/all/Test
-        if: always()
       - name: Show files
         run: tree -L 5 .
         if: always()
