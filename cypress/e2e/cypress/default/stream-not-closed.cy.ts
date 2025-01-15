@@ -12,7 +12,7 @@ describe('Stream IS closed prematurely', () => {
     cy.apiDeleteAll('Test')
   })
 
-  it('Test it for unread streamed value', () => {
+  it('NOK: Test it for unread streamed value', () => {
     cy.visit('')
     cy.runInTestAPipeline('IgnoreStreamedValue', 'Adapter1a', ' ')
     cy.getNumLadybugReports().should('equal', 1)
@@ -27,7 +27,7 @@ describe('Stream IS closed prematurely', () => {
     cy.getIframeBody().find('app-edit-display app-editor').should('contain.text', '>>')
   })
 
-  it('Test it for empty streamed value', () => {
+  it('NOK: Test it for empty streamed value', () => {
     cy.visit('')
     cy.runInTestAPipeline('StreamedEmptyValue', 'Adapter1b', ' ')
     // We did not delete the report of the previous test.
