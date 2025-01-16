@@ -12,6 +12,9 @@ describe('Tests with views and filtering', () => {
   })
 
   it('Filter on two criteria', () => {
+    cy.visit('')
+    // Enter Ladybug
+    cy.getNumLadybugReports().should('equal', 5)
     cy.getIframeBody().find('[data-cy-debug="filter"]').click()
     cy.enterFilter('Name', 'Adapter')
     cy.enterFilter('Input', 'yyy')
@@ -26,5 +29,27 @@ describe('Tests with views and filtering', () => {
     cy.getActiveFilterSphere('Input').should('not.exist')
     cy.getIframeBody().find('[data-cy-debug="close-filter-btn"]').click()
     cy.getIframeBody().find('[data-cy-debug="close-filter-btn"]').should('not.exist')
+  })
+
+  it('Change view so that a column goes on which there was a filter', () => {
+    cy.visit('')
+    // Enter Ladybug
+    cy.getNumLadybugReports().should('equal', 5)
+    cy.getIframeBody().find('[data-cy-debug="filter"]').click()
+    cy.enterFilter('Input', 'yyy')
+    cy.getIframeBody().find('[data-cy-debug="close-filter-btn"]').click()
+    cy.getIframeBody().find('[data-cy-debug="tableRow"]').should('have.length', 3)
+    cy.getActiveFilterSphere('Input').should('contain.text', 'Input: yyy')
+    cy.getIframeBody().find('[data-cy-change-view-dropdown]').select('White box view no input')
+    cy.getIframeBody().find('[data-cy-debug="tableRow"]').should('have.length', 5)
+    cy.getActiveFilterSphere('Input').should('not.exist')
+    // Check that the original filter is (not) saved
+    cy.intercept('/iaf/ladybug/api/testtool').as('viewUpdated')
+    cy.getIframeBody().find('[data-cy-change-view-dropdown]').select('White box')
+    cy.wait('@viewUpdated')
+    // Give UI time to update based on the HTTP response
+    cy.wait(200)
+    cy.getIframeBody().find('[data-cy-debug="tableRow"]').should('have.length', 5)
+    cy.getActiveFilterSphere('Input').should('not.exist')
   })
 })
