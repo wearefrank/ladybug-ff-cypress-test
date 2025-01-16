@@ -35,7 +35,7 @@ declare namespace Cypress {
     guardedCopyReportToTestTab(alias: string)
     checkTestTabHasReportNamed(name: string): Cypress.Chainable<any>
     enterFilter(field: string, filter: string)
-    getActiveFilterSphere(field: string): Cypress.Chainable<any>
+    checkActiveFilterSphere(field: string, value: string): Cypress.Chainable<any>
     apiDeleteAll(storageName: string)
     selectTreeNode(path: NodeSelection[]): Cypress.Chainable<any>
   }
@@ -175,9 +175,9 @@ Cypress.Commands.add('enterFilter', (field: string, filter: string) => {
     .type(filter + '{enter}')
 })
 
-Cypress.Commands.add('getActiveFilterSphere', (field: string) => {
-  const lowerCaseField = field.toLowerCase()
-  return cy.getIframeBody().find(`[title="Active filter for ${lowerCaseField}"]`)
+Cypress.Commands.add('checkActiveFilterSphere', (field: string, value: string) => {
+  const expectedText = `${field}: ${value}`
+  return cy.getIframeBody().find('app-active-filters').contains(expectedText)
 })
 
 Cypress.Commands.add('apiDeleteAll', (storageName: string) => {
