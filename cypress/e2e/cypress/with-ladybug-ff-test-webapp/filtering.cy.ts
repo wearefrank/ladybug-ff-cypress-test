@@ -31,7 +31,7 @@ describe('Tests with views and filtering', () => {
     cy.getIframeBody().find('[data-cy-debug="close-filter-btn"]').should('not.exist')
   })
 
-  it('Change view so that a column goes on which there was a filter', () => {
+  it('Change view so that a column goes on which there was a filter and original filter not saved', () => {
     cy.visit('')
     // Enter Ladybug
     cy.getNumLadybugReports().should('equal', 5)
@@ -43,7 +43,7 @@ describe('Tests with views and filtering', () => {
     cy.getIframeBody().find('[data-cy-change-view-dropdown]').select('White box view no input')
     cy.getIframeBody().find('[data-cy-debug="tableRow"]').should('have.length', 5)
     cy.getActiveFilterSphere('Input').should('not.exist')
-    // Check that the original filter is (not) saved
+    // Check that the original filter is not saved
     cy.intercept('/iaf/ladybug/api/testtool').as('viewUpdated')
     cy.getIframeBody().find('[data-cy-change-view-dropdown]').select('White box')
     cy.wait('@viewUpdated')
