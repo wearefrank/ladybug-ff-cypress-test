@@ -1,17 +1,30 @@
-describe('Tests with filtering', () => {
+describe('Tests with views and filtering', () => {
   before(() => {
     cy.apiDeleteAll('FileDebugStorage')
     cy.apiDeleteAll('Test')
+    cy.visit('')
     cy.runInTestAPipeline('Example1a', 'Adapter1a', 'xxx')
     cy.runInTestAPipeline('Example1b', 'Adapter1b', 'xxx')
-    cy.runInTestAPipeline('Example1c', 'Adapter1c', 'xxx')
-    cy.runInTestAPipeline('UseToStreamPipe', 'UseToStreamPipeChar', ' ')
-    cy.runInTestAPipeline('UseToStreamPipe', 'UseToStreamPipeBin', ' ').then((total) => {
-      expect(total).to.equal(5)
-    })
+    cy.runInTestAPipeline('Example1c', 'Adapter1c', 'xxxyyy')
+    cy.runInTestAPipeline('UseToStreamPipe', 'UseToStreamPipeChar', 'yyy')
+    cy.runInTestAPipeline('UseToStreamPipe', 'UseToStreamPipeBin', 'yyy')
+    cy.getNumLadybugReports().should('equal', 5)
   })
 
-  it('Dummy test', () => {
-    cy.wrap('Some text')
+  it('Filter on two criteria', () => {
+    cy.getIframeBody().find('[data-cy-debug="filter"]').click()
+    cy.enterFilter('Name', 'Adapter')
+    cy.enterFilter('Input', 'yyy')
+    cy.getIframeBody().find('[data-cy-debug="close-filter-btn"]').click()
+    cy.getActiveFilterSphere('Name').should('contain.text', 'Name: Adapter')
+    cy.getActiveFilterSphere('Input').should('contain.text', 'Input: yyy')
+    cy.getIframeBody().find('[data-cy-debug="tableRow"]').should('have.length', 1)
+    cy.getIframeBody().find('[data-cy-debug="filter"]').click()
+    cy.getIframeBody().find('[data-cy-debug="clear-filter-btn"]').click()
+    cy.getIframeBody().find('[data-cy-debug="tableRow"]').should('have.length', 5)
+    cy.getActiveFilterSphere('Name').should('not.exist')
+    cy.getActiveFilterSphere('Input').should('not.exist')
+    cy.getIframeBody().find('[data-cy-debug="close-filter-btn"]').click()
+    cy.getIframeBody().find('[data-cy-debug="close-filter-btn"]').should('not.exist')
   })
 })

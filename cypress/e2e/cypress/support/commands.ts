@@ -34,6 +34,8 @@ declare namespace Cypress {
     getAllStorageIdsInTable(): Chainable<number[]>
     guardedCopyReportToTestTab(alias: string)
     checkTestTabHasReportNamed(name: string): Cypress.Chainable<any>
+    enterFilter(field: string, filter: string)
+    getActiveFilterSphere(field: string): Cypress.Chainable<any>
     apiDeleteAll(storageName: string)
     selectTreeNode(path: NodeSelection[]): Cypress.Chainable<any>
   }
@@ -101,9 +103,7 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
 Cypress.Commands.add('getNumLadybugReportsForNameFilter', (name) => {
   cy.getNumLadybugReports().then(totalNumReports => {
     cy.getIframeBody().find('[data-cy-debug="filter"]').click()
-    cy.getIframeBody().find('app-filter-side-drawer').find('label:contains(Name)')
-      .parent().find('input')
-      .type(name + '{enter}')
+    cy.enterFilter('Name', name)
     cy.getIframeBody().find('[data-cy-debug="tableRow"]').its('length')
       .should('be.lessThan', totalNumReports).then(result => {
         cy.getIframeBody().find('app-filter-side-drawer').find('label:contains(Name)')
@@ -166,6 +166,18 @@ Cypress.Commands.add('checkTestTabHasReportNamed', (name) => {
   cy.get('@testtabReportRow').find('td:eq(2)').should('contain', name)
   cy.get('@testtabReportRow').find('td:eq(4)').should('be.empty')
   return cy.get('@testtabReportRow')
+})
+
+Cypress.Commands.add('enterFilter', (field: string, filter: string) => {
+  const fieldQuery = `label:contains(${field})`
+  cy.getIframeBody().find('app-filter-side-drawer').find(fieldQuery)
+    .parent().find('input')
+    .type(filter + '{enter}')
+})
+
+Cypress.Commands.add('getActiveFilterSphere', (field: string) => {
+  const lowerCaseField = field.toLowerCase()
+  return cy.getIframeBody().find(`[title="Active filter for ${lowerCaseField}"]`)
 })
 
 Cypress.Commands.add('apiDeleteAll', (storageName: string) => {
