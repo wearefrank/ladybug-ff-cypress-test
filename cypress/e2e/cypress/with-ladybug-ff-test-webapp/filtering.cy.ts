@@ -43,7 +43,7 @@ describe('Tests with views and filtering', () => {
       cy.getIframeBody().find('[data-cy-debug="table"]').find(`th:eq(${testCase.colNr})`).contains(`${testCase.name}`)
       cy.getIframeBody().find('[data-cy-debug="tableRow"]:eq(0)').find(`td:eq(${testCase.colNr})`).then((el: JQuery<HTMLElement>) => {
         const firstRowFieldValue = el.text().trim()
-        cy.wrap(`Filtering on value: ${firstRowFieldValue}`)
+        cy.log(`Filtering on value: ${firstRowFieldValue}`)
         cy.getIframeBody().find('[data-cy-debug="filter"]').click()
         cy.enterFilter(testCase.labelFilterPanel, firstRowFieldValue)
         cy.getIframeBody().find('[data-cy-debug="tableRow"]').should('have.length.lessThan', 5)
