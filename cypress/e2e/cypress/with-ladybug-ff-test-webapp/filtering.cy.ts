@@ -32,7 +32,9 @@ describe('Tests with views and filtering', () => {
     { name: 'Input', colNr: 10, labelFilterPanel: 'Input' }
   ]
 
-  columnAndNameCombinations.filter((testCase) => testCase.name !== 'Status').forEach(testCase => {
+  const testedColumnAndNameCombinations = columnAndNameCombinations.filter((testCase) => testCase.name !== 'Status')
+
+  for (const testCase of testedColumnAndNameCombinations) {
     it(`Filter on field ${testCase.name}, expected at column ${testCase.colNr}`, () => {
       cy.visit('')
       // Enter Ladybug
@@ -54,7 +56,7 @@ describe('Tests with views and filtering', () => {
         cy.checkActiveFilterSphere(testCase.labelFilterPanel, firstRowFieldValue).should('not.exist')
       })
     })
-  })
+  }
 
   it('Filter on two criteria', () => {
     cy.visit('')
