@@ -229,7 +229,7 @@ function selectTreeNodeImpl (subject: JQuery<HTMLElement>, path: NodeSelection[]
 }
 
 Cypress.Commands.add('awaitLoadingSpinner', () => {
-  cy.getIframeBody().as('@iframeBody')
+  cy.getIframeBody().as('iframeBody')
   cy.get('@iframeBody').find('[data-cy-loading-spinner]', { timeout: 10000 }).should('not.exist')
 })
 
