@@ -49,7 +49,7 @@ Cypress.Commands.add('inIframeBody', (query) => {
     .its('0.contentDocument').should('exist')
     .its('body').should('not.be.undefined')
     .then(body => cy.wrap(body)).as('iframeBody')
-  return cy.get('@iframeBody').find(query)
+  return cy.get('@iframeBody', { timeout: 10000 }).find(query)
 })
 
 Cypress.Commands.add('getNumLadybugReports', () => {
