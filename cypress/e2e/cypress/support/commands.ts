@@ -26,7 +26,7 @@
 
 declare namespace Cypress {
   interface Chainable<Subject = any> {
-    getIframeBody(): Chainable<any>
+    inIframeBody(query: string): Chainable<any>
     getNumLadybugReports(): Chainable<any>
     runInTestAPipeline(config: string, adapter: string, message: string): Chainable<any>
     getNumLadybugReportsForNameFilter(name: string): Chainable<number>
@@ -43,13 +43,13 @@ declare namespace Cypress {
   }
 }
 
-// From the internet.
-Cypress.Commands.add('getIframeBody', () => {
-  return cy
+Cypress.Commands.add('inIframeBody', (query) => {
+  cy
     .get('iframe')
     .its('0.contentDocument').should('exist')
     .its('body').should('not.be.undefined')
-    .then(body => cy.wrap(body))
+    .then(body => cy.wrap(body)).as('iframeBody')
+  return cy.get('@iframeBody').find(query)
 })
 
 Cypress.Commands.add('getNumLadybugReports', () => {
@@ -58,21 +58,21 @@ Cypress.Commands.add('getNumLadybugReports', () => {
   cy.get('[data-cy-nav="testing"]').click()
   cy.get('[data-cy-nav="testingLadybug"]').click()
   cy.awaitLoadingSpinner()
-  cy.getIframeBody().find('[data-cy-nav-tab="debugTab"]').click()
+  cy.inIframeBody('[data-cy-nav-tab="debugTab"]').click()
   cy.intercept({
     method: 'GET',
     url: 'iaf/ladybug/api/metadata/FileDebugStorage/count',
     times: 1
   }).as('apiGetReports_2')
-  cy.getIframeBody().find('[data-cy-debug="refresh"]').click()
+  cy.inIframeBody('[data-cy-debug="refresh"]').click()
   cy.wait('@apiGetReports_2').then(interception => {
     const count: number = interception.response.body
     // Uncomment if PR https://github.com/wearefrank/ladybug-frontend/pull/363
     // has been merged and if its frontend is referenced by F!F pom.xml.
     //
-    // cy.getIframeBody().find('[data-cy-debug="amountShown"]')
+    // cy.inIframeBody('[data-cy-debug="amountShown"]')
     // .should('equal', "/" + count);
-    cy.getIframeBody().find('[data-cy-debug="tableRow"]')
+    cy.inIframeBody('[data-cy-debug="tableRow"]')
       .should('have.length', count)
     return cy.wrap(count)
   })
@@ -98,15 +98,15 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
 // Only works if some reports are expected to be omitted because of the filter
 Cypress.Commands.add('getNumLadybugReportsForNameFilter', (name) => {
   cy.getNumLadybugReports().then(totalNumReports => {
-    cy.getIframeBody().find('[data-cy-debug="filter"]').click()
+    cy.inIframeBody('[data-cy-debug="filter"]').click()
     cy.enterFilter('Name', name)
-    cy.getIframeBody().find('[data-cy-debug="tableRow"]').its('length')
+    cy.inIframeBody('[data-cy-debug="tableRow"]').its('length')
       .should('be.lessThan', totalNumReports).then(result => {
-        cy.getIframeBody().find('app-filter-side-drawer').find('label:contains(Name)')
+        cy.inIframeBody('app-filter-side-drawer').find('label:contains(Name)')
           .parent().find('button:contains(Clear)').click()
-        cy.getIframeBody().find('[data-cy-debug="tableRow"]').should('have.length', totalNumReports)
-        cy.getIframeBody().find('app-filter-side-drawer').find('button:contains(Close)').click()
-        cy.getIframeBody().find('app-filter-side-drawer').find('label').should('not.exist')
+        cy.inIframeBody('[data-cy-debug="tableRow"]').should('have.length', totalNumReports)
+        cy.inIframeBody('app-filter-side-drawer').find('button:contains(Close)').click()
+        cy.inIframeBody('app-filter-side-drawer').find('label').should('not.exist')
         return cy.wrap(result)
       })
   })
@@ -126,7 +126,7 @@ Cypress.Commands.add('createReportInLadybug', (config: string, adapter: string, 
 
 Cypress.Commands.add('getAllStorageIdsInTable', () => {
   const storageIds: number[] = []
-  cy.getIframeBody().find('[data-cy-debug="tableRow"]').each($row => {
+  cy.inIframeBody('[data-cy-debug="tableRow"]').each($row => {
     cy.wrap($row).find('td:eq(1)').invoke('text').then(s => {
       storageIds.push(parseInt(s))
     })
@@ -146,7 +146,7 @@ Cypress.Commands.add('guardedCopyReportToTestTab', (alias) => {
     method: 'GET',
     url: /\/iaf\/ladybug\/api\/metadata\/Test*/g
   }).as('apiGetTestReports')
-  cy.getIframeBody().find('[data-cy-debug-editor="copy"]').click()
+  cy.inIframeBody('[data-cy-debug-editor="copy"]').click()
   cy.wait(`@${alias}`).then((interception) => {
     cy.wrap(interception).its('request.url').should('contain', 'Test')
     cy.wrap(interception).its('response.statusCode').should('equal', 200)
@@ -155,8 +155,8 @@ Cypress.Commands.add('guardedCopyReportToTestTab', (alias) => {
 })
 
 Cypress.Commands.add('checkTestTabHasReportNamed', (name) => {
-  cy.getIframeBody().find('[data-cy-nav-tab="testTab"]').click()
-  cy.getIframeBody().find('[data-cy-test="table"] tbody tr')
+  cy.inIframeBody('[data-cy-nav-tab="testTab"]').click()
+  cy.inIframeBody('[data-cy-test="table"] tbody tr')
     .should('have.length', 1)
     .as('testtabReportRow')
   cy.get('@testtabReportRow').find('td:eq(2)').should('contain', name)
@@ -166,14 +166,14 @@ Cypress.Commands.add('checkTestTabHasReportNamed', (name) => {
 
 Cypress.Commands.add('enterFilter', (field: string, filter: string) => {
   const fieldQuery = `label:contains(${field})`
-  cy.getIframeBody().find('app-filter-side-drawer').find(fieldQuery)
+  cy.inIframeBody('app-filter-side-drawer').find(fieldQuery)
     .parent().find('input')
     .type(filter + '{enter}')
 })
 
 Cypress.Commands.add('checkActiveFilterSphere', (field: string, value: string) => {
   const expectedText = `${field}: ${value}`
-  return cy.getIframeBody().find('app-active-filters').contains(expectedText)
+  return cy.inIframeBody('app-active-filters').contains(expectedText)
 })
 
 Cypress.Commands.add('apiDeleteAll', (storageName: string) => {
@@ -202,7 +202,7 @@ function normalizeNodeSelection (input: NodeSelection): TextWithSeq {
 
 Cypress.Commands.add('selectTreeNode', (path: NodeSelection[]) => {
   const head = normalizeNodeSelection(path.shift())
-  cy.getIframeBody().find(`[data-cy-debug-tree="root"] > app-tree-item > div > div:nth-child(1):contains(${head.text})`).then((elementsWithTexts) => {
+  cy.inIframeBody(`[data-cy-debug-tree="root"] > app-tree-item > div > div:nth-child(1):contains(${head.text})`).then((elementsWithTexts) => {
     const chosen = elementsWithTexts[head.seq]
     return cy.wrap(chosen).parent().parent().then((element) => {
       if (path.length === 0) {
@@ -229,8 +229,7 @@ function selectTreeNodeImpl (subject: JQuery<HTMLElement>, path: NodeSelection[]
 }
 
 Cypress.Commands.add('awaitLoadingSpinner', () => {
-  cy.getIframeBody().as('iframeBody')
-  cy.get('@iframeBody').find('[data-cy-loading-spinner]', { timeout: 10000 }).should('not.exist')
+  cy.inIframeBody('[data-cy-loading-spinner]').should('not.exist')
 })
 
 Cypress.Commands.add('waitForVideo', () => {
