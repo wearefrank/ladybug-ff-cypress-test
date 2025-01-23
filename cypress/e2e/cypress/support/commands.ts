@@ -54,15 +54,9 @@ Cypress.Commands.add('getNumLadybugReports', () => {
   cy.get('[data-cy-nav="adapterStatus"]', { timeout: 10000 }).click()
   cy.get('[data-cy-nav="testingLadybug"]').should('not.be.visible')
   cy.get('[data-cy-nav="testing"]').click()
-  cy.intercept({
-    method: 'GET',
-    url: 'iaf/ladybug/api/metadata/FileDebugStorage/count',
-    times: 1
-  }).as('apiGetReports')
   cy.get('[data-cy-nav="testingLadybug"]').click()
-  cy.wait(200)
+  awaitLoadingSpinner()
   cy.getIframeBody().find('[data-cy-nav-tab="debugTab"]').click()
-  cy.wait('@apiGetReports')
   cy.intercept({
     method: 'GET',
     url: 'iaf/ladybug/api/metadata/FileDebugStorage/count',
@@ -230,4 +224,12 @@ function selectTreeNodeImpl (subject: JQuery<HTMLElement>, path: NodeSelection[]
       })
     }
   })
+}
+
+function awaitLoadingSpinner (): void {
+  cy.getIframeBody().find('[data-cy-loading-spinner]', { timeout: 10000 }).should('not.exist')
+}
+
+function waitForVideo (): void {
+  cy.wait(3000)
 }

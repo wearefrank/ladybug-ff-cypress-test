@@ -91,11 +91,8 @@ describe('Tests with views and filtering', () => {
     cy.getIframeBody().find('[data-cy-debug="tableRow"]').should('have.length', 5)
     cy.checkActiveFilterSphere('Input', 'yyy').should('not.exist')
     // Check that the original filter is not saved
-    cy.intercept('/iaf/ladybug/api/testtool').as('viewUpdated')
     cy.getIframeBody().find('[data-cy-change-view-dropdown]').select('White box')
-    cy.wait('@viewUpdated')
-    // Give UI time to update based on the HTTP response
-    cy.wait(200)
+    awaitLoadingSpinner()
     cy.getIframeBody().find('[data-cy-debug="tableRow"]').should('have.length', 5)
     cy.checkActiveFilterSphere('Input', 'yyy').should('not.exist')
   })
