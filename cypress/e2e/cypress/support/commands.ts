@@ -229,6 +229,8 @@ function selectTreeNodeImpl (subject: JQuery<HTMLElement>, path: NodeSelection[]
 }
 
 Cypress.Commands.add('awaitLoadingSpinner', () => {
+  // We do not want to catch the moment that the loading spinner is NOT YET present
+  cy.wait(200)
   cy.inIframeBody('[data-cy-loading-spinner]').should('not.exist')
 })
 
