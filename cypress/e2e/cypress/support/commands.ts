@@ -47,7 +47,7 @@ Cypress.Commands.add('inIframeBody', (query) => {
   cy
     .get('iframe')
     .its('0.contentDocument').should('exist')
-    .its('body').should('not.be.undefined')
+    .its('body').should('be.visible')
     .then(body => cy.wrap(body)).as('iframeBody')
   return cy.get('@iframeBody', { timeout: 10000 }).find(query)
 })
