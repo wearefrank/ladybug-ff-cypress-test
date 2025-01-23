@@ -92,7 +92,7 @@ describe('Tests with views and filtering', () => {
     cy.checkActiveFilterSphere('Input', 'yyy').should('not.exist')
     // Check that the original filter is not saved
     cy.getIframeBody().find('[data-cy-change-view-dropdown]').select('White box')
-    awaitLoadingSpinner()
+    cy.awaitLoadingSpinner()
     cy.getIframeBody().find('[data-cy-debug="tableRow"]').should('have.length', 5)
     cy.checkActiveFilterSphere('Input', 'yyy').should('not.exist')
   })

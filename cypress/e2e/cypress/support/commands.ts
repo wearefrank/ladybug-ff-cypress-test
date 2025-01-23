@@ -38,6 +38,8 @@ declare namespace Cypress {
     checkActiveFilterSphere(field: string, value: string): Cypress.Chainable<any>
     apiDeleteAll(storageName: string)
     selectTreeNode(path: NodeSelection[]): Cypress.Chainable<any>
+    awaitLoadingSpinner(): void
+    waitForVideo(): void
   }
 }
 
@@ -55,7 +57,7 @@ Cypress.Commands.add('getNumLadybugReports', () => {
   cy.get('[data-cy-nav="testingLadybug"]').should('not.be.visible')
   cy.get('[data-cy-nav="testing"]').click()
   cy.get('[data-cy-nav="testingLadybug"]').click()
-  awaitLoadingSpinner()
+  cy.awaitLoadingSpinner()
   cy.getIframeBody().find('[data-cy-nav-tab="debugTab"]').click()
   cy.intercept({
     method: 'GET',
@@ -226,10 +228,10 @@ function selectTreeNodeImpl (subject: JQuery<HTMLElement>, path: NodeSelection[]
   })
 }
 
-function awaitLoadingSpinner (): void {
+Cypress.Commands.add('awaitLoadingSpinner', () => {
   cy.getIframeBody().find('[data-cy-loading-spinner]', { timeout: 10000 }).should('not.exist')
-}
+})
 
-function waitForVideo (): void {
+Cypress.Commands.add('waitForVideo', () => {
   cy.wait(3000)
-}
+})
