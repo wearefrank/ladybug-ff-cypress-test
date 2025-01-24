@@ -45,11 +45,11 @@ declare namespace Cypress {
 
 Cypress.Commands.add('inIframeBody', (query) => {
   cy
-    .get('iframe')
     .its('0.contentDocument').should('exist')
-    .its('body').should('be.visible')
-    .then(body => cy.wrap(body)).as('iframeBody')
-  return cy.get('@iframeBody', { timeout: 10000 }).find(query)
+    .its('body').should('not.be.undefined')
+    .then(body => {
+      cy.wrap(body).find(query)
+    })
 })
 
 Cypress.Commands.add('getNumLadybugReports', () => {
@@ -234,6 +234,7 @@ Cypress.Commands.add('awaitLoadingSpinner', () => {
   cy.inIframeBody('[data-cy-loading-spinner]').should('not.exist')
 })
 
+// Wait so that the state of the UI is shown more clearly in videos.
 Cypress.Commands.add('waitForVideo', () => {
   cy.wait(3000)
 })
