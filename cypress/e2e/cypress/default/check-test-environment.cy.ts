@@ -3,6 +3,6 @@ describe('Check test environment WITHOUT test webapp', () => {
     cy.visit('/iaf/ladybug')
     cy.get('[data-cy-change-view-dropdown]').contains('White box').should('exist')
     cy.get('[data-cy-change-view-dropdown]').contains('White box view no name no input').should('not.exist')
-    cy.wait(3000)
+    cy.waitForVideo()
   })
 })
