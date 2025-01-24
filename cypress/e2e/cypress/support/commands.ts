@@ -46,8 +46,8 @@ declare namespace Cypress {
 Cypress.Commands.add('inIframeBody', (query) => {
   cy
     .get('iframe')
-    .its('0.contentDocument').should('exist')
-    .its('body').should('not.be.undefined')
+    .its('0.contentDocument')
+    .its('body')
     .then(body => {
       cy.wrap(body).find(query)
     })
