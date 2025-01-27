@@ -1,3 +1,7 @@
+# When maintaining this file, please have a fixed sequence
+# of the keys within a step:
+#   name, id, if, working-directory, run/uses, others.
+# 
 name: Testing
 on:
   push:
@@ -36,8 +40,8 @@ jobs:
           repository: wearefrank/frank-runner
           path: frank-runner
       - name: See commit number of checked-out frank-runner
-        run: git log -1
         working-directory: frank-runner
+        run: git log -1
       - name: Set port where Frank!Framework is served
         run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
       - name: Set secure port
@@ -59,8 +63,8 @@ jobs:
         with:
           path: ladybug-ff-cypress-test
       - name: Copy cypress.config_cicd.ts to cypress.config.ts to listen to correct port
-        run: cp cypress.config_cicd.ts cypress.config.ts
         working-directory: ladybug-ff-cypress-test
+        run: cp cypress.config_cicd.ts cypress.config.ts
       - name: Use Node.js 20.x
         uses: actions/setup-node@v2
         with:
@@ -68,17 +72,17 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
       - name: Update yarn
+        working-directory: "ladybug-ff-cypress-test"
         run: corepack enable
-        working-directory: "ladybug-ff-cypress-test"
       - name: Show node version
+        working-directory: "ladybug-ff-cypress-test"
         run: node -v
-        working-directory: "ladybug-ff-cypress-test"
       - name: Show yarn version
-        run: yarn -v
         working-directory: "ladybug-ff-cypress-test"
+        run: yarn -v
       - name: Install packages
-        run: yarn install --immutable
         working-directory: ladybug-ff-cypress-test
+        run: yarn install --immutable
       - name: Cache Frank!Runner dependencies - build
         uses: actions/cache@v3
         with:
@@ -96,108 +100,108 @@ jobs:
       - name: Show current time, allows you to check that logs are not old
         run: date
       - name: Let Frank!Runner do its downloads
-        run: yarn run installFrankRunnerEnv
         working-directory: ladybug-ff-cypress-test
+        run: yarn run installFrankRunnerEnv
       - name: Remove old Tomcat versions - download
+        working-directory: frank-runner
         run: rm -rf download/apache-tomcat-9*
-        working-directory: frank-runner
       - name: Remove old Tomcat versions - build
+        working-directory: frank-runner
         run: rm -rf build/apache-tomcat-9*
-        working-directory: frank-runner
       - name: Show apache-tomcat directories
+        working-directory: frank-runner
         run: find . -path './build/*' -name 'apache-tomcat*'
-        working-directory: frank-runner
       - name: Check that there is only one version of Tomcat
+        working-directory: frank-runner
         run: test $(find . -path './build/*' -name 'apache-tomcat*' | wc -w) -eq 1
-        working-directory: frank-runner
       - name: Delete old Ladybug test reports
+        working-directory: frank-runner
         run: find . -path './build/apache-tomcat*/logs/testtool*' -delete
-        working-directory: frank-runner
       - name: Remove old catalina.out
-        run: find . -path './build/apache-tomcat*/catalina.out' -delete
         working-directory: frank-runner
+        run: find . -path './build/apache-tomcat*/catalina.out' -delete
       # Build the latest code if buildLatestFFandLadybugCode
       - name: Cache Maven downloads
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository/
           key: ${{ runner.os }}-maven
           restore-keys: |
             ${{ runner.os }}-maven
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
       - name: Checkout ladybug-frontend
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
         uses: actions/checkout@v4
         with:
           repository: wearefrank/ladybug-frontend
           path: ladybug-frontend
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
       - name: Checkout ladybug (backend)
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
         uses: actions/checkout@v4
         with:
           repository: wearefrank/ladybug
           path: ladybug
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
       - name: Checkout frankframework
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
         uses: actions/checkout@v4
         with:
           repository: frankframework/frankframework
           path: frankframework
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
       - name: Check out ladybug-ff-test-webapp
+        if: ${{ matrix.test-app == 'true' }}
         uses: actions/checkout@v4
         with:
           repository: wearefrank/ladybug-ff-test-webapp
           path: ladybug-ff-test-webapp
-        if: ${{ matrix.test-app == 'true' }}
       - name: Put build.properties in ladybug-ff-test-webapp
         if: ${{ matrix.test-app == 'true' }}  
         run: cp build-ladybug-ff-test-webapp.properties ../../../ladybug-ff-test-webapp/build.properties
         working-directory: ladybug-ff-cypress-test/.github/workflows
       - name: Adjust pom.xml files so that ladybug-frontend, ladybug and frankframework reference each other
-        run: ./run.sh
-        working-directory: frank-runner/specials/util/syncPomVersions
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'false' }}
+        working-directory: frank-runner/specials/util/syncPomVersions
+        run: ./run.sh
       # If use the latest FF! build for ladybug-ff-test-webapp, we do not need to sync. Version is just referred as LATEST.
       - name: Adjust pom.xml files so that ladybug-ff-test-webapp, FF!, ladybug and ladybug-frontend can find each other
-        run: ./runIncludingLadybugFfTestWebapp.sh
-        working-directory: frank-runner/specials/util/syncPomVersions
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'true' }}
+        working-directory: frank-runner/specials/util/syncPomVersions
+        run: ./runIncludingLadybugFfTestWebapp.sh
       - name: Build ladybug-frontend
-        run: ./run.sh
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
         working-directory: frank-runner/specials/ladybug-frontend
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
+        run: ./run.sh
       - name: Put build.properties in iaf-webapp
-        run: cp build-iaf-webapp.properties ../../../frank-runner/specials/iaf-webapp/build.properties
-        working-directory: ladybug-ff-cypress-test/.github/workflows
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
+        working-directory: ladybug-ff-cypress-test/.github/workflows
+        run: cp build-iaf-webapp.properties ../../../frank-runner/specials/iaf-webapp/build.properties
         # When frank-runner/specials/iaf-webapp is executed, we always get the Maven artifacts in .m2.
       - name: Do not start build from iaf-webapp if running ladybug-ff-test-webapp
-        run: echo "skip.start=true" >> build.properties
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'true' }}
         working-directory: frank-runner/specials/iaf-webapp
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'true' }}
+        run: echo "skip.start=true" >> build.properties
       - name: Put build.properties in ladybug
-        run: cp build-ladybug.properties ../../../frank-runner/specials/ladybug/build.properties
-        working-directory: ladybug-ff-cypress-test/.github/workflows
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
-      - name: Start server using Frank!Runner in background (official release) - no ladybug-ff-test-webapp
-        run: ./restart.sh > serverStartLog.log &
-        working-directory: frank-runner
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'false' && matrix.test-app == 'false' }}
-      - name: Start server of locally-built code - no ladybug-ff-test-webapp
-        run: ./restart.sh > serverStartLog.log &
-        working-directory: frank-runner/specials/ladybug
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'false' }}
-      - name: Build frank-runner/specials/iaf-webapp but do not start it
-        run: ./restart.sh > buildIafWebapp.log
-        working-directory: frank-runner/specials/ladybug
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'true' }}
-      - name: Start ladybug-ff-test-webapp with FF! build we have (built) as Maven artifact
-        run: ./restart.sh > serverStartLog.log &
-        working-directory: ladybug-ff-test-webapp
-        if: ${{ matrix.test-app == 'true' }}
-      - name: Wait for server to be available
-        run: ./waitForUrl.sh http://localhost:8090 900
         working-directory: ladybug-ff-cypress-test/.github/workflows
+        run: cp build-ladybug.properties ../../../frank-runner/specials/ladybug/build.properties
+      - name: Start server using Frank!Runner in background (official release) - no ladybug-ff-test-webapp
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'false' && matrix.test-app == 'false' }}
+        working-directory: frank-runner
+        run: ./restart.sh > serverStartLog.log &
+      - name: Start server of locally-built code - no ladybug-ff-test-webapp
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'false' }}
+        working-directory: frank-runner/specials/ladybug
+        run: ./restart.sh > serverStartLog.log &
+      - name: Build frank-runner/specials/iaf-webapp but do not start it
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'true' }}
+        working-directory: frank-runner/specials/ladybug
+        run: ./restart.sh > buildIafWebapp.log
+      - name: Start ladybug-ff-test-webapp with FF! build we have (built) as Maven artifact
+        if: ${{ matrix.test-app == 'true' }}
+        working-directory: ladybug-ff-test-webapp
+        run: ./restart.sh > serverStartLog.log &
+      - name: Wait for server to be available
+        working-directory: ladybug-ff-cypress-test/.github/workflows
+        run: ./waitForUrl.sh http://localhost:8090 900
       - name: Be sure there are no old videos
         run: rm -rf ladybug-ff-cypress-test/cypress/videos
       - name: Be sure there are no old screenshots
@@ -205,11 +209,11 @@ jobs:
       - name: Try to access server directly with curl
         run: curl -v -i http://localhost:8090
       - name: Run the tests
-        run: yarn cypress run --spec "${{ matrix.specs }}"
         working-directory: ladybug-ff-cypress-test
+        run: yarn cypress run --spec "${{ matrix.specs }}"
       - name: Show files
-        run: tree -L 5 .
         if: always()
+        run: tree -L 5 .
       - name: Store ladybug (backend) pom.xml
         if: ${{ always() && steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
         uses: actions/upload-artifact@v4.4.0
@@ -229,69 +233,68 @@ jobs:
           name: ladybug-ff-test-webapp pom.xml test-app = ${{ matrix.test-app }}
           path: ladybug-ff-test-webapp/pom.xml
       - name: Store log of Frank!Runner downloads
-        uses: actions/upload-artifact@v4.4.0
         if: always()
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: installFrankRunnerEnv.log - test app = ${{ matrix.test-app }}
           path: frank-runner/installFrankRunnerEnv.log
       - name: Store log of starting the server with the Frank!Runner (official release) - no test webapp
-        uses: actions/upload-artifact@v4.4.0
         if: ${{ always() && (steps.decideAboutBuildCode.outputs.buildCode == 'false' && matrix.test-app == 'false' ) }}
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: serverStartLog.log - test app = ${{ matrix.test-app }}
           path: frank-runner/serverStartLog.log
       - name: Store log of building frank-runner/specials/iaf-webapp without starting that directly
-        uses: actions/upload-artifact@v4.4.0
         if: ${{ always() && (steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'true') }}
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: buildIafWebapp.log - test app = ${{ matrix.test-app }}
           path: frank-runner/specials/ladybug/buildIafWebapp.log
       - name: Store log of starting the server with the Frank!Runner (local build) - no test webapp
-        uses: actions/upload-artifact@v4.4.0
         if: ${{ always() && (steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'false' ) }}
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: serverStartLog.log - test app = ${{ matrix.test-app }}
           path: frank-runner/specials/ladybug/serverStartLog.log
       - name: Store log of starting the server with the Frank!Runner - test webapp
-        uses: actions/upload-artifact@v4.4.0
         if: ${{ always() && matrix.test-app == 'true' }}
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: serverStartLog.log - test app = ${{ matrix.test-app }}
           path: ladybug-ff-test-webapp/serverStartLog.log
       - name: Store build.properties
-        uses: actions/upload-artifact@v4.4.0
         if: always()
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: build.properties - test app = ${{ matrix.test-app }}
           path: frank-runner/build.properties
       - name: Store build.properties of frank-runner/specials/iaf-webapp/build.properties
-        uses: actions/upload-artifact@v4.4.0
         if: ${{ always() && matrix.test-app == 'true' }}
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: iaf-webapp-build.properties - test app = ${{ matrix.test-app }}
           path: frank-runner/specials/iaf-webapp/build.properties
       - name: Store Apache Tomcat log
-        uses: actions/upload-artifact@v4.4.0
         if: always()
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: catalina.properties - test app = ${{ matrix.test-app }}
           path: frank-runner/build/apache-tomcat-*/conf/catalina.properties
       - name: Store Apache Tomcat log
-        uses: actions/upload-artifact@v4.4.0
         if: always()
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: logs - test app = ${{ matrix.test-app }}
           path: frank-runner/build/*/logs/*
       - name: Store Cypress screenshots
-        uses: actions/upload-artifact@v4.4.0
         if: always()
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: screenshots - test app = ${{ matrix.test-app }}
           path: ladybug-ff-cypress-test/cypress/screenshots/
       - name: Store Cypress videos
-        uses: actions/upload-artifact@v4.4.0
         if: always()
+        uses: actions/upload-artifact@v4.4.0
         with:
           name: videos - test app = ${{ matrix.test-app }}
           path: ladybug-ff-cypress-test/cypress/videos/
-
