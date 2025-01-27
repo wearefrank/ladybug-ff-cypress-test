@@ -21,7 +21,7 @@ describe('Information to check the test environment', () => {
   it('See property configurations.dir', () => {
     cy.visit('')
     cy.contains('Environment Variables').click()
-    cy.get('input[name=search]').type('ibistesttool.custom{enter}')
+    cy.get('input[name=search]').type('configurations.dir{enter}')
     cy.waitForVideo()
   })
 })
