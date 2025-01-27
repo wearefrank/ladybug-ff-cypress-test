@@ -47,13 +47,13 @@ jobs:
       # Path is relative to project.dir, which depends on the way the FF! is started.
       - name: Load configurations from ladybug-ff-cypress-test - with project.dir is frank-runner/examples/Frank2Example1
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'false' && matrix.test-app == 'false' }}
-        run: echo "override.configurations.dir=../../../ladybug-ff-cypress-test/FrankApps/${{ matrix.configurations }}" >> frank-runner/build.properties
+        run: echo "override.configurations.dir=../../../ladybug-ff-cypress-test/TestConfigurations/${{ matrix.configurations }}" >> frank-runner/build.properties
       - name: Load configurations from ladybug-ff-cypress-test - with project ladybug-ff-test-webapp
         if: ${{ matrix.test-app == 'true' }}
-        run: echo "override.configurations.dir=../ladybug-ff-cypress-test/FrankApps/${{ matrix.configurations }}" >> frank-runner/build.properties
+        run: echo "override.configurations.dir=../ladybug-ff-cypress-test/TestConfigurations/${{ matrix.configurations }}" >> frank-runner/build.properties
       - name: Load configurations from ladybug-ff-cypress-test - with project.dir is frankframework/webapp
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'false' }}
-        run: echo "override.configurations.dir=../../ladybug-ff-cypress-test/FrankApps/${{ matrix.configurations }}" >> frank-runner/build.properties
+        run: echo "override.configurations.dir=../../ladybug-ff-cypress-test/TestConfigurations/${{ matrix.configurations }}" >> frank-runner/build.properties
       - name: Checkout ladybug-ff-cypress-test
         uses: actions/checkout@v4
         with:
