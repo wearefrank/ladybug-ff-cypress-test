@@ -34,6 +34,11 @@ jobs:
         run: if [[ "${{ github.event.inputs.buildLatestFFandLadybugCode }}" == "" ]]; then echo "false"; else echo "${{ github.event.inputs.buildLatestFFandLadybugCode }}"; fi > temp; echo "buildCode=$(cat temp)" >> $GITHUB_OUTPUT
       - name: Show decision
         run: echo "buildCode is ${{ steps.decideAboutBuildCode.outputs.buildCode }}"
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 9
+          run_install: false
       - name: Checkout Frank!Runner
         uses: actions/checkout@v4
         with:
@@ -135,6 +140,15 @@ jobs:
         with:
           repository: wearefrank/ladybug-frontend
           path: ladybug-frontend
+      # Temporary - while fixing ladybug-frontend build
+      - name: Fetch all tags
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
+        run: git fetch origin fix-pnpm-corepack
+        working-directory: "ladybug-frontend"
+      - name: Checkout branch that fixes corepack issue
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
+        working-directory: ladybug-frontend
+        run: git checkout --track origin/fix-pnpm-corepack
       - name: Checkout ladybug (backend)
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
         uses: actions/checkout@v4
