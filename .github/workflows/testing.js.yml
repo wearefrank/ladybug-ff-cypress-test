@@ -140,6 +140,10 @@ jobs:
         with:
           repository: wearefrank/ladybug-frontend
           path: ladybug-frontend
+      # Temporary - while fixing ladybug-frontend build
+      - name: Checkout branch that fixes corepack issue
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
+        run: git checkout --track origin/fix-pnpm-corepack
       - name: Checkout ladybug (backend)
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
         uses: actions/checkout@v4
