@@ -34,6 +34,11 @@ jobs:
         run: if [[ "${{ github.event.inputs.buildLatestFFandLadybugCode }}" == "" ]]; then echo "false"; else echo "${{ github.event.inputs.buildLatestFFandLadybugCode }}"; fi > temp; echo "buildCode=$(cat temp)" >> $GITHUB_OUTPUT
       - name: Show decision
         run: echo "buildCode is ${{ steps.decideAboutBuildCode.outputs.buildCode }}"
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 9
+          run_install: false
       - name: Checkout Frank!Runner
         uses: actions/checkout@v4
         with:
