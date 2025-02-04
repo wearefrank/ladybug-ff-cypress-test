@@ -141,6 +141,10 @@ jobs:
           repository: wearefrank/ladybug-frontend
           path: ladybug-frontend
       # Temporary - while fixing ladybug-frontend build
+      - name: Fetch all tags
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
+        run: git fetch origin fix-pnpm-corepack
+        working-directory: "ladybug-frontend"
       - name: Checkout branch that fixes corepack issue
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
         working-directory: ladybug-frontend
