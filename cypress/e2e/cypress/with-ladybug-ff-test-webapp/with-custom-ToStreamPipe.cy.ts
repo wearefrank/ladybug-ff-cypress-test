@@ -1,6 +1,3 @@
-// This test demonstrates that some bugs ARE present.
-// When these bugs are fixed, they can be updated
-// to ward against regression.
 describe('With custom ToStreamPipe', () => {
   // Make this beforeEach() when issue https://github.com/wearefrank/ladybug/issues/344
   // will have been fixed.
@@ -40,7 +37,7 @@ describe('With custom ToStreamPipe', () => {
     cy.inIframeBody('app-edit-display app-editor').contains('Hello World_suffix')
   })
 
-  it('NOK: Empty character stream IS closed prematurely', () => {
+  it('Empty character stream is not closed prematurely', () => {
     cy.visit('')
     cy.runInTestAPipeline('UseToStreamPipe', 'UseToStreamPipeEmptyChar', ' ')
     cy.getNumLadybugReports().should('equal', 3)
@@ -52,10 +49,12 @@ describe('With custom ToStreamPipe', () => {
       { text: 'Pipe testPipe', seq: 1 }
     ]).click()
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
-    cy.inIframeBody('app-edit-display app-editor').contains('>> Captured writer was closed')
+    cy.inIframeBody('app-edit-display app-editor').should('not.contain', '>>')
+    cy.inIframeBody('app-edit-display app-editor').should('have.text', '')
+    cy.inIframeBody('app-edit-display app-editor').should('have.length', 0)
   })
 
-  it('NOK: Empty binary stream IS closed prematurely', () => {
+  it('Empty binary stream is not closed prematurely', () => {
     cy.visit('')
     cy.runInTestAPipeline('UseToStreamPipe', 'UseToStreamPipeEmptyBin', ' ')
     cy.getNumLadybugReports().should('equal', 4)
@@ -67,6 +66,8 @@ describe('With custom ToStreamPipe', () => {
       { text: 'Pipe testPipe', seq: 1 }
     ]).click()
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
-    cy.inIframeBody('app-edit-display app-editor').contains('>> Captured stream was closed')
+    cy.inIframeBody('app-edit-display app-editor').should('not.contain', '>>')
+    cy.inIframeBody('app-edit-display app-editor').should('have.text', '')
+    cy.inIframeBody('app-edit-display app-editor').should('have.length', 0)
   })
 })
