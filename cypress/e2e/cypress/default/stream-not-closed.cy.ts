@@ -1,3 +1,6 @@
+// These tests not only check that Ladybug behaves correctly.
+// There are also tests that demonstrate known issues. Such
+// tests are distinguished by the word "NOK".
 describe('Stream is not closed prematurely', () => {
   // Make this beforeEach() when issue https://github.com/wearefrank/ladybug/issues/344
   // will have been fixed.
@@ -6,6 +9,8 @@ describe('Stream is not closed prematurely', () => {
     cy.apiDeleteAll('Test')
   })
 
+  // Succeeds as long as issue https://github.com/frankframework/frankframework/issues/8398
+  // has NOT been fixed.
   it('NOK: Ignored value is shown as empty', () => {
     cy.visit('')
     cy.runInTestAPipeline('IgnoreStreamedValue', 'Adapter1a', ' ')
