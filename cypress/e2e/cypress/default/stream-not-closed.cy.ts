@@ -6,7 +6,7 @@ describe('Stream is not closed prematurely', () => {
     cy.apiDeleteAll('Test')
   })
 
-  it('Test it for unread streamed value', () => {
+  it('NOK: Ignored value is shown as empty', () => {
     cy.visit('')
     cy.runInTestAPipeline('IgnoreStreamedValue', 'Adapter1a', ' ')
     cy.getNumLadybugReports().should('equal', 1)
@@ -18,8 +18,10 @@ describe('Stream is not closed prematurely', () => {
       { text: 'Pipe replace', seq: 1 }
     ]).click()
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
+    cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'empty')
     cy.inIframeBody('app-edit-display app-editor').should('not.contain.text', '>>')
-    cy.inIframeBody('app-edit-display app-editor').should('have.text', 'World!')
+    cy.inIframeBody('app-edit-display app-editor').should('have.text', '')
+    cy.inIframeBody('app-edit-display app-editor').should('have.length', 0)
   })
 
   it('Test it for empty streamed value', () => {
@@ -35,6 +37,7 @@ describe('Stream is not closed prematurely', () => {
       'Pipe replace',
       { text: 'Pipe replace', seq: 1 }]).click()
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
+    cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'empty')
     cy.inIframeBody('app-edit-display app-editor').should('not.contain.text', '>>')
     cy.inIframeBody('app-edit-display app-editor').should('have.text', '')
     cy.inIframeBody('app-edit-display app-editor').should('have.length', 0)
