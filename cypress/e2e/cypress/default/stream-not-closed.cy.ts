@@ -20,8 +20,7 @@ describe('Stream is not closed prematurely', () => {
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'empty')
     cy.inIframeBody('app-edit-display app-editor').should('not.contain.text', '>>')
-    cy.inIframeBody('app-edit-display app-editor').should('have.text', ' ')
-    cy.inIframeBody('app-edit-display app-editor').should('have.length', 1)
+    cy.inIframeBody('app-edit-display app-editor').should('have.text', '')
   })
 
   it('Test it for empty streamed value', () => {
@@ -39,7 +38,6 @@ describe('Stream is not closed prematurely', () => {
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'empty')
     cy.inIframeBody('app-edit-display app-editor').should('not.contain.text', '>>')
-    cy.inIframeBody('app-edit-display app-editor').should('have.text', ' ')
-    cy.inIframeBody('app-edit-display app-editor').should('have.length', 1)
+    cy.inIframeBody('app-edit-display app-editor').should('have.text', '')
   })
 })
