@@ -1,6 +1,3 @@
-// These tests not only check that Ladybug behaves correctly.
-// There are also tests that demonstrate known issues. Such
-// tests are distinguished by the word "NOK".
 describe('Stream is not closed prematurely', () => {
   // Make this beforeEach() when issue https://github.com/wearefrank/ladybug/issues/344
   // will have been fixed.
@@ -9,9 +6,7 @@ describe('Stream is not closed prematurely', () => {
     cy.apiDeleteAll('Test')
   })
 
-  // Succeeds as long as issue https://github.com/frankframework/frankframework/issues/8398
-  // has NOT been fixed.
-  it('NOK: Ignored value is shown as empty', () => {
+  it('When a pipe output is not used by proceding pipes, the value is still shown', () => {
     cy.visit('')
     cy.runInTestAPipeline('IgnoreStreamedValue', 'Adapter1a', ' ')
     cy.getNumLadybugReports().should('equal', 1)
@@ -23,9 +18,13 @@ describe('Stream is not closed prematurely', () => {
       { text: 'Pipe replace', seq: 1 }
     ]).click()
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
-    cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'empty')
+    cy.inIframeBody('app-edit-display app-report-alert-message').should('not.contain.text', 'empty')
     cy.inIframeBody('app-edit-display app-editor').should('not.contain.text', '>>')
-    cy.inIframeBody('app-edit-display app-editor').should('have.text', '')
+    cy.inIframeBody('app-edit-display app-editor').should('not.contain.text', 'Hello')
+    // If you request an exact match with "World!", the test fails. It then finds value
+    // "1World!UnfocusedRaw". Probably it grabs more text than just the pipe output.
+    // In the video, you see that the user just sees output World! as we want.
+    cy.inIframeBody('app-edit-display app-editor').should('contain.text', 'World!')
   })
 
   it('Test it for empty streamed value', () => {
