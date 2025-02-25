@@ -51,7 +51,8 @@ describe('Metadata and message context', () => {
       const rawInputMessage = fixturesFolder + '/ConclusionInputs/valid'
       const inputMessage = rawInputMessage.replace(/\\/g, '/')
       cy.log('Input message for Conclusion/IngestDocument: ' + inputMessage)
-      cy.request('POST', 'http://localhost/api/ingestdocument', inputMessage).then(resp => {
+      const url = Cypress.config('baseUrl') + '/api/ingestdocument'
+      cy.request('POST', url, inputMessage).then(resp => {
         expect(resp.status).to.equal(200)
       })
     })
