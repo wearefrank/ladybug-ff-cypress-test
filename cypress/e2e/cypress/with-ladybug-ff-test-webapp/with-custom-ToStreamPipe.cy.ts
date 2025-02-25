@@ -18,7 +18,7 @@ describe('With custom ToStreamPipe', () => {
       { text: 'Pipe testPipe', seq: 1 }
     ]).click()
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
-    cy.inIframeBody('app-edit-display app-editor').contains('Hello World_suffix')
+    cy.checkpointValue().should('have.text', 'Hello World_suffix')
   })
 
   it('Discarded binary stream appears well in Ladybug', () => {
@@ -34,7 +34,7 @@ describe('With custom ToStreamPipe', () => {
     ]).click()
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'ByteArrayInputStream')
-    cy.inIframeBody('app-edit-display app-editor').contains('Hello World_suffix')
+    cy.checkpointValue().should('have.text', 'Hello World_suffix')
   })
 
   it('Empty character stream is not closed prematurely', () => {
@@ -50,8 +50,8 @@ describe('With custom ToStreamPipe', () => {
     ]).click()
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'empty')
-    cy.inIframeBody('app-edit-display app-editor').should('not.contain', '>>')
-    cy.inIframeBody('app-edit-display app-editor').should('have.text', '')
+    cy.checkpointValue().should('not.contain', '>>')
+    cy.checkpointValue().should('have.text', '')
   })
 
   it('Empty binary stream is not closed prematurely', () => {
@@ -67,7 +67,7 @@ describe('With custom ToStreamPipe', () => {
     ]).click()
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'empty')
-    cy.inIframeBody('app-edit-display app-editor').should('not.contain', '>>')
-    cy.inIframeBody('app-edit-display app-editor').should('have.text', '')
+    cy.checkpointValue().should('not.contain', '>>')
+    cy.checkpointValue().should('have.text', '')
   })
 })

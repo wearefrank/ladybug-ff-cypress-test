@@ -40,6 +40,8 @@ declare namespace Cypress {
     selectTreeNode(path: NodeSelection[]): Cypress.Chainable<any>
     awaitLoadingSpinner(): void
     waitForVideo(): void
+    trimmedText(): Chainable<any>
+    checkpointValue(): Chainable<any>
   }
 }
 
@@ -160,7 +162,7 @@ Cypress.Commands.add('checkTestTabHasReportNamed', (name) => {
   cy.inIframeBody('[data-cy-test="table"] tbody tr')
     .should('have.length', 1)
     .as('testtabReportRow')
-  cy.get('@testtabReportRow').find('td:eq(2)').should('have.text', name)
+  cy.get('@testtabReportRow').find('td:eq(2)').trimmedText().should('equal', name)
   cy.get('@testtabReportRow').find('td:eq(4)').should('be.empty')
   return cy.get('@testtabReportRow')
 })
@@ -238,4 +240,21 @@ Cypress.Commands.add('awaitLoadingSpinner', () => {
 // Wait so that the state of the UI is shown more clearly in videos.
 Cypress.Commands.add('waitForVideo', () => {
   cy.wait(3000)
+})
+
+Cypress.Commands.add('trimmedText', { prevSubject: true }, (subject) => {
+  cy.wrap(subject).invoke('text').then((theText) => {
+    return theText.trim().replace(/&nbsp;/, '')
+  })
+})
+
+Cypress.Commands.add('checkpointValue', { prevSubject: false }, () => {
+  cy.inIframeBody('app-edit-display app-editor').then((appEditor) => {
+    const textOfAppEditor = appEditor.text()
+    if (textOfAppEditor.length === 0) {
+      cy.wrap(appEditor)
+    } else {
+      cy.wrap(appEditor).find('.monaco-scrollable-element')
+    }
+  })
 })

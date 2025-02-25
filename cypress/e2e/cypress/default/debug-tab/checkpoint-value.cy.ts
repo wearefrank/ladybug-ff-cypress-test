@@ -19,12 +19,9 @@ describe('Stream is not closed prematurely', () => {
     ]).click()
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     cy.inIframeBody('app-edit-display app-report-alert-message').should('not.contain.text', 'empty')
-    cy.inIframeBody('app-edit-display app-editor').should('not.contain.text', '>>')
-    cy.inIframeBody('app-edit-display app-editor').should('not.contain.text', 'Hello')
-    // If you request an exact match with "World!", the test fails. It then finds value
-    // "1World!UnfocusedRaw". Probably it grabs more text than just the pipe output.
-    // In the video, you see that the user just sees output World! as we want.
-    cy.inIframeBody('app-edit-display app-editor').should('contain.text', 'World!')
+    cy.checkpointValue().should('not.contain.text', '>>')
+    cy.checkpointValue().should('not.contain.text', 'Hello')
+    cy.checkpointValue().should('have.text', 'World!')
   })
 
   it('Test it for empty streamed value', () => {
@@ -41,7 +38,40 @@ describe('Stream is not closed prematurely', () => {
       { text: 'Pipe replace', seq: 1 }]).click()
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'empty')
-    cy.inIframeBody('app-edit-display app-editor').should('not.contain.text', '>>')
-    cy.inIframeBody('app-edit-display app-editor').should('have.text', '')
+    cy.checkpointValue().should('not.contain.text', '>>')
+    cy.checkpointValue().should('have.text', '')
+  })
+})
+
+describe('Metadata and message context', () => {
+  before(() => {
+    cy.apiDeleteAll('FileDebugStorage')
+    cy.apiDeleteAll('Test')
+    cy.wrap(Cypress.config('fixturesFolder')).then((fixturesFolder) => {
+      const rawInputMessage = fixturesFolder + '/ConclusionInputs/valid'
+      const inputMessage = rawInputMessage.replace(/\\/g, '/')
+      cy.log('Input message for Conclusion/IngestDocument: ' + inputMessage)
+      cy.request('POST', 'http://localhost/api/ingestdocument', inputMessage).then(resp => {
+        expect(resp.status).to.equal(200)
+      })
+    })
+  })
+
+  it('Check that configuration Conclusion/IngestDocument ran successfully', () => {
+    cy.visit('')
+    cy.getNumLadybugReports()
+    cy.inIframeBody('[data-cy-debug="tableRow"]').should('have.length', 1).as('reportRow')
+    cy.get('@reportRow').contains('Conclusion').click()
+    // Status column
+    cy.get('@reportRow').find('td:eq(6)').trimmedText().should('equal', 'Success')
+    cy.selectTreeNode([
+      'Pipeline Conclusion/IngestDocument',
+      'Pipeline Conclusion/IngestDocument',
+      'Pipe sendToMundo',
+      { seq: 1, text: 'Pipe sendToMundo' }
+    ]).click()
+    // Do not check for equality because there is a line number and something
+    // other text the user does not see.
+    cy.checkpointValue().should('have.text', 'ok')
   })
 })
