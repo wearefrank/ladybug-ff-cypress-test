@@ -18,7 +18,7 @@ describe('With custom ToStreamPipe', () => {
       { text: 'Pipe testPipe', seq: 1 }
     ]).click()
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
-    cy.checkpointValue().should('have.text', 'Hello World_suffix')
+    cy.checkpointValue().trimmedText().should('equal', 'Hello World_suffix')
   })
 
   it('Discarded binary stream appears well in Ladybug', () => {
@@ -34,7 +34,7 @@ describe('With custom ToStreamPipe', () => {
     ]).click()
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'ByteArrayInputStream')
-    cy.checkpointValue().should('have.text', 'Hello World_suffix')
+    cy.checkpointValue().trimmedText().should('equal', 'Hello World_suffix')
   })
 
   it('Empty character stream is not closed prematurely', () => {
