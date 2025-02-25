@@ -75,4 +75,59 @@ describe('Metadata and message context', () => {
     // other text the user does not see.
     cy.checkpointValue().should('have.text', 'ok')
   })
+
+  it('Hide and show message context', () => {
+    cy.visit('')
+    cy.getNumLadybugReports()
+    cy.inIframeBody('[data-cy-debug="tableRow"]').should('have.length', 1).as('reportRow')
+    cy.get('@reportRow').contains('Conclusion').click()
+    cy.selectTreeNode([
+      'Pipeline Conclusion/IngestDocument',
+      'Pipeline Conclusion/IngestDocument'
+    ]).click()
+    cy.inIframeBody('app-messagecontext-table').should('not.exist')
+    // TODO: when data-cy tags are updated, update this Cypress query.
+    // Also do this for other tests in this file.
+    cy.inIframeBody('[data-cy-open-metadata-table]:contains(Show messagecontext)').click()
+    cy.inIframeBody('app-messagecontext-table').contains('Header.user-agent')
+    cy.inIframeBody('[data-cy-open-metadata-table]:contains(Hide messagecontext)').click()
+    cy.inIframeBody('app-messagecontext-table').should('not.exist')
+  })
+
+  it('Hide and show metadata', () => {
+    cy.visit('')
+    cy.getNumLadybugReports()
+    cy.inIframeBody('[data-cy-debug="tableRow"]').should('have.length', 1).as('reportRow')
+    cy.get('@reportRow').contains('Conclusion').click()
+    cy.selectTreeNode([
+      'Pipeline Conclusion/IngestDocument',
+      'Pipeline Conclusion/IngestDocument'
+    ]).click()
+    cy.inIframeBody('app-metadata-table').should('not.exist')
+    cy.inIframeBody('[data-cy-open-metadata-table]:contains(Show metadata)').click()
+    cy.inIframeBody('app-metadata-table').contains('Source class name')
+    cy.inIframeBody('[data-cy-open-metadata-table]:contains(Hide metadata)').click()
+    cy.inIframeBody('app-metadata-table').should('not.exist')
+  })
+
+  it('Show metadata and message context together', () => {
+    cy.visit('')
+    cy.getNumLadybugReports()
+    cy.inIframeBody('[data-cy-debug="tableRow"]').should('have.length', 1).as('reportRow')
+    cy.get('@reportRow').contains('Conclusion').click()
+    cy.selectTreeNode([
+      'Pipeline Conclusion/IngestDocument',
+      'Pipeline Conclusion/IngestDocument'
+    ]).click()
+    cy.inIframeBody('app-messagecontext-table').should('not.exist')
+    cy.inIframeBody('app-metadata-table').should('not.exist')
+    cy.inIframeBody('[data-cy-open-metadata-table]:contains(Show messagecontext)').click()
+    cy.inIframeBody('[data-cy-open-metadata-table]:contains(Show metadata)').click()
+    cy.inIframeBody('app-messagecontext-table').contains('Header.user-agent')
+    cy.inIframeBody('app-metadata-table').contains('Source class name')
+    cy.inIframeBody('[data-cy-open-metadata-table]:contains(Hide messagecontext)').click()
+    cy.inIframeBody('[data-cy-open-metadata-table]:contains(Hide metadata)').click()
+    cy.inIframeBody('app-messagecontext-table').should('not.exist')
+    cy.inIframeBody('app-metadata-table').should('not.exist')
+  })
 })
