@@ -244,7 +244,11 @@ Cypress.Commands.add('waitForVideo', () => {
 
 Cypress.Commands.add('trimmedText', { prevSubject: true }, (subject) => {
   cy.wrap(subject).invoke('text').then((theText) => {
-    return theText.trim().replace(/&nbsp;/, '')
+    const nbspRegex = /\u00A0/g
+    // cy.log(`Text to trim shown as URL encoded: ${encodeURI(theText)}`)
+    const result = theText.replace(nbspRegex, ' ').trim()
+    // cy.log(`Trimmed text shown as URL encoded: ${encodeURI(result)}`)
+    cy.wrap(result)
   })
 })
 
