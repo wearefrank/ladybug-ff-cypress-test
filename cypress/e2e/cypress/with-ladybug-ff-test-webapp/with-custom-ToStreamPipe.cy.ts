@@ -18,6 +18,7 @@ describe('With custom ToStreamPipe', () => {
       { text: 'Pipe testPipe', seq: 1 }
     ]).click()
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
+    // TODO: It would be nice to get rid of this trim()
     cy.checkpointValue().trimmedText().should('equal', 'Hello World_suffix')
   })
 
@@ -34,6 +35,7 @@ describe('With custom ToStreamPipe', () => {
     ]).click()
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'ByteArrayInputStream')
+    // TODO: It would be nice to get rid of this trim.
     cy.checkpointValue().trimmedText().should('equal', 'Hello World_suffix')
   })
 

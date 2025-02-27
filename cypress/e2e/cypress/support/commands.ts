@@ -162,7 +162,7 @@ Cypress.Commands.add('checkTestTabHasReportNamed', (name) => {
   cy.inIframeBody('[data-cy-test="table"] tbody tr')
     .should('have.length', 1)
     .as('testtabReportRow')
-  cy.get('@testtabReportRow').find('td:eq(2)').trimmedText().should('equal', name)
+  cy.get('@testtabReportRow').find('td:eq(2)').should('have.text', name)
   cy.get('@testtabReportRow').find('td:eq(4)').should('be.empty')
   return cy.get('@testtabReportRow')
 })

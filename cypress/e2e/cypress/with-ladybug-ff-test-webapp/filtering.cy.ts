@@ -42,6 +42,7 @@ describe('Tests with views and filtering', () => {
       // Check the name and column number combination
       cy.inIframeBody('[data-cy-debug="table"]').find(`th:eq(${testCase.colNr})`).contains(`${testCase.name}`)
       cy.inIframeBody('[data-cy-debug="tableRow"]:eq(0)').find(`td:eq(${testCase.colNr})`).then((el: JQuery<HTMLElement>) => {
+        // TODO: It would be nice to get rid of this trim().
         const firstRowFieldValue = el.text().trim()
         cy.log(`Filtering on value: ${firstRowFieldValue}`)
         cy.inIframeBody('[data-cy-debug="filter"]').click()
