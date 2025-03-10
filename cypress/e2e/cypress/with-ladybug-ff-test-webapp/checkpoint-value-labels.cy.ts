@@ -14,8 +14,8 @@ describe('Checkpoint value labels', () => {
       'Pipeline NullAndEmpty/NullAndEmpty',
       'Pipeline NullAndEmpty/NullAndEmpty'
     ]).click()
-    cy.inIframeBody('app-edit-display app-report-alert-message')
-      .should('have.length', 1)
+    cy.checkNumCheckpointValueLabels(1)
+    cy.checkpointValueLabel(0)
       .trimmedText()
       .should('equal', 'Message is null')
   })
