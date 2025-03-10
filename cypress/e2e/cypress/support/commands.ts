@@ -42,6 +42,8 @@ declare namespace Cypress {
     waitForVideo(): void
     trimmedText(): Chainable<any>
     checkpointValue(): Chainable<any>
+    checkNumCheckpointValueLabels(expectedNumLabels: number): void
+    checkpointValueLabel(index: number): Chainable<any>
   }
 }
 
@@ -262,4 +264,13 @@ Cypress.Commands.add('checkpointValue', { prevSubject: false }, () => {
       cy.wrap(appEditor).find('.monaco-scrollable-element')
     }
   })
+})
+
+Cypress.Commands.add('checkNumCheckpointValueLabels', { prevSubject: false }, (expectedNumLabels: number) => {
+  cy.inIframeBody('app-edit-display app-report-alert-message > div > div')
+    .should('have.length', expectedNumLabels)
+})
+
+Cypress.Commands.add('checkpointValueLabel', { prevSubject: false }, (index: number) => {
+  cy.inIframeBody(`app-edit-display app-report-alert-message > div > div:eq(${index})`)
 })
