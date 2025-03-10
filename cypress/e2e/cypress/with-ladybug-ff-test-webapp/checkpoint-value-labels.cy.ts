@@ -37,7 +37,7 @@ describe('Checkpoint value labels', () => {
       .should('equal', 'Message is empty string')
   })
 
-  it('When message is empty binary stream then two labels empty and binary stream', () => {
+  it('When message is empty binary stream then three labels empty, binary stream and encoding', () => {
     openReport()
     cy.selectTreeNode([
       'Pipeline NullAndEmpty/NullAndEmpty',
