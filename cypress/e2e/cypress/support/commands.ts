@@ -88,14 +88,12 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
   cy.get('[data-cy-nav="testingRunPipeline"]').should('not.be.visible')
   cy.get('[data-cy-nav="testing"]').click()
   cy.get('[data-cy-nav="testingRunPipeline"]').click()
-  cy.get('[data-cy-test-pipeline="selectConfig"]')
-    .clear().type(config + '{enter}')
-  cy.get('[data-cy-test-pipeline="selectAdapter"]')
-    .clear().type(adapter + '{enter}')
+  cy.get('button:contains(Reset)').click()
+  cy.get('[data-cy-test-pipeline="selectConfig"]').type(config + '{enter}')
+  cy.get('[data-cy-test-pipeline="selectAdapter"]').type(adapter + '{enter}')
   // Requires special treatment because the Monaco editor has to be
   // accessed here.
-  cy.get('[data-cy-test-pipeline="message"]')
-    .type('{ctrl}a').type(message)
+  cy.get('[data-cy-test-pipeline="message"]').type(message)
   cy.get('[data-cy-test-pipeline="send"]').click()
   cy.get('[data-cy-test-pipeline="runResult"]').should('contain', 'SUCCESS')
 })
