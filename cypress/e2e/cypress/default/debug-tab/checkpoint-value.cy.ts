@@ -58,7 +58,7 @@ describe('Metadata and message context', () => {
     })
   })
 
-  xit('Check that configuration Conclusion/IngestDocument ran successfully', () => {
+  it('Check that configuration Conclusion/IngestDocument ran successfully', () => {
     cy.visit('')
     cy.getNumLadybugReports()
     cy.inIframeBody('[data-cy-debug="tableRow"]').should('have.length', 1).as('reportRow')
