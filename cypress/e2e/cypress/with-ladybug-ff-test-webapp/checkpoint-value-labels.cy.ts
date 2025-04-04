@@ -92,3 +92,22 @@ function openReport (): void {
   cy.get('@reportRow').find('td:eq(6)').trimmedText().should('equal', 'Success')
   cy.get('@reportRow').contains('NullAndEmpty').click()
 }
+
+describe('Checkpoint value truncation because of ibistesttool.maxMessageLength', () => {
+  before(() => {
+    cy.apiDeleteAll('FileDebugStorage')
+    cy.apiDeleteAll('Test')
+    cy.visit('')
+    cy.runInTestAPipeline('UseTestBlockTestPipe', 'UseTextBlockPipe', '5 55')
+  })
+
+  it('When maxMessageLength is exceeded by checkpoint value, then the right number of characters is shown', () => {
+    openReport()
+    cy.selectTreeNode([
+      'Pipeline UseTextBlockTestPipe/UseTextBlockPipe',
+      'Pipeline UseTextBlockTestPipe/UseTextBlockPipe',
+      'Pipe UseTextBlockPipe',
+      { seq: 1, text: 'UseTextBlockPipe' }
+    ]).click()
+  })
+})
