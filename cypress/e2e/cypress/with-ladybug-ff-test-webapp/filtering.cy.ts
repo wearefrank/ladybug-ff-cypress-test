@@ -17,24 +17,28 @@ describe('Tests with views and filtering', () => {
     readonly name: string
     readonly colNr: number
     readonly labelFilterPanel: string
+    // TODO: Get rid of this when issue https://github.com/wearefrank/ladybug/issues/429 is fixed
+    readonly enabled: boolean
   }
 
+  const isDatabaseStorage: boolean = Cypress.env('debugStorageName') === 'database'
+
   const columnAndNameCombinations: ColumnAndName[] = [
-    { name: 'Storage Id', colNr: 1, labelFilterPanel: 'Storageid' },
-    { name: 'End time', colNr: 2, labelFilterPanel: 'Endtime' },
-    { name: 'Duration', colNr: 3, labelFilterPanel: 'Duration' },
-    { name: 'Name', colNr: 4, labelFilterPanel: 'Name' },
-    { name: 'Correlation Id', colNr: 5, labelFilterPanel: 'Correlationid' },
-    { name: 'Status', colNr: 6, labelFilterPanel: 'Status' },
-    { name: 'Checkpoints', colNr: 7, labelFilterPanel: 'Numberofcheckpoints' },
-    { name: 'Memory', colNr: 8, labelFilterPanel: 'Estimatedmemoryusage' },
-    { name: 'Size', colNr: 9, labelFilterPanel: 'Storagesize' },
-    { name: 'Input', colNr: 10, labelFilterPanel: 'Input' }
+    { name: 'Storage Id', colNr: 1, labelFilterPanel: 'Storageid', enabled: !isDatabaseStorage },
+    { name: 'End time', colNr: 2, labelFilterPanel: 'Endtime', enabled: !isDatabaseStorage },
+    { name: 'Duration', colNr: 3, labelFilterPanel: 'Duration', enabled: true },
+    { name: 'Name', colNr: 4, labelFilterPanel: 'Name', enabled: true },
+    { name: 'Correlation Id', colNr: 5, labelFilterPanel: 'Correlationid', enabled: true },
+    { name: 'Status', colNr: 6, labelFilterPanel: 'Status', enabled: true },
+    { name: 'Checkpoints', colNr: 7, labelFilterPanel: 'Numberofcheckpoints', enabled: !isDatabaseStorage },
+    { name: 'Memory', colNr: 8, labelFilterPanel: 'Estimatedmemoryusage', enabled: true },
+    { name: 'Size', colNr: 9, labelFilterPanel: 'Storagesize', enabled: true },
+    { name: 'Input', colNr: 10, labelFilterPanel: 'Input', enabled: true }
   ]
 
   const testedColumnAndNameCombinations = columnAndNameCombinations.filter((testCase) => testCase.name !== 'Status')
 
-  for (const testCase of testedColumnAndNameCombinations) {
+  for (const testCase of testedColumnAndNameCombinations.filter((c) => c.enabled)) {
     it(`Filter on field ${testCase.name}, expected at column ${testCase.colNr}`, () => {
       cy.visit('')
       // Enter Ladybug

@@ -14,8 +14,10 @@
   "scripts": {
     "prepare": "npx husky install",
     "lint": "eslint cypress/**/*.ts",
-    "batch": "cypress run",
-    "interactive": "cypress open",
+    "batch-file-storage": "cypress run --env \"debugStorageName=FileDebugStorage\"",
+    "batch-database-storage": "cypress run --env \"debugStorageName=DatabaseDebugStorage\"",
+    "interactive-file-storage": "cypress open --env \"debugStorageName=FileDebugStorage\"",
+    "interactive-database-storage": "cypress open --env \"debugStorageName=DatabaseDebugStorage\"",
     "installFrankRunnerEnv": "cd ../frank-runner && ./env.sh > installFrankRunnerEnv.log"
   },
   "devDependencies": {
