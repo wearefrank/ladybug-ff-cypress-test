@@ -19,6 +19,8 @@ jobs:
   testing:
     strategy:
       matrix:
+        test-app: ["false", "true"]
+        storage: ["file", "database"]
         include:
           - test-app: "false"
             specs: "cypress/e2e/cypress/common-over-test-envs/**,cypress/e2e/cypress/default/**"
@@ -95,8 +97,16 @@ jobs:
       - name: Get relative path of ladybug-ff-cypress-test
         id: relative-path-to-ladybug
         run: echo "RELATIVE_PATH_TO_LADYBUG_FF_TEST_WEBAPP=$(realpath --relative-to=$FRANK_APP ladybug-ff-cypress-test)" >> $GITHUB_OUTPUT
+      - name: Calculate path to resources (1)
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'false' && matrix.test-app == 'false' }}
+        run: echo "RESOURCES_DIR=$FRANK_APP/classes" >> $GITHUB_ENV
+      - name: Calculate path to resources (2)
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' || matrix.test-app == 'true' }}
+        run: echo "RESOURCES_DIR=$FRANK_APP/src/main/resources" >> $GITHUB_ENV
       - name: Show FRANK_APP and RELATIVE_PATH_TO_LADYBUG_FF_TEST_WEBAPP
         run: echo "FRANK_APP=$FRANK_APP and RELATIVE_PATH_TO_LADYBUG_FF_TEST_WEBAPP=${{ steps.relative-path-to-ladybug.outputs.RELATIVE_PATH_TO_LADYBUG_FF_TEST_WEBAPP }}"
+      - name: Show RESOURCES_DIR
+        run: echo "RESOURCES_DIR=$RESOURCES_DIR"
 
       - name: See commit number of checked-out frank-runner
         working-directory: frank-runner
@@ -110,6 +120,12 @@ jobs:
 
       - name: Load configurations from ladybug-ff-cypress-test
         run: echo "override.configurations.dir=${{ steps.relative-path-to-ladybug.outputs.RELATIVE_PATH_TO_LADYBUG_FF_TEST_WEBAPP }}/TestConfigurations/${{ matrix.configurations }}" >> frank-runner/build.properties
+      - name: Set jdbc.migrator.active to true
+        if: ${{ matrix.storage == 'database' }}
+        run: echo "jdbc.migrator.active=true" >> $RESOURCES_DIR/DeploymentSpecifics.properties
+      - name: Set ladybug.jdbc.datasource to jdbc/${instance.name.lc}
+        if: ${{ matrix.storage == 'database' }}
+        run: echo "ladybug.jdbc.datasource=jdbc/${instance.name.lc}" >> $RESOURCES_DIR/DeploymentSpecifics.properties
       - name: Copy cypress.config_cicd.ts to cypress.config.ts to listen to correct port
         working-directory: ladybug-ff-cypress-test
         run: cp cypress.config_cicd.ts cypress.config.ts
@@ -228,83 +244,89 @@ jobs:
         if: ${{ always() && steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: ladybug pom.xml test-app = ${{ matrix.test-app }}
+          name: ladybug pom.xml test-app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
           path: ladybug/pom.xml
       - name: Store frankframework/ladybug/pom.xml
         if: ${{ always() && steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: frankframework ladybug pom.xml test-app = ${{ matrix.test-app }}
+          name: frankframework ladybug pom.xml test-app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
           path: frankframework/ladybug/pom.xml
       - name: Store ladybug-ff-test-webapp/pom.xml
         if: ${{ always() && matrix.test-app == 'true' }}
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: ladybug-ff-test-webapp pom.xml test-app = ${{ matrix.test-app }}
+          name: ladybug-ff-test-webapp pom.xml test-app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
           path: ladybug-ff-test-webapp/pom.xml
       - name: Store log of Frank!Runner downloads
         if: always()
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: installFrankRunnerEnv.log - test app = ${{ matrix.test-app }}
+          name: installFrankRunnerEnv.log - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
           path: frank-runner/installFrankRunnerEnv.log
       - name: Store log of starting the server with the Frank!Runner (official release) - no test webapp
         if: ${{ always() && (steps.decideAboutBuildCode.outputs.buildCode == 'false' && matrix.test-app == 'false' ) }}
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: serverStartLog.log - test app = ${{ matrix.test-app }}
+          name: serverStartLog.log - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
           path: frank-runner/serverStartLog.log
       - name: Store log of building frank-runner/specials/iaf-webapp without starting that directly
         if: ${{ always() && (steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'true') }}
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: buildIafWebapp.log - test app = ${{ matrix.test-app }}
+          name: buildIafWebapp.log - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
           path: frank-runner/specials/ladybug/buildIafWebapp.log
       - name: Store log of starting the server with the Frank!Runner (local build) - no test webapp
         if: ${{ always() && (steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'false' ) }}
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: serverStartLog.log - test app = ${{ matrix.test-app }}
+          name: serverStartLog.log - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
           path: frank-runner/specials/ladybug/serverStartLog.log
       - name: Store log of starting the server with the Frank!Runner - test webapp
         if: ${{ always() && matrix.test-app == 'true' }}
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: serverStartLog.log - test app = ${{ matrix.test-app }}
+          name: serverStartLog.log - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
           path: ladybug-ff-test-webapp/serverStartLog.log
       - name: Store build.properties
         if: always()
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: build.properties - test app = ${{ matrix.test-app }}
+          name: build.properties - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
           path: frank-runner/build.properties
       - name: Store build.properties of frank-runner/specials/iaf-webapp/build.properties
         if: ${{ always() && matrix.test-app == 'true' }}
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: iaf-webapp-build.properties - test app = ${{ matrix.test-app }}
+          name: iaf-webapp-build.properties - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
           path: frank-runner/specials/iaf-webapp/build.properties
+      - name: Store DeploymentSpecifics.properties
+        if: ${{ always() && matrix.storage == 'database' }}
+        uses: actions/upload-artifact@v4.4.0
+        with:
+          name: DeploymentSpecifics - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
+          path: $RESOURCES_DIR/DeploymentSpecifics.properties
       - name: Store Apache Tomcat log
         if: always()
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: catalina.properties - test app = ${{ matrix.test-app }}
+          name: catalina.properties - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
           path: frank-runner/build/apache-tomcat-*/conf/catalina.properties
       - name: Store Apache Tomcat log
         if: always()
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: logs - test app = ${{ matrix.test-app }}
+          name: logs - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
           path: frank-runner/build/*/logs/*
       - name: Store Cypress screenshots
         if: always()
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: screenshots - test app = ${{ matrix.test-app }}
+          name: screenshots - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
           path: ladybug-ff-cypress-test/cypress/screenshots/
       - name: Store Cypress videos
         if: always()
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: videos - test app = ${{ matrix.test-app }}
+          name: videos - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
           path: ladybug-ff-cypress-test/cypress/videos/
