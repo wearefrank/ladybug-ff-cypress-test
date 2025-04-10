@@ -2,7 +2,7 @@ const NUM_COLUMNS_WHITE_BOX_VIEW = 10
 
 describe('Tests with views and filtering', () => {
   before(() => {
-    cy.apiDeleteAll('FileDebugStorage')
+    cy.apiDeleteAll(Cypress.env('debugStorageName') as string)
     cy.apiDeleteAll('Test')
     cy.visit('')
     cy.runInTestAPipeline('Example1a', 'Adapter1a', 'xxx')
