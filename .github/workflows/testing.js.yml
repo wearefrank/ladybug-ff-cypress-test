@@ -34,20 +34,54 @@ jobs:
         run: if [[ "${{ github.event.inputs.buildLatestFFandLadybugCode }}" == "" ]]; then echo "false"; else echo "${{ github.event.inputs.buildLatestFFandLadybugCode }}"; fi > temp; echo "buildCode=$(cat temp)" >> $GITHUB_OUTPUT
       - name: Show decision
         run: echo "buildCode is ${{ steps.decideAboutBuildCode.outputs.buildCode }}"
+
+      - name: Cache Frank!Runner dependencies - build
+        uses: actions/cache@v3
+        with:
+          path: frank-runner/build
+          key: ${{ runner.os }}-frank-runner-build
+          restore-keys: |
+            ${{ runner.os }}-frank-runner-build
+      - name: Cache Frank!Runner dependencies - download
+        uses: actions/cache@v3
+        with:
+          path: frank-runner/download
+          key: ${{ runner.os }}-frank-runner-download
+          restore-keys: |
+            ${{ runner.os }}-frank-runner-download
       - name: Checkout Frank!Runner
         uses: actions/checkout@v4
         with:
           repository: wearefrank/frank-runner
           path: frank-runner
-      - name: See commit number of checked-out frank-runner
-        working-directory: frank-runner
-        run: git log -1
-      - name: Set port where Frank!Framework is served
-        run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
-      - name: Set secure port
-        run: echo "tomcat.secure.port=8091" >> frank-runner/build.properties
-      - name: Set debug to true
-        run: echo "debug=true" >> frank-runner/build.properties
+      - name: Checkout ladybug-ff-cypress-test
+        uses: actions/checkout@v4
+        with:
+          path: ladybug-ff-cypress-test  
+      - name: Checkout ladybug-frontend
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
+        uses: actions/checkout@v4
+        with:
+          repository: wearefrank/ladybug-frontend
+          path: ladybug-frontend
+      - name: Checkout ladybug (backend)
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
+        uses: actions/checkout@v4
+        with:
+          repository: wearefrank/ladybug
+          path: ladybug
+      - name: Checkout frankframework
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
+        uses: actions/checkout@v4
+        with:
+          repository: frankframework/frankframework
+          path: frankframework
+      - name: Check out ladybug-ff-test-webapp
+        if: ${{ matrix.test-app == 'true' }}
+        uses: actions/checkout@v4
+        with:
+          repository: wearefrank/ladybug-ff-test-webapp
+          path: ladybug-ff-test-webapp
 
       - name: Calculate path to Frank application (1)
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'false' && matrix.test-app == 'false' }}
@@ -61,13 +95,21 @@ jobs:
       - name: Get relative path of ladybug-ff-cypress-test
         id: relative-path-to-ladybug
         run: echo "RELATIVE_PATH_TO_LADYBUG_FF_TEST_WEBAPP=$(realpath --relative-to=$FRANK_APP ladybug-ff-cypress-test)" >> $GITHUB_OUTPUT
+      - name: Show FRANK_APP and RELATIVE_PATH_TO_LADYBUG_FF_TEST_WEBAPP
+        run: echo "FRANK_APP=$FRANK_APP and RELATIVE_PATH_TO_LADYBUG_FF_TEST_WEBAPP=${{ steps.relative-path-to-ladybug.outputs.RELATIVE_PATH_TO_LADYBUG_FF_TEST_WEBAPP }}"
+
+      - name: See commit number of checked-out frank-runner
+        working-directory: frank-runner
+        run: git log -1
+      - name: Set port where Frank!Framework is served
+        run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
+      - name: Set secure port
+        run: echo "tomcat.secure.port=8091" >> frank-runner/build.properties
+      - name: Set debug to true
+        run: echo "debug=true" >> frank-runner/build.properties
 
       - name: Load configurations from ladybug-ff-cypress-test
         run: echo "override.configurations.dir=${{ steps.relative-path-to-ladybug.outputs.RELATIVE_PATH_TO_LADYBUG_FF_TEST_WEBAPP }}/TestConfigurations/${{ matrix.configurations }}" >> frank-runner/build.properties
-      - name: Checkout ladybug-ff-cypress-test
-        uses: actions/checkout@v4
-        with:
-          path: ladybug-ff-cypress-test
       - name: Copy cypress.config_cicd.ts to cypress.config.ts to listen to correct port
         working-directory: ladybug-ff-cypress-test
         run: cp cypress.config_cicd.ts cypress.config.ts
@@ -89,20 +131,6 @@ jobs:
       - name: Install packages
         working-directory: ladybug-ff-cypress-test
         run: yarn install --immutable
-      - name: Cache Frank!Runner dependencies - build
-        uses: actions/cache@v3
-        with:
-          path: frank-runner/build
-          key: ${{ runner.os }}-frank-runner-build
-          restore-keys: |
-            ${{ runner.os }}-frank-runner-build
-      - name: Cache Frank!Runner dependencies - download
-        uses: actions/cache@v3
-        with:
-          path: frank-runner/download
-          key: ${{ runner.os }}-frank-runner-download
-          restore-keys: |
-            ${{ runner.os }}-frank-runner-download
       - name: Show current time, allows you to check that logs are not old
         run: date
       - name: Let Frank!Runner do its downloads
@@ -135,30 +163,6 @@ jobs:
           key: ${{ runner.os }}-maven
           restore-keys: |
             ${{ runner.os }}-maven
-      - name: Checkout ladybug-frontend
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
-        uses: actions/checkout@v4
-        with:
-          repository: wearefrank/ladybug-frontend
-          path: ladybug-frontend
-      - name: Checkout ladybug (backend)
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
-        uses: actions/checkout@v4
-        with:
-          repository: wearefrank/ladybug
-          path: ladybug
-      - name: Checkout frankframework
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
-        uses: actions/checkout@v4
-        with:
-          repository: frankframework/frankframework
-          path: frankframework
-      - name: Check out ladybug-ff-test-webapp
-        if: ${{ matrix.test-app == 'true' }}
-        uses: actions/checkout@v4
-        with:
-          repository: wearefrank/ladybug-ff-test-webapp
-          path: ladybug-ff-test-webapp
       - name: Put build.properties in ladybug-ff-test-webapp
         if: ${{ matrix.test-app == 'true' }}  
         run: cp build-ladybug-ff-test-webapp.properties ../../../ladybug-ff-test-webapp/build.properties
