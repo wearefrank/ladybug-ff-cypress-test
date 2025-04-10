@@ -21,7 +21,7 @@ describe('Tests with views and filtering', () => {
     readonly enabled: boolean
   }
 
-  const isDatabaseStorage: boolean = Cypress.env('debugStorageName') === 'database'
+  const isDatabaseStorage: boolean = Cypress.env('debugStorageName') === 'DatabaseDebugStorage'
 
   const columnAndNameCombinations: ColumnAndName[] = [
     { name: 'Storage Id', colNr: 1, labelFilterPanel: 'Storageid', enabled: !isDatabaseStorage },
