@@ -66,7 +66,7 @@ Cypress.Commands.add('getNumLadybugReports', () => {
   cy.inIframeBody('[data-cy-nav-tab="debugTab"]').click()
   cy.intercept({
     method: 'GET',
-    url: 'iaf/ladybug/api/metadata/FileDebugStorage/count',
+    url: `iaf/ladybug/api/metadata/${Cypress.env('debugStorageName') as string}/count`,
     times: 1
   }).as('apiGetReports_2')
   cy.inIframeBody('[data-cy-debug="refresh"]').click()
