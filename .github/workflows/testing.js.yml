@@ -18,6 +18,7 @@ on:
 jobs:
   testing:
     strategy:
+      fail-fast: false
       matrix:
         test-app: ["false", "true"]
         storage: ["file", "database"]
@@ -305,7 +306,7 @@ jobs:
         uses: actions/upload-artifact@v4.4.0
         with:
           name: DeploymentSpecifics - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
-          path: $RESOURCES_DIR/DeploymentSpecifics.properties
+          path: ${{ env.RESOURCES_DIR }}/DeploymentSpecifics.properties
       - name: Store Apache Tomcat log
         if: always()
         uses: actions/upload-artifact@v4.4.0
