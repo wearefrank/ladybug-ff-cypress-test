@@ -28,7 +28,7 @@ jobs:
           - test-app: "true"
             specs: "cypress/e2e/cypress/common-over-test-envs/**,cypress/e2e/cypress/with-ladybug-ff-test-webapp/**"
             configurations: configurationsTestWebapp
-    name: Ladybug + Frank!Framework, test-app = ${{ matrix.test-app }}
+    name: Ladybug + Frank!Framework, test-app = ${{ matrix.test-app }}, Ladybug storage = ${{ matrix.storage }}
     runs-on: ubuntu-latest
     steps:
       - name: Decide about building the code
