@@ -34,6 +34,20 @@ jobs:
         run: if [[ "${{ github.event.inputs.buildLatestFFandLadybugCode }}" == "" ]]; then echo "false"; else echo "${{ github.event.inputs.buildLatestFFandLadybugCode }}"; fi > temp; echo "buildCode=$(cat temp)" >> $GITHUB_OUTPUT
       - name: Show decision
         run: echo "buildCode is ${{ steps.decideAboutBuildCode.outputs.buildCode }}"
+
+      - name: Calculate path to Frank application (1)
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'false' && matrix.test-app == 'false' }}
+        run: echo "FRANK_APP=$(realpath frank-runner/examples/Frank2Example1)" >> $GITHUB_ENV
+      - name: Calculate path to Frank application (2)
+        if: ${{ matrix.test-app == 'true' }}
+        run: echo "FRANK_APP=$(realpath ladybug-ff-test-webapp)" >> $GITHUB_ENV
+      - name: Calculate path to Frank application (3)
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'false' }}
+        run: echo "FRANK_APP=$(realpath frankframework/webapp)" >> $GITHUB_ENV
+      - name: Get relative path of ladybug-ff-cypress-test
+        id: relative-path-to-ladybug
+        run: echo "RELATIVE_PATH_TO_LADYBUG_FF_TEST_WEBAPP=$(realpath --relative-to=$FRANK_APP ladybug-ff-cypress-test)" >> $GITHUB_OUTPUT
+
       - name: Checkout Frank!Runner
         uses: actions/checkout@v4
         with:
@@ -48,16 +62,8 @@ jobs:
         run: echo "tomcat.secure.port=8091" >> frank-runner/build.properties
       - name: Set debug to true
         run: echo "debug=true" >> frank-runner/build.properties
-      # Path is relative to project.dir, which depends on the way the FF! is started.
-      - name: Load configurations from ladybug-ff-cypress-test - with project.dir is frank-runner/examples/Frank2Example1
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'false' && matrix.test-app == 'false' }}
-        run: echo "override.configurations.dir=../../../ladybug-ff-cypress-test/TestConfigurations/${{ matrix.configurations }}" >> frank-runner/build.properties
-      - name: Load configurations from ladybug-ff-cypress-test - with project ladybug-ff-test-webapp
-        if: ${{ matrix.test-app == 'true' }}
-        run: echo "override.configurations.dir=../ladybug-ff-cypress-test/TestConfigurations/${{ matrix.configurations }}" >> frank-runner/build.properties
-      - name: Load configurations from ladybug-ff-cypress-test - with project.dir is frankframework/webapp
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'false' }}
-        run: echo "override.configurations.dir=../../ladybug-ff-cypress-test/TestConfigurations/${{ matrix.configurations }}" >> frank-runner/build.properties
+      - name: Load configurations from ladybug-ff-cypress-test
+        run: echo "override.configurations.dir=${{ steps.relative-path-to-ladybug.outputs.RELATIVE_PATH_TO_LADYBUG_FF_TEST_WEBAPP }}/TestConfigurations/${{ matrix.configurations }}" >> frank-runner/build.properties
       - name: Checkout ladybug-ff-cypress-test
         uses: actions/checkout@v4
         with:
