@@ -259,7 +259,7 @@ function trimMonacoText (value: string): string {
 Cypress.Commands.add('checkpointValue', { prevSubject: false }, () => {
   cy.inIframeBody('app-edit-display app-editor').then((appEditor) => {
     const textOfAppEditor = appEditor.text()
-    if (textOfAppEditor.length !== 0) {
+    if (textOfAppEditor.length === 0) {
       cy.wrap(appEditor)
     } else {
       cy.wrap(appEditor).find('.monaco-scrollable-element')
