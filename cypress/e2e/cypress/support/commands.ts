@@ -277,20 +277,24 @@ function checkLadybugCheckpointValue (checker: (string) => boolean, numberOfTime
   }
   cy.log(`Remaining number of tries: ${numberOfTimes}`).then(() => {
     cy.inIframeBody('app-edit-display app-editor').then((appEditor) => {
-      const textOfAppEditor = appEditor.text()
-      cy.log(`Text out of scrollable element: ${textOfAppEditor}`).then(() => {
+      const textOfAppEditor: string = appEditor.text()
+      cy.log(`Text out of scrollable element: ${trimForLog(textOfAppEditor)}`).then(() => {
         if (checker(textOfAppEditor)) {
-          cy.log('Text out of scrollable element matches')
+          cy.log('Text of app editor already matches')
+        } else if (textOfAppEditor.length === 0) {
+          cy.log('No text in app editor, next try').then(() => {
+            cy.wait(frequencyMS)
+            checkLadybugCheckpointValue(checker, numberOfTimes - 1, frequencyMS)
+          })
         } else {
           cy.wrap(appEditor).find('.monaco-scrollable-element').then((monacoScrollableElement) => {
-            const textOfScrollableElement = monacoScrollableElement.text()
-            cy.log(`Text inside scrollable element: ${textOfScrollableElement}`).then(() => {
+            const textOfScrollableElement: string = monacoScrollableElement.text()
+            cy.log(`Text inside scrollable element: ${trimForLog(textOfScrollableElement)}`).then(() => {
               if (checker(textOfScrollableElement)) {
                 cy.log('Text inside scrollable element matches')
               } else {
-                cy.wait(frequencyMS).then(() => {
-                  checkLadybugCheckpointValue(checker, numberOfTimes - 1, frequencyMS)
-                })
+                cy.wait(frequencyMS)
+                checkLadybugCheckpointValue(checker, numberOfTimes - 1, frequencyMS)
               }
             })
           })
@@ -298,6 +302,14 @@ function checkLadybugCheckpointValue (checker: (string) => boolean, numberOfTime
       })
     })
   })
+}
+
+function trimForLog (value: string): string {
+  if (value.length > 20) {
+    return `${value.substring(0, 17)}...`
+  } else {
+    return value
+  }
 }
 
 Cypress.Commands.add('checkpointValueTrimmedEquals', { prevSubject: false }, (expectedValue) => {
