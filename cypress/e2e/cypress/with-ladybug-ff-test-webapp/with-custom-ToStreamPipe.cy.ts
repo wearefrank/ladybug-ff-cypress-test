@@ -52,8 +52,7 @@ describe('With custom ToStreamPipe', () => {
     ]).click()
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'empty')
-    cy.checkpointValue().should('not.contain', '>>')
-    cy.checkpointValue().should('have.text', '')
+    cy.checkpointValueEmpty()
   })
 
   it('Empty binary stream is not closed prematurely', () => {
@@ -69,7 +68,6 @@ describe('With custom ToStreamPipe', () => {
     ]).click()
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'empty')
-    cy.checkpointValue().should('not.contain', '>>')
-    cy.checkpointValue().should('have.text', '')
+    cy.checkpointValueEmpty()
   })
 })

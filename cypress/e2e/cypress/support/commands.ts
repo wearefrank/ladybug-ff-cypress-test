@@ -41,9 +41,9 @@ declare namespace Cypress {
     awaitLoadingSpinner(): void
     waitForVideo(): void
     trimmedText(): Chainable<any>
-    checkpointValue(): Chainable<any>
     checkpointValueEquals(expectedValue: string): void
     checkpointValueTrimmedEquals(expectedValue: string): void
+    checkpointValueEmpty(): void
     checkNumCheckpointValueLabels(expectedNumLabels: number): void
     checkpointValueLabel(index: number): Chainable<any>
   }
@@ -256,17 +256,6 @@ function trimMonacoText (value: string): string {
   return value.replace(nbspRegex, ' ').trim()
 }
 
-Cypress.Commands.add('checkpointValue', { prevSubject: false }, () => {
-  cy.inIframeBody('app-edit-display app-editor').then((appEditor) => {
-    const textOfAppEditor = appEditor.text()
-    if (textOfAppEditor.length === 0) {
-      cy.wrap(appEditor)
-    } else {
-      cy.wrap(appEditor).find('.monaco-scrollable-element')
-    }
-  })
-})
-
 Cypress.Commands.add('checkpointValueEquals', { prevSubject: false }, (expectedValue) => {
   checkLadybugCheckpointValue((actualValue) => actualValue === expectedValue, 6, 1000)
 })
@@ -314,6 +303,10 @@ function trimForLog (value: string): string {
 
 Cypress.Commands.add('checkpointValueTrimmedEquals', { prevSubject: false }, (expectedValue) => {
   checkLadybugCheckpointValue((actualValue: string) => trimMonacoText(actualValue) === expectedValue, 6, 1000)
+})
+
+Cypress.Commands.add('checkpointValueEmpty', { prevSubject: false }, () => {
+  checkLadybugCheckpointValue((actualValue: string) => actualValue.length === 0, 6, 1000)
 })
 
 Cypress.Commands.add('checkNumCheckpointValueLabels', { prevSubject: false }, (expectedNumLabels: number) => {

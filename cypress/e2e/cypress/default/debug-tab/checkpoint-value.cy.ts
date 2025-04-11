@@ -19,8 +19,6 @@ describe('Stream is not closed prematurely', () => {
     ]).click()
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     cy.inIframeBody('app-edit-display app-report-alert-message').should('not.contain.text', 'empty')
-    cy.checkpointValue().should('not.contain.text', '>>')
-    cy.checkpointValue().should('not.contain.text', 'Hello')
     cy.checkpointValueEquals('World!')
   })
 
@@ -38,8 +36,7 @@ describe('Stream is not closed prematurely', () => {
       { text: 'Pipe replace', seq: 1 }]).click()
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'empty')
-    cy.checkpointValue().should('not.contain.text', '>>')
-    cy.checkpointValue().should('have.text', '')
+    cy.checkpointValueEmpty()
   })
 })
 
