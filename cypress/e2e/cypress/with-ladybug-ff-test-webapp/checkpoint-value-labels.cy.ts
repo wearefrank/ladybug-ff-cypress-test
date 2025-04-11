@@ -125,7 +125,7 @@ describe('Checkpoint value truncation because of ibistesttool.maxMessageLength',
       'Pipe testPipe',
       { seq: 1, text: 'testPipe' }
     ]).click()
-    cy.checkpointValue().trimmedText().should('equal', expected)
+    cy.checkpointValueTrimmedEquals(expected)
   })
 
   it('When maxMessageLength is exceeded, there is a label showing how many characters are omitted', () => {
