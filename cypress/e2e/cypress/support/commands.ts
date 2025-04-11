@@ -268,38 +268,40 @@ Cypress.Commands.add('checkpointValue', { prevSubject: false }, () => {
 })
 
 Cypress.Commands.add('checkpointValueEquals', { prevSubject: false }, (expectedValue) => {
-  cy.wrap(checkLadybugCheckpointValue((actualValue) => actualValue === expectedValue, 6, 1000)).should('equal', true)
+  checkLadybugCheckpointValue((actualValue) => actualValue === expectedValue, 6, 1000)
 })
 
-function checkLadybugCheckpointValue (checker: (string) => boolean, numberOfTimes: number, frequencyMS: number): boolean {
+function checkLadybugCheckpointValue (checker: (string) => boolean, numberOfTimes: number, frequencyMS: number): void {
   if (numberOfTimes === 0) {
-    cy.log('Max number of tries reached')
-    return false
+    throw new Error('checkLadybugCheckpointValue number of tries exceeded')
   }
-  cy.log(`Remaining number of tries: ${numberOfTimes}`)
-  cy.inIframeBody('app-edit-display app-editor').then((appEditor) => {
-    const textOfAppEditor = appEditor.text()
-    cy.log(`Text out of scrollable element: ${textOfAppEditor}`)
-    if (checker(textOfAppEditor)) {
-      return true
-    } else {
-      cy.wrap(appEditor).find('.monaco-scrollable-element').then((monacoScrollableElement) => {
-        const textOfScrollableElement = monacoScrollableElement.text()
-        cy.log(`Text inside scrollable element: ${textOfScrollableElement}`)
-        if (checker(textOfScrollableElement)) {
-          return true
+  cy.log(`Remaining number of tries: ${numberOfTimes}`).then(() => {
+    cy.inIframeBody('app-edit-display app-editor').then((appEditor) => {
+      const textOfAppEditor = appEditor.text()
+      cy.log(`Text out of scrollable element: ${textOfAppEditor}`).then(() => {
+        if (checker(textOfAppEditor)) {
+          cy.log('Text out of scrollable element matches')
         } else {
-          cy.wait(frequencyMS).then(() => {
-            return checkLadybugCheckpointValue(checker, numberOfTimes - 1, frequencyMS)
+          cy.wrap(appEditor).find('.monaco-scrollable-element').then((monacoScrollableElement) => {
+            const textOfScrollableElement = monacoScrollableElement.text()
+            cy.log(`Text inside scrollable element: ${textOfScrollableElement}`).then(() => {
+              if (checker(textOfScrollableElement)) {
+                cy.log('Text inside scrollable element matches')
+              } else {
+                cy.wait(frequencyMS).then(() => {
+                  checkLadybugCheckpointValue(checker, numberOfTimes - 1, frequencyMS)
+                })
+              }
+            })
           })
         }
       })
-    }
+    })
   })
 }
 
 Cypress.Commands.add('checkpointValueTrimmedEquals', { prevSubject: false }, (expectedValue) => {
-  cy.wrap(checkLadybugCheckpointValue((actualValue: string) => trimMonacoText(actualValue) === expectedValue, 6, 1000)).should('equal', true)
+  checkLadybugCheckpointValue((actualValue: string) => trimMonacoText(actualValue) === expectedValue, 6, 1000)
 })
 
 Cypress.Commands.add('checkNumCheckpointValueLabels', { prevSubject: false }, (expectedNumLabels: number) => {
