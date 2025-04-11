@@ -2,7 +2,7 @@ describe('Stream is not closed prematurely', () => {
   // Make this beforeEach() when issue https://github.com/wearefrank/ladybug/issues/344
   // will have been fixed.
   before(() => {
-    cy.apiDeleteAll('FileDebugStorage')
+    cy.apiDeleteAll(Cypress.env('debugStorageName') as string)
     cy.apiDeleteAll('Test')
   })
 
@@ -42,7 +42,7 @@ describe('Stream is not closed prematurely', () => {
 
 describe('Metadata and message context', () => {
   before(() => {
-    cy.apiDeleteAll('FileDebugStorage')
+    cy.apiDeleteAll(Cypress.env('debugStorageName') as string)
     cy.apiDeleteAll('Test')
     cy.wrap(Cypress.config('fixturesFolder')).then((fixturesFolder) => {
       const rawInputMessage = fixturesFolder + '/ConclusionInputs/valid'

@@ -1,6 +1,6 @@
 describe('Test user stories about testing with Ladybug', () => {
   beforeEach(() => {
-    cy.apiDeleteAll('FileDebugStorage')
+    cy.apiDeleteAll(Cypress.env('debugStorageName') as string)
     cy.apiDeleteAll('Test')
     cy.visit('')
   })

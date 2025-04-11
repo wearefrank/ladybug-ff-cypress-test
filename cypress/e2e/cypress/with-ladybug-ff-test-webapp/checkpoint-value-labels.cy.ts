@@ -1,6 +1,6 @@
 describe('Checkpoint value labels', () => {
   before(() => {
-    cy.apiDeleteAll('FileDebugStorage')
+    cy.apiDeleteAll(Cypress.env('debugStorageName') as string)
     cy.apiDeleteAll('Test')
     const url = Cypress.config('baseUrl') + '/api/nullAndEmpty'
     cy.request('GET', url, null).then((resp) => {
@@ -95,7 +95,7 @@ function openReport (expectedName: string): void {
 
 describe('Checkpoint value truncation because of ibistesttool.maxMessageLength', () => {
   before(() => {
-    cy.apiDeleteAll('FileDebugStorage')
+    cy.apiDeleteAll(Cypress.env('debugStorageName') as string)
     cy.apiDeleteAll('Test')
     cy.visit('')
     // Including the newlines, these are 7 * 56 = 392 characters.
