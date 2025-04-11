@@ -127,7 +127,7 @@ jobs:
         run: echo "override.configurations.dir=${{ steps.relative-path-to-ladybug.outputs.RELATIVE_PATH_TO_LADYBUG_FF_TEST_WEBAPP }}/TestConfigurations/${{ matrix.configurations }}" >> frank-runner/build.properties
       - name: Set jdbc.migrator.active to true
         if: ${{ matrix.storage == 'database' }}
-        run: echo "jdbc.migrator.active=true" >> $RESOURCES_DIR/DeploymentSpecifics.properties
+        run: echo -e "\njdbc.migrator.active=true" >> $RESOURCES_DIR/DeploymentSpecifics.properties
       - name: Set ladybug.jdbc.datasource to jdbc/${instance.name.lc}
         if: ${{ matrix.storage == 'database' }}
         run: echo "ladybug.jdbc.datasource=jdbc/\${instance.name.lc}" >> $RESOURCES_DIR/DeploymentSpecifics.properties
@@ -209,7 +209,7 @@ jobs:
       - name: Do not start build from iaf-webapp if running ladybug-ff-test-webapp
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'true' }}
         working-directory: frank-runner/specials/iaf-webapp
-        run: echo "skip.start=true" >> build.properties
+        run: echo -e "\nskip.start=true" >> build.properties
       - name: Put build.properties in ladybug
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
         working-directory: ladybug-ff-cypress-test/.github/workflows
