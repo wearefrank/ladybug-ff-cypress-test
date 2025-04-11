@@ -41,7 +41,9 @@ declare namespace Cypress {
     awaitLoadingSpinner(): void
     waitForVideo(): void
     trimmedText(): Chainable<any>
-    checkpointValue(): Chainable<any>
+    checkpointValueEquals(expectedValue: string): void
+    checkpointValueTrimmedEquals(expectedValue: string): void
+    checkpointValueEmpty(): void
     checkNumCheckpointValueLabels(expectedNumLabels: number): void
     checkpointValueLabel(index: number): Chainable<any>
   }
@@ -245,23 +247,66 @@ Cypress.Commands.add('waitForVideo', () => {
 
 Cypress.Commands.add('trimmedText', { prevSubject: true }, (subject) => {
   cy.wrap(subject).invoke('text').then((theText) => {
-    const nbspRegex = /\u00A0/g
-    // cy.log(`Text to trim shown as URL encoded: ${encodeURI(theText)}`)
-    const result = theText.replace(nbspRegex, ' ').trim()
-    // cy.log(`Trimmed text shown as URL encoded: ${encodeURI(result)}`)
-    cy.wrap(result)
+    cy.wrap(trimMonacoText(theText))
   })
 })
 
-Cypress.Commands.add('checkpointValue', { prevSubject: false }, () => {
-  cy.inIframeBody('app-edit-display app-editor').then((appEditor) => {
-    const textOfAppEditor = appEditor.text()
-    if (textOfAppEditor.length === 0) {
-      cy.wrap(appEditor)
-    } else {
-      cy.wrap(appEditor).find('.monaco-scrollable-element')
-    }
+function trimMonacoText (value: string): string {
+  const nbspRegex = /\u00A0/g
+  return value.replace(nbspRegex, ' ').trim()
+}
+
+Cypress.Commands.add('checkpointValueEquals', { prevSubject: false }, (expectedValue) => {
+  checkLadybugCheckpointValue((actualValue) => actualValue === expectedValue, 6, 1000)
+})
+
+function checkLadybugCheckpointValue (checker: (string) => boolean, numberOfTimes: number, frequencyMS: number): void {
+  if (numberOfTimes === 0) {
+    throw new Error('checkLadybugCheckpointValue number of tries exceeded')
+  }
+  cy.log(`Remaining number of tries: ${numberOfTimes}`).then(() => {
+    cy.inIframeBody('app-edit-display app-editor').then((appEditor) => {
+      const textOfAppEditor: string = appEditor.text()
+      cy.log(`Text out of scrollable element: ${trimForLog(textOfAppEditor)}`).then(() => {
+        if (checker(textOfAppEditor)) {
+          cy.log('Text of app editor already matches')
+        } else if (textOfAppEditor.length === 0) {
+          cy.log('No text in app editor, next try').then(() => {
+            cy.wait(frequencyMS)
+            checkLadybugCheckpointValue(checker, numberOfTimes - 1, frequencyMS)
+          })
+        } else {
+          cy.wrap(appEditor).find('.monaco-scrollable-element').then((monacoScrollableElement) => {
+            const textOfScrollableElement: string = monacoScrollableElement.text()
+            cy.log(`Text inside scrollable element: ${trimForLog(textOfScrollableElement)}`).then(() => {
+              if (checker(textOfScrollableElement)) {
+                cy.log('Text inside scrollable element matches')
+              } else {
+                cy.wait(frequencyMS)
+                checkLadybugCheckpointValue(checker, numberOfTimes - 1, frequencyMS)
+              }
+            })
+          })
+        }
+      })
+    })
   })
+}
+
+function trimForLog (value: string): string {
+  if (value.length > 20) {
+    return `${value.substring(0, 17)}...`
+  } else {
+    return value
+  }
+}
+
+Cypress.Commands.add('checkpointValueTrimmedEquals', { prevSubject: false }, (expectedValue) => {
+  checkLadybugCheckpointValue((actualValue: string) => trimMonacoText(actualValue) === expectedValue, 6, 1000)
+})
+
+Cypress.Commands.add('checkpointValueEmpty', { prevSubject: false }, () => {
+  checkLadybugCheckpointValue((actualValue: string) => actualValue.length === 0, 6, 1000)
 })
 
 Cypress.Commands.add('checkNumCheckpointValueLabels', { prevSubject: false }, (expectedNumLabels: number) => {
