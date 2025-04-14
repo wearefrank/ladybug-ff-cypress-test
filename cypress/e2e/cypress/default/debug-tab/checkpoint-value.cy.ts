@@ -19,9 +19,7 @@ describe('Stream is not closed prematurely', () => {
     ]).click()
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     cy.inIframeBody('app-edit-display app-report-alert-message').should('not.contain.text', 'empty')
-    cy.checkpointValue().should('not.contain.text', '>>')
-    cy.checkpointValue().should('not.contain.text', 'Hello')
-    cy.checkpointValue().should('have.text', 'World!')
+    cy.checkpointValueEquals('World!')
   })
 
   it('Test it for empty streamed value', () => {
@@ -38,8 +36,7 @@ describe('Stream is not closed prematurely', () => {
       { text: 'Pipe replace', seq: 1 }]).click()
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'empty')
-    cy.checkpointValue().should('not.contain.text', '>>')
-    cy.checkpointValue().should('have.text', '')
+    cy.checkpointValueEmpty()
   })
 })
 
@@ -74,7 +71,7 @@ describe('Metadata and message context', () => {
     ]).click()
     // Do not check for equality because there is a line number and something
     // other text the user does not see.
-    cy.checkpointValue().should('have.text', 'ok')
+    cy.checkpointValueEquals('ok')
   })
 
   it('Hide and show message context', () => {
