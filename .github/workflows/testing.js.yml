@@ -139,7 +139,7 @@ jobs:
         run: echo "application.security.console.authentication.type=YAML" >> $RESOURCES_DIR/DeploymentSpecifics.properties
       - name: Copy localUsers.yml
         if: ${{ matrix.dtap == 'PRD' }}
-        run: cp ladybug-ff-cypress-test/.github/workflows/localUsers.yml.txt $RESOURCES_DIR
+        run: cp ladybug-ff-cypress-test/.github/workflows/localUsers.yml.txt $RESOURCES_DIR/localUsers.yml
       - name: Copy cypress.config_cicd.ts to cypress.config.ts to listen to correct port
         working-directory: ladybug-ff-cypress-test
         run: cp cypress.config_cicd.ts cypress.config.ts
