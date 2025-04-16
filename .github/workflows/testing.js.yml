@@ -22,6 +22,7 @@ jobs:
       matrix:
         test-app: ["false", "true"]
         storage: ["file", "database"]
+        dtap: ["LOC"]
         include:
           - test-app: "false"
             specs: "cypress/e2e/cypress/common-over-test-envs/**,cypress/e2e/cypress/default/**"
@@ -33,7 +34,14 @@ jobs:
             debugStorageName: "FileDebugStorage"
           - storage: "database"
             debugStorageName: "DatabaseDebugStorage"
-    name: Ladybug + Frank!Framework, test-app = ${{ matrix.test-app }}, Ladybug storage = ${{ matrix.storage }}
+          # Only one test with dtap.stage=PRD
+          - dtap: "PRD"
+            test-app: "false"
+            storage: "file"
+            specs: "cypress/e2e/cypress/prd/**"
+            configurations: configurationsDefault
+            debugStorageName: "FileDebugStorage"
+    name: Ladybug + Frank!Framework, test-app = ${{ matrix.test-app }}, Ladybug storage = ${{ matrix.storage }}, dtap.stage=${{ matrix.dtap }}
     runs-on: ubuntu-latest
     steps:
       - name: Decide about building the code
@@ -116,21 +124,19 @@ jobs:
       - name: See commit number of checked-out frank-runner
         working-directory: frank-runner
         run: git log -1
-      - name: Set port where Frank!Framework is served
-        run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
-      - name: Set secure port
-        run: echo "tomcat.secure.port=8091" >> frank-runner/build.properties
-      - name: Set debug to true
-        run: echo "debug=true" >> frank-runner/build.properties
-
+      - name: Initialize build.properties of frank-runner
+        run: cp ladybug-ff-cypress-test/.github/workflows/build-frankrunner-unconditional.properties frank-runner/build.properties
       - name: Load configurations from ladybug-ff-cypress-test
         run: echo "override.configurations.dir=${{ steps.relative-path-to-ladybug.outputs.RELATIVE_PATH_TO_LADYBUG_FF_TEST_WEBAPP }}/TestConfigurations/${{ matrix.configurations }}" >> frank-runner/build.properties
-      - name: Set jdbc.migrator.active to true
+      - name: Set properties so that FF! uses database
         if: ${{ matrix.storage == 'database' }}
-        run: echo -e "\njdbc.migrator.active=true" >> $RESOURCES_DIR/DeploymentSpecifics.properties
-      - name: Set ladybug.jdbc.datasource to jdbc/${instance.name.lc}
-        if: ${{ matrix.storage == 'database' }}
-        run: echo "ladybug.jdbc.datasource=jdbc/\${instance.name.lc}" >> $RESOURCES_DIR/DeploymentSpecifics.properties
+        run: cp ladybug-ff-cypress-test/.github/workflows/DeploymentSpecifics-enable-database.properties $RESOURCES_DIR/DeploymentSpecifics.properties
+      - name: Require authentication
+        if: ${{ matrix.dtap == 'PRD' }}
+        run: echo "application.security.console.authentication.type=YAML" >> $RESOURCES_DIR/DeploymentSpecifics.properties
+      - name: Copy localUsers.yml
+        if: ${{ matrix.dtap == 'PRD' }}
+        run: cp ladybug-ff-cypress-test/.github/workflows/localUsers.yml.txt $RESOURCES_DIR
       - name: Copy cypress.config_cicd.ts to cypress.config.ts to listen to correct port
         working-directory: ladybug-ff-cypress-test
         run: cp cypress.config_cicd.ts cypress.config.ts
