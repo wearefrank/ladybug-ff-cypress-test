@@ -126,6 +126,9 @@ jobs:
         run: git log -1
       - name: Initialize build.properties of frank-runner
         run: cp ladybug-ff-cypress-test/.github/workflows/build-frankrunner-unconditional.properties frank-runner/build.properties
+      - name: Set dtap.stage in build.properties
+        if: ${{ matrix.dtap == 'PRD' }}
+        run: echo "dtap.stage=PRD" >> frank-runner/build.properties
       - name: Load configurations from ladybug-ff-cypress-test
         run: echo "override.configurations.dir=${{ steps.relative-path-to-ladybug.outputs.RELATIVE_PATH_TO_LADYBUG_FF_TEST_WEBAPP }}/TestConfigurations/${{ matrix.configurations }}" >> frank-runner/build.properties
       - name: Set properties so that FF! uses database
@@ -300,7 +303,7 @@ jobs:
           name: iaf-webapp-build.properties - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: frank-runner/specials/iaf-webapp/build.properties
       - name: Store DeploymentSpecifics.properties
-        if: ${{ always() && matrix.storage == 'database' }}
+        if: ${{ always() && (matrix.storage == 'database' || matrix.dtap == 'PRD') }}
         uses: actions/upload-artifact@v4.4.0
         with:
           name: DeploymentSpecifics - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
