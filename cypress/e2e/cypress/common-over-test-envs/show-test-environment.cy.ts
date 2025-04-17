@@ -25,4 +25,10 @@ describe('Information to check the test environment', () => {
     cy.get('input[name=search]').type('configurations.dir{enter}')
     cy.waitForVideo()
   })
+
+  it('Frank!Framework should be healthy', () => {
+    cy.request('/iaf/api/server/health').then((resp) => {
+      expect(resp.status).to.equal(200)
+    })
+  })
 })
