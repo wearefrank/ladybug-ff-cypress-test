@@ -22,25 +22,29 @@ jobs:
       matrix:
         test-app: ["false", "true"]
         storage: ["file", "database"]
-        dtap: ["LOC"]
+        dtap: ["LOC", "PRD"]
+        exclude:
+          - dtap: "PRD"
+            test-app: "true"
+          - dtap: "PRD"
+            storage: "database"
         include:
           - test-app: "false"
-            specs: "cypress/e2e/cypress/common-over-test-envs/**,cypress/e2e/cypress/default/**"
             configurations: configurationsDefault
           - test-app: "true"
-            specs: "cypress/e2e/cypress/common-over-test-envs/**,cypress/e2e/cypress/with-ladybug-ff-test-webapp/**"
             configurations: configurationsTestWebapp
+          - dtap: "LOC"
+            test-app: "false"
+            specs: "cypress/e2e/cypress/common-over-test-envs/**,cypress/e2e/cypress/default/**"
+          - dtap: "LOC"
+            test-app: "true"
+            specs: "cypress/e2e/cypress/common-over-test-envs/**,cypress/e2e/cypress/with-ladybug-ff-test-webapp/**"
+          - dtap: "PRD"
+            specs: "cypress/e2e/cypress/prd/**"
           - storage: "file"
             debugStorageName: "FileDebugStorage"
           - storage: "database"
             debugStorageName: "DatabaseDebugStorage"
-          # Only one test with dtap.stage=PRD
-          - dtap: "PRD"
-            test-app: "false"
-            storage: "file"
-            specs: "cypress/e2e/cypress/prd/**"
-            configurations: configurationsDefault
-            debugStorageName: "FileDebugStorage"
     name: Ladybug + Frank!Framework, test-app = ${{ matrix.test-app }}, Ladybug storage = ${{ matrix.storage }}, dtap.stage=${{ matrix.dtap }}
     runs-on: ubuntu-latest
     steps:
