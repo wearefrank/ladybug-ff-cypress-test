@@ -45,7 +45,7 @@ jobs:
             debugStorageName: "FileDebugStorage"
           - storage: "database"
             debugStorageName: "DatabaseDebugStorage"
-    name: Ladybug + Frank!Framework, test-app = ${{ matrix.test-app }}, Ladybug storage = ${{ matrix.storage }}, dtap.stage=${{ matrix.dtap }}
+    name: test-app = ${{ matrix.test-app }}, Ladybug storage = ${{ matrix.storage }}, dtap.stage=${{ matrix.dtap }}
     runs-on: ubuntu-latest
     steps:
       - name: Decide about building the code
