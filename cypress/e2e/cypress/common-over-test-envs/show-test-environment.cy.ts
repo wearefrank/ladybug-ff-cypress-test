@@ -1,6 +1,7 @@
 describe('Information to check the test environment', () => {
   it('Provide info about the test environment', () => {
-    cy.visit('')
+    // Authorizes as IbisTester, should be irrelevant for tests with dtap.stage=LOC
+    cy.visitLadybugAsTester()
     cy.waitForVideo()
     cy.getNumLadybugReports().then(() => {
       cy.inIframeBody('#version').invoke('text').then((s) => {
@@ -12,14 +13,14 @@ describe('Information to check the test environment', () => {
   })
 
   it('See property ibistesttool.custom', () => {
-    cy.visit('')
+    cy.visitLadybugAsTester()
     cy.contains('Environment Variables').click()
     cy.get('input[name=search]').type('ibistesttool.custom{enter}')
     cy.waitForVideo()
   })
 
   it('See property configurations.dir', () => {
-    cy.visit('')
+    cy.visitLadybugAsTester()
     cy.contains('Environment Variables').click()
     cy.get('input[name=search]').type('configurations.dir{enter}')
     cy.waitForVideo()

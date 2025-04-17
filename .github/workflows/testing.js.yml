@@ -40,7 +40,7 @@ jobs:
             test-app: "true"
             specs: "cypress/e2e/cypress/common-over-test-envs/**,cypress/e2e/cypress/with-ladybug-ff-test-webapp/**"
           - dtap: "PRD"
-            specs: "cypress/e2e/cypress/prd/**"
+            specs: "cypress/e2e/cypress/common-over-test-envs/**,cypress/e2e/cypress/prd/**"
           - storage: "file"
             debugStorageName: "FileDebugStorage"
           - storage: "database"

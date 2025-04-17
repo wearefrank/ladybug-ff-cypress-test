@@ -46,6 +46,7 @@ declare namespace Cypress {
     checkpointValueEmpty(): void
     checkNumCheckpointValueLabels(expectedNumLabels: number): void
     checkpointValueLabel(index: number): Chainable<any>
+    visitLadybugAsTester(): void
   }
 }
 
@@ -316,4 +317,13 @@ Cypress.Commands.add('checkNumCheckpointValueLabels', { prevSubject: false }, (e
 
 Cypress.Commands.add('checkpointValueLabel', { prevSubject: false }, (index: number) => {
   cy.inIframeBody(`app-edit-display app-report-alert-message > div > div:eq(${index})`)
+})
+
+Cypress.Commands.add('visitLadybugAsTester', { prevSubject: false }, () => {
+  cy.visit('', {
+    auth: {
+      username: 'tester',
+      password: 'IbisTester'
+    }
+  })
 })
