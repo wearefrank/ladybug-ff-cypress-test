@@ -137,7 +137,7 @@ jobs:
         run: echo "override.configurations.dir=${{ steps.relative-path-to-ladybug.outputs.RELATIVE_PATH_TO_LADYBUG_FF_TEST_WEBAPP }}/TestConfigurations/${{ matrix.configurations }}" >> frank-runner/build.properties
       - name: Set properties so that FF! uses database
         if: ${{ matrix.storage == 'database' }}
-        run: cp ladybug-ff-cypress-test/.github/workflows/DeploymentSpecifics-enable-database.properties $RESOURCES_DIR/DeploymentSpecifics.properties
+        run: cat ladybug-ff-cypress-test/.github/workflows/DeploymentSpecifics-enable-database.properties >> $RESOURCES_DIR/DeploymentSpecifics.properties
       - name: Require authentication
         if: ${{ matrix.dtap == 'PRD' }}
         run: echo "application.security.console.authentication.type=YAML" >> $RESOURCES_DIR/DeploymentSpecifics.properties
