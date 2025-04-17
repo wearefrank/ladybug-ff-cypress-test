@@ -22,18 +22,30 @@ jobs:
       matrix:
         test-app: ["false", "true"]
         storage: ["file", "database"]
+        dtap: ["LOC", "PRD"]
+        exclude:
+          - dtap: "PRD"
+            test-app: "true"
+          - dtap: "PRD"
+            storage: "database"
         include:
           - test-app: "false"
-            specs: "cypress/e2e/cypress/common-over-test-envs/**,cypress/e2e/cypress/default/**"
             configurations: configurationsDefault
           - test-app: "true"
-            specs: "cypress/e2e/cypress/common-over-test-envs/**,cypress/e2e/cypress/with-ladybug-ff-test-webapp/**"
             configurations: configurationsTestWebapp
+          - dtap: "LOC"
+            test-app: "false"
+            specs: "cypress/e2e/cypress/common-over-test-envs/**,cypress/e2e/cypress/default/**"
+          - dtap: "LOC"
+            test-app: "true"
+            specs: "cypress/e2e/cypress/common-over-test-envs/**,cypress/e2e/cypress/with-ladybug-ff-test-webapp/**"
+          - dtap: "PRD"
+            specs: "cypress/e2e/cypress/common-over-test-envs/**,cypress/e2e/cypress/prd/**"
           - storage: "file"
             debugStorageName: "FileDebugStorage"
           - storage: "database"
             debugStorageName: "DatabaseDebugStorage"
-    name: Ladybug + Frank!Framework, test-app = ${{ matrix.test-app }}, Ladybug storage = ${{ matrix.storage }}
+    name: test-app = ${{ matrix.test-app }}, Ladybug storage = ${{ matrix.storage }}, dtap.stage=${{ matrix.dtap }}
     runs-on: ubuntu-latest
     steps:
       - name: Decide about building the code
@@ -116,21 +128,22 @@ jobs:
       - name: See commit number of checked-out frank-runner
         working-directory: frank-runner
         run: git log -1
-      - name: Set port where Frank!Framework is served
-        run: echo "tomcat.connector.port=8090" > frank-runner/build.properties
-      - name: Set secure port
-        run: echo "tomcat.secure.port=8091" >> frank-runner/build.properties
-      - name: Set debug to true
-        run: echo "debug=true" >> frank-runner/build.properties
-
+      - name: Initialize build.properties of frank-runner
+        run: cp ladybug-ff-cypress-test/.github/workflows/build-frankrunner-unconditional.properties frank-runner/build.properties
+      - name: Set dtap.stage in build.properties
+        if: ${{ matrix.dtap == 'PRD' }}
+        run: echo "dtap.stage=PRD" >> frank-runner/build.properties
       - name: Load configurations from ladybug-ff-cypress-test
         run: echo "override.configurations.dir=${{ steps.relative-path-to-ladybug.outputs.RELATIVE_PATH_TO_LADYBUG_FF_TEST_WEBAPP }}/TestConfigurations/${{ matrix.configurations }}" >> frank-runner/build.properties
-      - name: Set jdbc.migrator.active to true
+      - name: Set properties so that FF! uses database
         if: ${{ matrix.storage == 'database' }}
-        run: echo -e "\njdbc.migrator.active=true" >> $RESOURCES_DIR/DeploymentSpecifics.properties
-      - name: Set ladybug.jdbc.datasource to jdbc/${instance.name.lc}
-        if: ${{ matrix.storage == 'database' }}
-        run: echo "ladybug.jdbc.datasource=jdbc/\${instance.name.lc}" >> $RESOURCES_DIR/DeploymentSpecifics.properties
+        run: cat ladybug-ff-cypress-test/.github/workflows/DeploymentSpecifics-enable-database.properties >> $RESOURCES_DIR/DeploymentSpecifics.properties
+      - name: Require authentication
+        if: ${{ matrix.dtap == 'PRD' }}
+        run: echo "application.security.console.authentication.type=YAML" >> $RESOURCES_DIR/DeploymentSpecifics.properties
+      - name: Copy localUsers.yml
+        if: ${{ matrix.dtap == 'PRD' }}
+        run: cp ladybug-ff-cypress-test/.github/workflows/localUsers.yml.txt $RESOURCES_DIR/localUsers.yml
       - name: Copy cypress.config_cicd.ts to cypress.config.ts to listen to correct port
         working-directory: ladybug-ff-cypress-test
         run: cp cypress.config_cicd.ts cypress.config.ts
@@ -237,89 +250,89 @@ jobs:
         if: ${{ always() && steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: ladybug pom.xml test-app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
+          name: ladybug pom.xml test-app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: ladybug/pom.xml
       - name: Store frankframework/ladybug/pom.xml
         if: ${{ always() && steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: frankframework ladybug pom.xml test-app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
+          name: frankframework ladybug pom.xml test-app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: frankframework/ladybug/pom.xml
       - name: Store ladybug-ff-test-webapp/pom.xml
         if: ${{ always() && matrix.test-app == 'true' }}
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: ladybug-ff-test-webapp pom.xml test-app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
+          name: ladybug-ff-test-webapp pom.xml test-app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: ladybug-ff-test-webapp/pom.xml
       - name: Store log of Frank!Runner downloads
         if: always()
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: installFrankRunnerEnv.log - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
+          name: installFrankRunnerEnv.log - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: frank-runner/installFrankRunnerEnv.log
       - name: Store log of starting the server with the Frank!Runner (official release) - no test webapp
         if: ${{ always() && (steps.decideAboutBuildCode.outputs.buildCode == 'false' && matrix.test-app == 'false' ) }}
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: serverStartLog.log - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
+          name: serverStartLog.log - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: frank-runner/serverStartLog.log
       - name: Store log of building frank-runner/specials/iaf-webapp without starting that directly
         if: ${{ always() && (steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'true') }}
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: buildIafWebapp.log - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
+          name: buildIafWebapp.log - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: frank-runner/specials/ladybug/buildIafWebapp.log
       - name: Store log of starting the server with the Frank!Runner (local build) - no test webapp
         if: ${{ always() && (steps.decideAboutBuildCode.outputs.buildCode == 'true' && matrix.test-app == 'false' ) }}
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: serverStartLog.log - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
+          name: serverStartLog.log - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: frank-runner/specials/ladybug/serverStartLog.log
       - name: Store log of starting the server with the Frank!Runner - test webapp
         if: ${{ always() && matrix.test-app == 'true' }}
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: serverStartLog.log - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
+          name: serverStartLog.log - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: ladybug-ff-test-webapp/serverStartLog.log
       - name: Store build.properties
         if: always()
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: build.properties - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
+          name: build.properties - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: frank-runner/build.properties
       - name: Store build.properties of frank-runner/specials/iaf-webapp/build.properties
         if: ${{ always() && matrix.test-app == 'true' }}
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: iaf-webapp-build.properties - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
+          name: iaf-webapp-build.properties - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: frank-runner/specials/iaf-webapp/build.properties
       - name: Store DeploymentSpecifics.properties
-        if: ${{ always() && matrix.storage == 'database' }}
+        if: ${{ always() && (matrix.storage == 'database' || matrix.dtap == 'PRD') }}
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: DeploymentSpecifics - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
+          name: DeploymentSpecifics - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: ${{ env.RESOURCES_DIR }}/DeploymentSpecifics.properties
       - name: Store Apache Tomcat log
         if: always()
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: catalina.properties - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
+          name: catalina.properties - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: frank-runner/build/apache-tomcat-*/conf/catalina.properties
       - name: Store Apache Tomcat log
         if: always()
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: logs - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
+          name: logs - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: frank-runner/build/*/logs/*
       - name: Store Cypress screenshots
         if: always()
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: screenshots - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
+          name: screenshots - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: ladybug-ff-cypress-test/cypress/screenshots/
       - name: Store Cypress videos
         if: always()
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: videos - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }}
+          name: videos - test app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: ladybug-ff-cypress-test/cypress/videos/
