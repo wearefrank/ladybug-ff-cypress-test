@@ -96,12 +96,30 @@ jobs:
         with:
           repository: wearefrank/ladybug-frontend
           path: ladybug-frontend
+      - name: Fetch ladybug-frontend branch to checkout
+        if: ${{ inputs.frontendBranch != '' }}
+        working-directory: ladybug-frontend
+        run: git fetch origin/${{ inputs.frontendBranch }}
+      - name: Checkout ladybug-frontend branch to checkout
+        if: ${{ inputs.frontendBranch != '' }}
+        working-directory: ladybug-frontend
+        run: git checkout origin ${{ inputs.frontendBranch }}
+
       - name: Checkout ladybug (backend)
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
         uses: actions/checkout@v4
         with:
           repository: wearefrank/ladybug
           path: ladybug
+      - name: Fetch ladybug branch to checkout
+        if: ${{ inputs.backendBranch != '' }}
+        working-directory: ladybug
+        run: git fetch origin/${{ inputs.backendBranch }}
+      - name: Checkout ladybug branch to checkout
+        if: ${{ inputs.backendBranch != '' }}
+        working-directory: ladybug
+        run: git checkout origin ${{ inputs.backendBranch }}
+
       - name: Checkout frankframework
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
         uses: actions/checkout@v4
