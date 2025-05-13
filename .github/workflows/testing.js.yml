@@ -15,6 +15,14 @@ on:
         type: boolean
         default: false
         required: true
+      backendBranch:
+        description: If buildLatestFFandLadybugCode and if supplied, check out this branch of ladybug backend
+        type: string
+        required: false
+      frontendBranch:
+        description: If buildLatestFFandLadybugCode and if supplied, check out this branch of ladybug-frontend
+        type: string
+        required: false
 jobs:
   testing:
     strategy:
@@ -53,7 +61,12 @@ jobs:
         run: if [[ "${{ github.event.inputs.buildLatestFFandLadybugCode }}" == "" ]]; then echo "false"; else echo "${{ github.event.inputs.buildLatestFFandLadybugCode }}"; fi > temp; echo "buildCode=$(cat temp)" >> $GITHUB_OUTPUT
       - name: Show decision
         run: echo "buildCode is ${{ steps.decideAboutBuildCode.outputs.buildCode }}"
-
+      - name: Check that backendBranch is only set if it can be applied
+        if: ${{ inputs.backendBranch != '' && steps.decideAboutBuildCode.outputs.buildCode == 'false' }}
+        run: exit 1
+      - name: Check that frontendBranch is only set if it can be applied
+        if: ${{ inputs.frontendBranch != '' && steps.decideAboutBuildCode.outputs.buildCode == 'false' }}
+        run: exit 1
       - name: Cache Frank!Runner dependencies - build
         uses: actions/cache@v3
         with:
@@ -83,12 +96,30 @@ jobs:
         with:
           repository: wearefrank/ladybug-frontend
           path: ladybug-frontend
+      - name: Fetch ladybug-frontend branch to checkout
+        if: ${{ inputs.frontendBranch != '' }}
+        working-directory: ladybug-frontend
+        run: git fetch origin ${{ inputs.frontendBranch }}
+      - name: Checkout ladybug-frontend branch to checkout
+        if: ${{ inputs.frontendBranch != '' }}
+        working-directory: ladybug-frontend
+        run: git checkout --track origin/${{ inputs.frontendBranch }}
+
       - name: Checkout ladybug (backend)
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
         uses: actions/checkout@v4
         with:
           repository: wearefrank/ladybug
           path: ladybug
+      - name: Fetch ladybug branch to checkout
+        if: ${{ inputs.backendBranch != '' }}
+        working-directory: ladybug
+        run: git fetch origin ${{ inputs.backendBranch }}
+      - name: Checkout ladybug branch to checkout
+        if: ${{ inputs.backendBranch != '' }}
+        working-directory: ladybug
+        run: git checkout --track origin/${{ inputs.backendBranch }}
+
       - name: Checkout frankframework
         if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
         uses: actions/checkout@v4
