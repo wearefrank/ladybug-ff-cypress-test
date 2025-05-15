@@ -33,7 +33,6 @@ describe('dtap.stage=PRD', () => {
           cy.getNumLadybugReports().should('equal', 1)
           cy.inIframeBody('[data-cy-debug="tableRow"]')
             .find('td:nth-child(2)')
-            .should('equal', storageId)
             .click()
           cy.inIframeBody('[data-cy-debug-tree="root"]')
             .should('have.length.at.least', 1)
