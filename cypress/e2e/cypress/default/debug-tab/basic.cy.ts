@@ -43,7 +43,7 @@ describe('Basic tests', () => {
         })
       // cy.inIframeBody('[datay-cy-report="rerun"]').click()
       cy.inIframeBody('button:contains(Rerun)').click()
-      cy.inIframeBody(':contains(Save and rerun)').click()
+      // cy.inIframeBody(':contains(Save and rerun)').click()
       cy.inIframeBody('.rerun-result').should('contain', 'stubbed')
     })
   })
