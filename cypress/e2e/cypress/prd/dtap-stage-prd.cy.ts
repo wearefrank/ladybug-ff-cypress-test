@@ -15,10 +15,10 @@ describe('dtap.stage=PRD', () => {
     { username: 'dataAdmin', pwd: 'IbisDataAdmin' }
   ]
   for (const testCase of credentialsToTest) {
-    it(`Cannot rerun report as ${testCase.username}`, () => {
-      cy.apiDeleteAll(Cypress.env('debugStorageName') as string)
-      cy.apiDeleteAll('Test')
-      cy.visit('')
+    it(`Cannot Report rerun as ${testCase.username}`, () => {
+      cy.apiDeleteAllAs(Cypress.env('debugStorageName') as string, testCase.username, testCase.pwd)
+      cy.apiDeleteAllAs('Test', testCase.username, testCase.pwd)
+      cy.visitLadybugAs(testCase.username, testCase.pwd)
       cy.createReportInLadybug('Example1a', 'Adapter1a', 'xxx').then(storageId => {
         cy.wrap('Found report just created, storageId=' + storageId)
         cy.inIframeBody('[data-cy-debug="tableRow"]')

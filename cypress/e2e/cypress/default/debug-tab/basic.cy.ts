@@ -45,7 +45,7 @@ describe('Basic tests', () => {
       cy.inIframeBody('.rerun-result').should('not.exist')
       cy.inIframeBody('[data-cy-report="rerun"]').click()
       cy.inIframeBody('.rerun-result').should('contain', 'stubbed')
-      cy.inIframeBody(':contains(Rerun report successful')
+      cy.inIframeBody(':contains(Report rerun successful')
       cy.getNumLadybugReports().should('equal', 2)
     })
   })

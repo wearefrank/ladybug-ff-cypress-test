@@ -37,6 +37,7 @@ declare namespace Cypress {
     enterFilter(field: string, filter: string)
     checkActiveFilterSphere(field: string, value: string): Cypress.Chainable<any>
     apiDeleteAll(storageName: string)
+    apiDeleteAllAs(storageName: string, username: string, password: string)
     selectTreeNode(path: NodeSelection[]): Cypress.Chainable<any>
     awaitLoadingSpinner(): void
     waitForVideo(): void
@@ -47,6 +48,7 @@ declare namespace Cypress {
     checkNumCheckpointValueLabels(expectedNumLabels: number): void
     checkpointValueLabel(index: number): Chainable<any>
     visitLadybugAsTester(): void
+    visitLadybugAs(username: string, password: string): void
   }
 }
 
@@ -192,6 +194,19 @@ Cypress.Commands.add('apiDeleteAll', (storageName: string) => {
   })
 })
 
+Cypress.Commands.add('apiDeleteAllAs', (storageName: string, username: string, password: string) => {
+  cy.request({
+    method: 'DELETE',
+    url: `/iaf/ladybug/api/report/all/${storageName}`,
+    auth: {
+      username,
+      password
+    }
+  }).then(response => {
+    cy.wrap(response).its('status').should('equal', 200)
+  })
+})
+
 interface TextWithSeq {
   text: string
   seq: number
@@ -324,6 +339,15 @@ Cypress.Commands.add('visitLadybugAsTester', { prevSubject: false }, () => {
     auth: {
       username: 'tester',
       password: 'IbisTester'
+    }
+  })
+})
+
+Cypress.Commands.add('visitLadybugAs', { prevSubject: false }, (username, password) => {
+  cy.visit('', {
+    auth: {
+      username,
+      password
     }
   })
 })
