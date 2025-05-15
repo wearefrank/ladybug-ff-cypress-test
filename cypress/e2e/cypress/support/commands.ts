@@ -49,6 +49,7 @@ declare namespace Cypress {
     checkpointValueLabel(index: number): Chainable<any>
     visitLadybugAsTester(): void
     visitLadybugAs(username: string, password: string): void
+    enableReportGenerator(): void
   }
 }
 
@@ -350,4 +351,11 @@ Cypress.Commands.add('visitLadybugAs', { prevSubject: false }, (username, passwo
       password
     }
   })
+})
+
+Cypress.Commands.add('enableReportGenerator', { prevSubject: false }, () => {
+  cy.inIframeBody('[data-cy-debug="openSettings"]').should('be.visible').click()
+  cy.inIframeBody('[role=dialog]').should('be.visible')
+  cy.inIframeBody('[data-cy-settings="generatorEnabled"]').select('Enabled').should('have.value', 'Enabled')
+  cy.inIframeBody('[data-cy-settings="saveChanges"]').click()
 })

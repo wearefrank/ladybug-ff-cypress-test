@@ -8,41 +8,45 @@ describe('dtap.stage=PRD', () => {
     })
   })
 
-  const credentialsToTest: Array<{ username: string, pwd: string }> = [
-    { username: 'webservice', pwd: 'IbisWebService' },
-    { username: 'observer', pwd: 'IbisObserver' },
-    { username: 'admin', pwd: 'IbisAdmin' },
-    { username: 'dataAdmin', pwd: 'IbisDataAdmin' }
-  ]
-  for (const testCase of credentialsToTest) {
-    it(`Cannot Report rerun as ${testCase.username}`, () => {
+  describe('Rerun in debug tab forbidden', () => {
+    before(() => {
       // Implicitly logs in
-      cy.visitLadybugAs(testCase.username, testCase.pwd)
-      cy.apiDeleteAllAs(Cypress.env('debugStorageName') as string, testCase.username, testCase.pwd)
-      cy.apiDeleteAllAs('Test', testCase.username, testCase.pwd)
-      cy.visitLadybugAs(testCase.username, testCase.pwd)
-      cy.createReportInLadybug('Example1a', 'Adapter1a', 'xxx').then(storageId => {
-        cy.wrap('Found report just created, storageId=' + storageId)
-        cy.inIframeBody('[data-cy-debug="tableRow"]')
-          .find('td:nth-child(2)').each($cell => {
-            if (parseInt($cell.text()) === storageId) {
-              cy.wrap('Going to click cell with text' + $cell.text())
-              cy.wrap($cell).click()
-            }
-          })
-        cy.inIframeBody('[data-cy-debug-tree="root"]')
-          .should('have.length.at.least', 1)
-          .contains('Pipeline Example1a/Adapter1a').within(_ => {
-            cy.contains('Pipeline Example1a/Adapter1a').click()
-          })
-        cy.awaitLoadingSpinner()
-        cy.inIframeBody('.rerun-result').should('not.exist')
-        cy.inIframeBody('[data-cy-report="rerun"]').click()
-        cy.awaitLoadingSpinner()
-        cy.inIframeBody('.rerun-result').should('not.exist')
-        cy.inIframeBody(':contains(Not allowed)')
-        cy.getNumLadybugReports().should('equal', 1)
+      cy.visitLadybugAsTester()
+      cy.apiDeleteAll(Cypress.env('debugStorageName') as string)
+      cy.apiDeleteAll('Test')
+      cy.enableReportGenerator()
+      cy.createReportInLadybug('Example1a', 'Adapter1a', 'xxx').then((storageId) => {
+        cy.wrap(storageId).as('storageId')
       })
     })
-  }
+
+    const credentialsToTest: Array<{ username: string, pwd: string }> = [
+      { username: 'observer', pwd: 'IbisObserver' },
+      { username: 'admin', pwd: 'IbisAdmin' },
+      { username: 'dataAdmin', pwd: 'IbisDataAdmin' }
+    ]
+    for (const testCase of credentialsToTest) {
+      it(`Cannot Report rerun as ${testCase.username}`, () => {
+        cy.get('@storageId').then((storageId) => {
+          cy.visitLadybugAs(testCase.username, testCase.pwd)
+          cy.inIframeBody('[data-cy-debug="tableRow"]')
+            .find('td:nth-child(2)')
+            .should('equal', storageId)
+            .click()
+          cy.inIframeBody('[data-cy-debug-tree="root"]')
+            .should('have.length.at.least', 1)
+            .contains('Pipeline Example1a/Adapter1a').within(_ => {
+              cy.contains('Pipeline Example1a/Adapter1a').click()
+            })
+          cy.awaitLoadingSpinner()
+          cy.inIframeBody('.rerun-result').should('not.exist')
+          cy.inIframeBody('[data-cy-report="rerun"]').click()
+          cy.inIframeBody(':contains(Not allowed)')
+          cy.awaitLoadingSpinner()
+          cy.inIframeBody('.rerun-result').should('not.exist')
+          cy.getNumLadybugReports().should('equal', 1)
+        })
+      })
+    }
+  })
 })
