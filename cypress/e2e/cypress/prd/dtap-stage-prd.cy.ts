@@ -28,25 +28,23 @@ describe('dtap.stage=PRD', () => {
     ]
     for (const testCase of credentialsToTest) {
       it(`Cannot Report rerun as ${testCase.username}`, () => {
-        cy.get('@storageId').then((storageId) => {
-          cy.visitLadybugAs(testCase.username, testCase.pwd)
-          cy.getNumLadybugReports().should('equal', 1)
-          cy.inIframeBody('[data-cy-debug="tableRow"]')
-            .find('td:nth-child(2)')
-            .click()
-          cy.inIframeBody('[data-cy-debug-tree="root"]')
-            .should('have.length.at.least', 1)
-            .contains('Pipeline Example1a/Adapter1a').within(_ => {
-              cy.contains('Pipeline Example1a/Adapter1a').click()
-            })
-          cy.awaitLoadingSpinner()
-          cy.inIframeBody('.rerun-result').should('not.exist')
-          cy.inIframeBody('[data-cy-report="rerun"]').click()
-          cy.inIframeBody(':contains(Not allowed)')
-          cy.awaitLoadingSpinner()
-          cy.inIframeBody('.rerun-result').trimmedText().should('have.length', 0)
-          cy.getNumLadybugReports().should('equal', 1)
-        })
+        cy.visitLadybugAs(testCase.username, testCase.pwd)
+        cy.getNumLadybugReports().should('equal', 1)
+        cy.inIframeBody('[data-cy-debug="tableRow"]')
+          .find('td:nth-child(2)')
+          .click()
+        cy.inIframeBody('[data-cy-debug-tree="root"]')
+          .should('have.length.at.least', 1)
+          .contains('Pipeline Example1a/Adapter1a').within(_ => {
+            cy.contains('Pipeline Example1a/Adapter1a').click()
+          })
+        cy.awaitLoadingSpinner()
+        cy.inIframeBody('.rerun-result').should('not.exist')
+        cy.inIframeBody('[data-cy-report="rerun"]').click()
+        cy.inIframeBody(':contains(Not allowed)')
+        cy.awaitLoadingSpinner()
+        cy.inIframeBody('.rerun-result').trimmedText().should('have.length', 0)
+        cy.getNumLadybugReports().should('equal', 1)
       })
     }
   })
