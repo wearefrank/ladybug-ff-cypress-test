@@ -30,6 +30,7 @@ const ibisTesterPwd = 'IbisTester'
 declare namespace Cypress {
   interface Chainable<Subject = any> {
     inIframeBody(query: string): Chainable<any>
+    enterLadybug(): void
     getNumLadybugReports(): Chainable<any>
     runInTestAPipeline(config: string, adapter: string, message: string): Chainable<any>
     getNumLadybugReportsForNameFilter(name: string): Chainable<number>
@@ -66,13 +67,17 @@ Cypress.Commands.add('inIframeBody', (query) => {
     })
 })
 
-Cypress.Commands.add('getNumLadybugReports', () => {
+Cypress.Commands.add('enterLadybug', () => {
   cy.get('[data-cy-nav="adapterStatus"]', { timeout: 10000 }).click()
   cy.get('[data-cy-nav="testingLadybug"]').should('not.be.visible')
   cy.get('[data-cy-nav="testing"]').click()
   cy.get('[data-cy-nav="testingLadybug"]').click()
   cy.awaitLoadingSpinner()
   cy.inIframeBody('[data-cy-nav-tab="debugTab"]').click()
+})
+
+Cypress.Commands.add('getNumLadybugReports', () => {
+  cy.enterLadybug()
   cy.intercept({
     method: 'GET',
     url: `iaf/ladybug/api/metadata/${Cypress.env('debugStorageName') as string}/count`,
