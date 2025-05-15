@@ -24,9 +24,13 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
+const ibisTesterUser = 'tester'
+const ibisTesterPwd = 'IbisTester'
+
 declare namespace Cypress {
   interface Chainable<Subject = any> {
     inIframeBody(query: string): Chainable<any>
+    enterLadybug(): void
     getNumLadybugReports(): Chainable<any>
     runInTestAPipeline(config: string, adapter: string, message: string): Chainable<any>
     getNumLadybugReportsForNameFilter(name: string): Chainable<number>
@@ -37,6 +41,7 @@ declare namespace Cypress {
     enterFilter(field: string, filter: string)
     checkActiveFilterSphere(field: string, value: string): Cypress.Chainable<any>
     apiDeleteAll(storageName: string)
+    apiDeleteAllAsTester(storageName: string)
     selectTreeNode(path: NodeSelection[]): Cypress.Chainable<any>
     awaitLoadingSpinner(): void
     waitForVideo(): void
@@ -46,7 +51,9 @@ declare namespace Cypress {
     checkpointValueEmpty(): void
     checkNumCheckpointValueLabels(expectedNumLabels: number): void
     checkpointValueLabel(index: number): Chainable<any>
-    visitLadybugAsTester(): void
+    visitAsTester(): void
+    visitAs(username: string, password: string): void
+    enableReportGenerator(): void
   }
 }
 
@@ -60,13 +67,17 @@ Cypress.Commands.add('inIframeBody', (query) => {
     })
 })
 
-Cypress.Commands.add('getNumLadybugReports', () => {
+Cypress.Commands.add('enterLadybug', () => {
   cy.get('[data-cy-nav="adapterStatus"]', { timeout: 10000 }).click()
   cy.get('[data-cy-nav="testingLadybug"]').should('not.be.visible')
   cy.get('[data-cy-nav="testing"]').click()
   cy.get('[data-cy-nav="testingLadybug"]').click()
   cy.awaitLoadingSpinner()
   cy.inIframeBody('[data-cy-nav-tab="debugTab"]').click()
+})
+
+Cypress.Commands.add('getNumLadybugReports', () => {
+  cy.enterLadybug()
   cy.intercept({
     method: 'GET',
     url: `iaf/ladybug/api/metadata/${Cypress.env('debugStorageName') as string}/count`,
@@ -187,6 +198,19 @@ Cypress.Commands.add('apiDeleteAll', (storageName: string) => {
   cy.request({
     method: 'DELETE',
     url: `/iaf/ladybug/api/report/all/${storageName}`
+  }).then(response => {
+    cy.wrap(response).its('status').should('equal', 200)
+  })
+})
+
+Cypress.Commands.add('apiDeleteAllAsTester', (storageName: string) => {
+  cy.request({
+    method: 'DELETE',
+    url: `/iaf/ladybug/api/report/all/${storageName}`,
+    auth: {
+      username: ibisTesterUser,
+      password: ibisTesterPwd
+    }
   }).then(response => {
     cy.wrap(response).its('status').should('equal', 200)
   })
@@ -319,11 +343,27 @@ Cypress.Commands.add('checkpointValueLabel', { prevSubject: false }, (index: num
   cy.inIframeBody(`app-edit-display app-report-alert-message > div > div:eq(${index})`)
 })
 
-Cypress.Commands.add('visitLadybugAsTester', { prevSubject: false }, () => {
+Cypress.Commands.add('visitAsTester', { prevSubject: false }, () => {
   cy.visit('', {
     auth: {
-      username: 'tester',
-      password: 'IbisTester'
+      username: ibisTesterUser,
+      password: ibisTesterPwd
     }
   })
+})
+
+Cypress.Commands.add('visitAs', { prevSubject: false }, (username, password) => {
+  cy.visit('', {
+    auth: {
+      username,
+      password
+    }
+  })
+})
+
+Cypress.Commands.add('enableReportGenerator', { prevSubject: false }, () => {
+  cy.inIframeBody('[data-cy-debug="openSettings"]').should('be.visible').click()
+  cy.inIframeBody('[role=dialog]').should('be.visible')
+  cy.inIframeBody('[data-cy-settings="generatorEnabled"]').select('Enabled').should('have.value', 'Enabled')
+  cy.inIframeBody('[data-cy-settings="saveChanges"]').click()
 })
