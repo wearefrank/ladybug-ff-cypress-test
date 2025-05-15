@@ -44,7 +44,7 @@ describe('dtap.stage=PRD', () => {
           cy.inIframeBody('[data-cy-report="rerun"]').click()
           cy.inIframeBody(':contains(Not allowed)')
           cy.awaitLoadingSpinner()
-          cy.inIframeBody('.rerun-result').should('not.exist')
+          cy.inIframeBody('.rerun-result').trimmedText().should('have.length', 0)
           cy.getNumLadybugReports().should('equal', 1)
         })
       })
