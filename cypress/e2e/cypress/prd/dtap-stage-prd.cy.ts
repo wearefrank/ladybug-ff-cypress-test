@@ -30,6 +30,7 @@ describe('dtap.stage=PRD', () => {
       it(`Cannot Report rerun as ${testCase.username}`, () => {
         cy.get('@storageId').then((storageId) => {
           cy.visitLadybugAs(testCase.username, testCase.pwd)
+          cy.getNumLadybugReports().should('equal', 1)
           cy.inIframeBody('[data-cy-debug="tableRow"]')
             .find('td:nth-child(2)')
             .should('equal', storageId)
