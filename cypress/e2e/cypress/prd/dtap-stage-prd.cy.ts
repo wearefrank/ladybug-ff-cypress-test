@@ -1,6 +1,6 @@
 describe('dtap.stage=PRD', () => {
   it('Report generator is disabled by default', () => {
-    cy.visitLadybugAsTester()
+    cy.visitAsTester()
     cy.getNumLadybugReports().then(numReports => {
       cy.wrap(numReports).should('equal', 0)
       cy.runInTestAPipeline('Example1a', 'Adapter1a', 'xxx')
@@ -11,14 +11,12 @@ describe('dtap.stage=PRD', () => {
   describe('Rerun in debug tab forbidden', () => {
     before(() => {
       // Implicitly logs in
-      cy.visitLadybugAsTester()
+      cy.visitAsTester()
       cy.apiDeleteAllAsTester(Cypress.env('debugStorageName') as string)
       cy.apiDeleteAllAsTester('Test')
       cy.enterLadybug()
       cy.enableReportGenerator()
-      cy.createReportInLadybug('Example1a', 'Adapter1a', 'xxx').then((storageId) => {
-        cy.wrap(storageId).as('storageId')
-      })
+      cy.createReportInLadybug('Example1a', 'Adapter1a', 'xxx')
     })
 
     const credentialsToTest: Array<{ username: string, pwd: string }> = [
