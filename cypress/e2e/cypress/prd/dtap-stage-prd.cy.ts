@@ -16,6 +16,8 @@ describe('dtap.stage=PRD', () => {
   ]
   for (const testCase of credentialsToTest) {
     it(`Cannot Report rerun as ${testCase.username}`, () => {
+      // Implicitly logs in
+      cy.visitLadybugAs(testCase.username, testCase.pwd)
       cy.apiDeleteAllAs(Cypress.env('debugStorageName') as string, testCase.username, testCase.pwd)
       cy.apiDeleteAllAs('Test', testCase.username, testCase.pwd)
       cy.visitLadybugAs(testCase.username, testCase.pwd)
