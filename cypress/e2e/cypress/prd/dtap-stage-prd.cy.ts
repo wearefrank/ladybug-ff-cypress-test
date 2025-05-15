@@ -12,8 +12,8 @@ describe('dtap.stage=PRD', () => {
     before(() => {
       // Implicitly logs in
       cy.visitLadybugAsTester()
-      cy.apiDeleteAll(Cypress.env('debugStorageName') as string)
-      cy.apiDeleteAll('Test')
+      cy.apiDeleteAllAsTester(Cypress.env('debugStorageName') as string)
+      cy.apiDeleteAllAsTester('Test')
       cy.enableReportGenerator()
       cy.createReportInLadybug('Example1a', 'Adapter1a', 'xxx').then((storageId) => {
         cy.wrap(storageId).as('storageId')

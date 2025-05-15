@@ -24,6 +24,9 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
+const ibisTesterUser = 'tester'
+const ibisTesterPwd = 'IbisTester'
+
 declare namespace Cypress {
   interface Chainable<Subject = any> {
     inIframeBody(query: string): Chainable<any>
@@ -37,7 +40,7 @@ declare namespace Cypress {
     enterFilter(field: string, filter: string)
     checkActiveFilterSphere(field: string, value: string): Cypress.Chainable<any>
     apiDeleteAll(storageName: string)
-    apiDeleteAllAs(storageName: string, username: string, password: string)
+    apiDeleteAllAsTester(storageName: string)
     selectTreeNode(path: NodeSelection[]): Cypress.Chainable<any>
     awaitLoadingSpinner(): void
     waitForVideo(): void
@@ -195,13 +198,13 @@ Cypress.Commands.add('apiDeleteAll', (storageName: string) => {
   })
 })
 
-Cypress.Commands.add('apiDeleteAllAs', (storageName: string, username: string, password: string) => {
+Cypress.Commands.add('apiDeleteAllAsTester', (storageName: string) => {
   cy.request({
     method: 'DELETE',
     url: `/iaf/ladybug/api/report/all/${storageName}`,
     auth: {
-      username,
-      password
+      username: ibisTesterUser,
+      password: ibisTesterPwd
     }
   }).then(response => {
     cy.wrap(response).its('status').should('equal', 200)
@@ -338,8 +341,8 @@ Cypress.Commands.add('checkpointValueLabel', { prevSubject: false }, (index: num
 Cypress.Commands.add('visitLadybugAsTester', { prevSubject: false }, () => {
   cy.visit('', {
     auth: {
-      username: 'tester',
-      password: 'IbisTester'
+      username: ibisTesterUser,
+      password: ibisTesterPwd
     }
   })
 })
