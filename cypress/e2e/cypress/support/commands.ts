@@ -52,7 +52,7 @@ declare namespace Cypress {
     checkNumCheckpointValueLabels(expectedNumLabels: number): void
     checkpointValueLabel(index: number): Chainable<any>
     visitAsTester(): void
-    visitLadybugAs(username: string, password: string): void
+    visitAs(username: string, password: string): void
     enableReportGenerator(): void
   }
 }
@@ -352,7 +352,7 @@ Cypress.Commands.add('visitAsTester', { prevSubject: false }, () => {
   })
 })
 
-Cypress.Commands.add('visitLadybugAs', { prevSubject: false }, (username, password) => {
+Cypress.Commands.add('visitAs', { prevSubject: false }, (username, password) => {
   cy.visit('', {
     auth: {
       username,

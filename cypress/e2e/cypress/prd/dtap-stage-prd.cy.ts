@@ -26,7 +26,7 @@ describe('dtap.stage=PRD', () => {
     ]
     for (const testCase of credentialsToTest) {
       it(`Cannot Report rerun as ${testCase.username}`, () => {
-        cy.visitLadybugAs(testCase.username, testCase.pwd)
+        cy.visitAs(testCase.username, testCase.pwd)
         cy.getNumLadybugReports().should('equal', 1)
         cy.inIframeBody('[data-cy-debug="tableRow"]')
           .find('td:nth-child(2)')
