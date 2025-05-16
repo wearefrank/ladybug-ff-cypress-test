@@ -83,6 +83,7 @@ Cypress.Commands.add('getNumLadybugReports', () => {
     url: `iaf/ladybug/api/metadata/${Cypress.env('debugStorageName') as string}/count`,
     times: 1
   }).as('apiGetReports_2')
+  cy.awaitLoadingSpinner()
   cy.inIframeBody('[data-cy-debug="refresh"]').click()
   cy.wait('@apiGetReports_2').then(interception => {
     const count: number = interception.response.body
@@ -261,7 +262,7 @@ function selectTreeNodeImpl (subject: JQuery<HTMLElement>, path: NodeSelection[]
 
 Cypress.Commands.add('awaitLoadingSpinner', () => {
   // We do not want to catch the moment that the loading spinner is NOT YET present
-  cy.wait(200)
+  cy.wait(400)
   cy.inIframeBody('[data-cy-loading-spinner]').should('not.exist')
 })
 
