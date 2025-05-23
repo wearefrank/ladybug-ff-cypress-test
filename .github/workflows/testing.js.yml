@@ -15,6 +15,10 @@ on:
         type: boolean
         default: false
         required: true
+      ffBranch:
+        description: If buildLatestFfandLadybugCode and if supplied, check out this branch of Frank!Framework
+        type: string
+        required: false
       backendBranch:
         description: If buildLatestFFandLadybugCode and if supplied, check out this branch of ladybug backend
         type: string
@@ -61,6 +65,9 @@ jobs:
         run: if [[ "${{ github.event.inputs.buildLatestFFandLadybugCode }}" == "" ]]; then echo "false"; else echo "${{ github.event.inputs.buildLatestFFandLadybugCode }}"; fi > temp; echo "buildCode=$(cat temp)" >> $GITHUB_OUTPUT
       - name: Show decision
         run: echo "buildCode is ${{ steps.decideAboutBuildCode.outputs.buildCode }}"
+      - name: Check that ffBranch is only set if it can be applied
+        if: ${{ inputs.ffBranch != '' && steps.decideAboutBuildCode.outputs.buildCode == 'false' }}
+        run: exit 1
       - name: Check that backendBranch is only set if it can be applied
         if: ${{ inputs.backendBranch != '' && steps.decideAboutBuildCode.outputs.buildCode == 'false' }}
         run: exit 1
@@ -126,6 +133,15 @@ jobs:
         with:
           repository: frankframework/frankframework
           path: frankframework
+      - name: Fetch FF branch to checkout
+        if: ${{ inputs.ffBranch != '' }}
+        working-directory: frankframework
+        run: git fetch origin ${{ inputs.ffBranch }}
+      - name: Checkout FF branch to checkout
+        if: ${{ inputs.ffBranch != '' }}
+        working-directory: frankframework
+        run: git checkout --track origin/${{ inputs.ffBranch }}
+
       - name: Check out ladybug-ff-test-webapp
         if: ${{ matrix.test-app == 'true' }}
         uses: actions/checkout@v4
