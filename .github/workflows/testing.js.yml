@@ -15,6 +15,10 @@ on:
         type: boolean
         default: false
         required: true
+      ffFork:
+        description: If buildLatestFfandLadybugCode and if supplied, clone the Frank!Framework from this user or organization
+        type: string
+        required: false
       ffBranch:
         description: If buildLatestFfandLadybugCode and if supplied, check out this branch of Frank!Framework
         type: string
@@ -65,6 +69,9 @@ jobs:
         run: if [[ "${{ github.event.inputs.buildLatestFFandLadybugCode }}" == "" ]]; then echo "false"; else echo "${{ github.event.inputs.buildLatestFFandLadybugCode }}"; fi > temp; echo "buildCode=$(cat temp)" >> $GITHUB_OUTPUT
       - name: Show decision
         run: echo "buildCode is ${{ steps.decideAboutBuildCode.outputs.buildCode }}"
+      - name: Check that ffFork is only set if it can be applied
+        if: ${{ inputs.ffFork != '' && steps.decideAboutBuildCode.outputs.buildCode == 'false' }}
+        run: exit 1
       - name: Check that ffBranch is only set if it can be applied
         if: ${{ inputs.ffBranch != '' && steps.decideAboutBuildCode.outputs.buildCode == 'false' }}
         run: exit 1
@@ -127,11 +134,17 @@ jobs:
         working-directory: ladybug
         run: git checkout --track origin/${{ inputs.backendBranch }}
 
-      - name: Checkout frankframework
-        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' }}
+      - name: Checkout frankframework - default
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' && inputs.ffFork == '' }}
         uses: actions/checkout@v4
         with:
           repository: frankframework/frankframework
+          path: frankframework
+      - name: Checkout frankframework - fork
+        if: ${{ steps.decideAboutBuildCode.outputs.buildCode == 'true' && inputs.ffFork != '' }}
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.ffFork }}/frankframework
           path: frankframework
       - name: Fetch FF branch to checkout
         if: ${{ inputs.ffBranch != '' }}
