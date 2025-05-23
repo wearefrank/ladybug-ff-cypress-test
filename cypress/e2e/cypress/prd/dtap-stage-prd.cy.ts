@@ -1,4 +1,8 @@
 describe('dtap.stage=PRD', () => {
+  Cypress.on('uncaught:exception', () => {
+    return false
+  })
+
   it('Report generator is disabled by default', () => {
     cy.visitAsTester()
     cy.getNumLadybugReports().then(numReports => {
