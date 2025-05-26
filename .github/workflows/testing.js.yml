@@ -16,7 +16,7 @@ on:
         default: false
         required: true
       ffFork:
-        description: If buildLatestFfandLadybugCode and if supplied, clone the Frank!Framework from this user or organization
+        description: If buildLatestFfandLadybugCode and if supplied, clone the Frank!Framework from this user or organization. Examples are "mhdirkse" or "jacodg".
         type: string
         required: false
       ffBranch:
