@@ -1,5 +1,8 @@
 describe('dtap.stage=PRD', () => {
   /*
+   * The code below is based on a suggestion from the internet, but it does not work.
+   * It lets the browser crash.
+   *
   Cypress.on('uncaught:exception', (err) => {
     if (err.message.includes('ResizeObserver loop completed with undelivered notifications')) {
       return false
@@ -12,7 +15,7 @@ describe('dtap.stage=PRD', () => {
     cy.visitAsTester()
     cy.getNumLadybugReports().then(numReports => {
       cy.wrap(numReports).should('equal', 0)
-      cy.runInTestAPipeline('Example1a', 'Adapter1a', 'xxx')
+      cy.runInTestAPipeline('Example1a', 'Adapter1a', 'yyy')
       cy.getNumLadybugReports().should('equal', 0)
     })
   })
