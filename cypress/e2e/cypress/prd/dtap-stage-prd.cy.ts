@@ -15,7 +15,7 @@ describe('dtap.stage=PRD', () => {
     cy.visitAsTester()
     cy.getNumLadybugReports().then(numReports => {
       cy.wrap(numReports).should('equal', 0)
-      cy.runInTestAPipeline('Example1a', 'Adapter1a', 'yyy')
+      cy.runInTestAPipeline('Example1a', 'Adapter1a', '')
       cy.getNumLadybugReports().should('equal', 0)
     })
   })
