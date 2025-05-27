@@ -7,6 +7,7 @@ module.exports = defineConfig({
     },
     supportFile: 'cypress/e2e/cypress/support/e2e.ts',
     baseUrl: 'http://localhost:8090',
+    experimentalMemoryManagement: true,
     video: true
   }
 })
