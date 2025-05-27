@@ -1,9 +1,10 @@
 describe('dtap.stage=PRD', () => {
+  Cypress.on('uncaught:exception', (err) => {
+    expect(err.message).to.include('ResizeObserver loop completed with undelivered notifications')
+    return false
+  })
+
   it('Report generator is disabled by default', () => {
-    cy.on('uncaught:exception', (err) => {
-      expect(err.message).to.include('ResizeObserver loop completed with undelivered notifications')
-      return false
-    })
     cy.visitAsTester()
     cy.getNumLadybugReports().then(numReports => {
       cy.wrap(numReports).should('equal', 0)
