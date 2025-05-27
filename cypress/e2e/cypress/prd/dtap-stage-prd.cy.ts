@@ -1,7 +1,9 @@
 describe('dtap.stage=PRD', () => {
   Cypress.on('uncaught:exception', (err) => {
-    expect(err.message).to.include('ResizeObserver loop completed with undelivered notifications')
-    return false
+    if (err.message.includes('ResizeObserver loop completed with undelivered notifications')) {
+      return false
+    }
+    return true
   })
 
   it('Report generator is disabled by default', () => {
