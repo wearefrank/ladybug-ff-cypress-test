@@ -98,7 +98,7 @@ Cypress.Commands.add('getNumLadybugReports', () => {
   })
 })
 
-Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, message: string) => {
+Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, message: string | undefined) => {
   cy.get('[data-cy-nav="adapterStatus"]', { timeout: 10000 }).click()
   cy.get('[data-cy-nav="testingRunPipeline"]').should('not.be.visible')
   cy.get('[data-cy-nav="testing"]').click()
@@ -106,9 +106,11 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
   cy.get('button:contains(Reset)').click()
   cy.get('[data-cy-test-pipeline="selectConfig"]').type(config + '{enter}')
   cy.get('[data-cy-test-pipeline="selectAdapter"]').type(adapter + '{enter}')
-  // Requires special treatment because the Monaco editor has to be
-  // accessed here.
-  cy.get('[data-cy-test-pipeline="message"]').type(message)
+  if (message !== undefined) {
+    // In dtap.stage=PRD, a JavaScript exception comes out of Ladybug
+    // when you type a message here.
+    cy.get('[data-cy-test-pipeline="message"]').type(message)
+  }
   cy.get('[data-cy-test-pipeline="send"]').click()
   cy.get('[data-cy-test-pipeline="runResult"]').should('contain', 'SUCCESS')
 })

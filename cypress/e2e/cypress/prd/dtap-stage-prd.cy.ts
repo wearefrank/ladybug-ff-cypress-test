@@ -1,9 +1,21 @@
 describe('dtap.stage=PRD', () => {
+  /*
+   * The code below is based on a suggestion from the internet, but it does not work.
+   * It lets the browser crash.
+   *
+  Cypress.on('uncaught:exception', (err) => {
+    if (err.message.includes('ResizeObserver loop completed with undelivered notifications')) {
+      return false
+    }
+    return true
+  })
+  */
+
   it('Report generator is disabled by default', () => {
     cy.visitAsTester()
     cy.getNumLadybugReports().then(numReports => {
       cy.wrap(numReports).should('equal', 0)
-      cy.runInTestAPipeline('Example1a', 'Adapter1a', 'xxx')
+      cy.runInTestAPipeline('Example1a', 'Adapter1a', undefined)
       cy.getNumLadybugReports().should('equal', 0)
     })
   })
