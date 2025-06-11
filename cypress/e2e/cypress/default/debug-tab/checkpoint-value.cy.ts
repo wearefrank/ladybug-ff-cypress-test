@@ -75,6 +75,30 @@ describe('Metadata and message context', () => {
     cy.selectTreeNode([
       'Pipeline Conclusion/IngestDocument',
       'Pipeline Conclusion/IngestDocument',
+      'Pipe checkXml'
+    ]).click()
+    cy.wait(1000)
+    cy.selectTreeNode([
+      'Pipeline Conclusion/IngestDocument',
+      'Pipeline Conclusion/IngestDocument',
+      'Pipe readTxtFile'
+    ]).click()
+    cy.wait(1000)
+    cy.selectTreeNode([
+      'Pipeline Conclusion/IngestDocument',
+      'Pipeline Conclusion/IngestDocument',
+      'Pipe encodeBody'
+    ]).click()
+    cy.wait(1000)
+    cy.selectTreeNode([
+      'Pipeline Conclusion/IngestDocument',
+      'Pipeline Conclusion/IngestDocument',
+      'Pipe composeMundoMessage'
+    ]).click()
+    cy.wait(1000)
+    cy.selectTreeNode([
+      'Pipeline Conclusion/IngestDocument',
+      'Pipeline Conclusion/IngestDocument',
       'Pipe sendToMundo',
       { seq: 1, text: 'Pipe sendToMundo' }
     ]).click()
