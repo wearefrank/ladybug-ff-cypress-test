@@ -69,8 +69,7 @@ describe('Metadata and message context', () => {
     cy.selectTreeNode([
       'Pipeline Conclusion/IngestDocument',
       'Pipeline Conclusion/IngestDocument',
-      'Pipe readXmlFile',
-      { sec: 1, text: 'Pipe readXmlFile'}
+      'Pipe readXmlFile'
     ]).click()
     cy.wait(1000)
     cy.selectTreeNode([
