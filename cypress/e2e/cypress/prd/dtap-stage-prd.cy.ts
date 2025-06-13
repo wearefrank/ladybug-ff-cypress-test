@@ -28,7 +28,7 @@ describe('dtap.stage=PRD', () => {
       cy.apiDeleteAllAsTester('Test')
       cy.enterLadybug()
       cy.enableReportGenerator()
-      cy.createReportInLadybug('Example1a', 'Adapter1a', 'xxx')
+      cy.createReportInLadybug('Example1a', 'Adapter1a', undefined)
     })
 
     const credentialsToTest: Array<{ username: string, pwd: string }> = [

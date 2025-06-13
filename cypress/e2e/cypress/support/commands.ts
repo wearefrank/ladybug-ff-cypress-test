@@ -132,7 +132,7 @@ Cypress.Commands.add('getNumLadybugReportsForNameFilter', (name) => {
   })
 })
 
-Cypress.Commands.add('createReportInLadybug', (config: string, adapter: string, message: string) => {
+Cypress.Commands.add('createReportInLadybug', (config: string, adapter: string, message: string | undefined) => {
   cy.getNumLadybugReports().then(numBefore => {
     cy.runInTestAPipeline(config, adapter, message)
     cy.getNumLadybugReports().should('equal', numBefore + 1)
