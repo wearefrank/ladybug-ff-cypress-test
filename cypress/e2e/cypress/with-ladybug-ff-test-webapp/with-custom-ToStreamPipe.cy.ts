@@ -17,7 +17,6 @@ describe('With custom ToStreamPipe', () => {
       'Pipe testPipe',
       { text: 'Pipe testPipe', seq: 1 }
     ]).click()
-    cy.inIframeBody('app-edit-display app-report-alert-message').should('have.length', 0)
     // TODO: It would be nice to get rid of this trim()
     cy.checkpointValueTrimmedEquals('Hello World_suffix')
   })

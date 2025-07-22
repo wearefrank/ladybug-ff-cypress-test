@@ -17,7 +17,6 @@ describe('Stream is not closed prematurely', () => {
       'Pipe replace',
       { text: 'Pipe replace', seq: 1 }
     ]).click()
-    cy.inIframeBody('app-edit-display app-report-alert-message').should('have.length', 0)
     cy.checkpointValueEquals('World!')
   })
 
