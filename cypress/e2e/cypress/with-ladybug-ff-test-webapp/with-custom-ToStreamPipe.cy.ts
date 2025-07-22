@@ -56,7 +56,8 @@ describe('With custom ToStreamPipe', () => {
   it('Empty binary stream appears well in ladybug', () => {
     cy.visit('')
     cy.runInTestAPipeline('UseToStreamPipe', 'UseToStreamPipeEmptyBin', ' ')
-    cy.getNumLadybugReports().should('equal', 4)
+    // 3 not 4 because previous test is skipped
+    cy.getNumLadybugReports().should('equal', 3)
     cy.inIframeBody('[data-cy-debug="tableRow"]').contains('UseToStreamPipeEmptyBin').click()
     cy.selectTreeNode([
       'Pipeline UseToStreamPipe/UseToStreamPipeEmptyBin',
