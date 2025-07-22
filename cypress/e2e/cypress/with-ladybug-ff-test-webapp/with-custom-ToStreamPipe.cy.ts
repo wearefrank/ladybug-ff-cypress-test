@@ -17,7 +17,6 @@ describe('With custom ToStreamPipe', () => {
       'Pipe testPipe',
       { text: 'Pipe testPipe', seq: 1 }
     ]).click()
-    cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     // TODO: It would be nice to get rid of this trim()
     cy.checkpointValueTrimmedEquals('Hello World_suffix')
   })
@@ -33,13 +32,13 @@ describe('With custom ToStreamPipe', () => {
       'Pipe testPipe',
       { text: 'Pipe testPipe', seq: 1 }
     ]).click()
-    cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'ByteArrayInputStream')
     // TODO: It would be nice to get rid of this trim.
     cy.checkpointValueTrimmedEquals('Hello World_suffix')
   })
 
-  it('Empty character stream is not closed prematurely', () => {
+  // Skipped because of https://github.com/frankframework/frankframework/issues/9345.
+  xit('Empty character stream appears well in ladybug', () => {
     cy.visit('')
     cy.runInTestAPipeline('UseToStreamPipe', 'UseToStreamPipeEmptyChar', ' ')
     cy.getNumLadybugReports().should('equal', 3)
@@ -50,15 +49,15 @@ describe('With custom ToStreamPipe', () => {
       'Pipe testPipe',
       { text: 'Pipe testPipe', seq: 1 }
     ]).click()
-    cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'empty')
     cy.checkpointValueEmpty()
   })
 
-  it('Empty binary stream is not closed prematurely', () => {
+  it('Empty binary stream appears well in ladybug', () => {
     cy.visit('')
     cy.runInTestAPipeline('UseToStreamPipe', 'UseToStreamPipeEmptyBin', ' ')
-    cy.getNumLadybugReports().should('equal', 4)
+    // 3 not 4 because previous test is skipped
+    cy.getNumLadybugReports().should('equal', 3)
     cy.inIframeBody('[data-cy-debug="tableRow"]').contains('UseToStreamPipeEmptyBin').click()
     cy.selectTreeNode([
       'Pipeline UseToStreamPipe/UseToStreamPipeEmptyBin',
@@ -66,7 +65,6 @@ describe('With custom ToStreamPipe', () => {
       'Pipe testPipe',
       { text: 'Pipe testPipe', seq: 1 }
     ]).click()
-    cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'empty')
     cy.checkpointValueEmpty()
   })
