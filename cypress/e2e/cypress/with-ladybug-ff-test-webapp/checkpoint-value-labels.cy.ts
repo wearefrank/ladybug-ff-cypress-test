@@ -20,7 +20,7 @@ describe('Checkpoint value labels', () => {
       .should('equal', 'Message is null')
   })
 
-  it('When message is empty character stream then two labels empty and character stream', () => {
+  it('When message is empty character stream then only label empty', () => {
     openReport('NullAndEmpty')
     cy.selectTreeNode([
       'Pipeline NullAndEmpty/NullAndEmpty',
@@ -28,16 +28,13 @@ describe('Checkpoint value labels', () => {
       'Pipe emptyCharacterStream',
       { seq: 1, text: 'Pipe emptyCharacterStream' }
     ]).click()
-    cy.checkNumCheckpointValueLabels(2)
+    cy.checkNumCheckpointValueLabels(1)
     cy.checkpointValueLabel(0)
-      .should('contain.text', 'asynchronously')
-      .should('contain.text', 'character stream')
-    cy.checkpointValueLabel(1)
       .trimmedText()
       .should('equal', 'Message is empty string')
   })
 
-  it('When message is empty binary stream then three labels empty, binary stream and encoding', () => {
+  it('When message is empty binary stream then two labels empty and encoding', () => {
     openReport('NullAndEmpty')
     cy.selectTreeNode([
       'Pipeline NullAndEmpty/NullAndEmpty',
@@ -45,14 +42,11 @@ describe('Checkpoint value labels', () => {
       'Pipe emptyBinaryStream',
       { seq: 1, text: 'Pipe emptyBinaryStream' }
     ]).click()
-    cy.checkNumCheckpointValueLabels(3)
+    cy.checkNumCheckpointValueLabels(2)
     cy.checkpointValueLabel(0)
-      .should('contain.text', 'asynchronously')
-      .should('contain.text', 'byte stream')
-    cy.checkpointValueLabel(1)
       .trimmedText()
       .should('equal', 'Message is empty string')
-    cy.checkpointValueLabel(2)
+    cy.checkpointValueLabel(1)
       .should('contain.text', 'encoded')
       .should('contain.text', 'UTF-8')
   })
@@ -68,7 +62,7 @@ describe('Checkpoint value labels', () => {
     cy.checkNumCheckpointValueLabels(0)
   })
 
-  it('When message is non-empty character stream then no label empty', () => {
+  it('When message is non-empty character stream then no labels', () => {
     openReport('NullAndEmpty')
     cy.selectTreeNode([
       'Pipeline NullAndEmpty/NullAndEmpty',
@@ -76,10 +70,7 @@ describe('Checkpoint value labels', () => {
       'Pipe stream',
       { seq: 1, text: 'stream' }
     ]).click()
-    cy.checkNumCheckpointValueLabels(1)
-    cy.checkpointValueLabel(0)
-      .should('contain.text', 'asynchronously')
-      .should('contain.text', 'character stream')
+    cy.checkNumCheckpointValueLabels(0)
   })
 })
 

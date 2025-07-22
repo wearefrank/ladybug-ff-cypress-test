@@ -17,7 +17,7 @@ describe('With custom ToStreamPipe', () => {
       'Pipe testPipe',
       { text: 'Pipe testPipe', seq: 1 }
     ]).click()
-    cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
+    cy.inIframeBody('app-edit-display app-report-alert-message').should('have.length', 0)
     // TODO: It would be nice to get rid of this trim()
     cy.checkpointValueTrimmedEquals('Hello World_suffix')
   })
@@ -33,13 +33,12 @@ describe('With custom ToStreamPipe', () => {
       'Pipe testPipe',
       { text: 'Pipe testPipe', seq: 1 }
     ]).click()
-    cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'ByteArrayInputStream')
     // TODO: It would be nice to get rid of this trim.
     cy.checkpointValueTrimmedEquals('Hello World_suffix')
   })
 
-  it('Empty character stream is not closed prematurely', () => {
+  it('Empty character stream appears well in ladybug', () => {
     cy.visit('')
     cy.runInTestAPipeline('UseToStreamPipe', 'UseToStreamPipeEmptyChar', ' ')
     cy.getNumLadybugReports().should('equal', 3)
@@ -50,12 +49,11 @@ describe('With custom ToStreamPipe', () => {
       'Pipe testPipe',
       { text: 'Pipe testPipe', seq: 1 }
     ]).click()
-    cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'empty')
     cy.checkpointValueEmpty()
   })
 
-  it('Empty binary stream is not closed prematurely', () => {
+  it('Empty binary stream appears well in ladybug', () => {
     cy.visit('')
     cy.runInTestAPipeline('UseToStreamPipe', 'UseToStreamPipeEmptyBin', ' ')
     cy.getNumLadybugReports().should('equal', 4)
@@ -66,7 +64,6 @@ describe('With custom ToStreamPipe', () => {
       'Pipe testPipe',
       { text: 'Pipe testPipe', seq: 1 }
     ]).click()
-    cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'Message is captured asynchronously')
     cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'empty')
     cy.checkpointValueEmpty()
   })
