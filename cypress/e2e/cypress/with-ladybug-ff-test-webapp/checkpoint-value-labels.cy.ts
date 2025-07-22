@@ -1,4 +1,9 @@
-describe('Checkpoint value labels', () => {
+// See https://github.com/frankframework/frankframework/issues/9345 for
+// why this test is disabled.
+//
+// Do not throw this test! It is the only place where we explicitly check
+// that unwanted labels are not present.
+describe.skip('Checkpoint value labels', () => {
   before(() => {
     cy.apiDeleteAll(Cypress.env('debugStorageName') as string)
     cy.apiDeleteAll('Test')

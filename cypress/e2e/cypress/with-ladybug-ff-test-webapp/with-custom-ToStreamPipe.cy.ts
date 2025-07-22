@@ -37,7 +37,8 @@ describe('With custom ToStreamPipe', () => {
     cy.checkpointValueTrimmedEquals('Hello World_suffix')
   })
 
-  it('Empty character stream appears well in ladybug', () => {
+  // Skipped because of https://github.com/frankframework/frankframework/issues/9345.
+  xit('Empty character stream appears well in ladybug', () => {
     cy.visit('')
     cy.runInTestAPipeline('UseToStreamPipe', 'UseToStreamPipeEmptyChar', ' ')
     cy.getNumLadybugReports().should('equal', 3)
