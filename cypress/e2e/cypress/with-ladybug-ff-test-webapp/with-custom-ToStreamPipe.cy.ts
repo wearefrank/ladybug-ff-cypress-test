@@ -56,7 +56,7 @@ describe('With custom ToStreamPipe', () => {
     cy.visit('')
     cy.runInTestAPipeline('UseToStreamPipe', 'UseToStreamPipeEmptyBin', ' ')
     // 3 not 4 because previous test is skipped
-    cy.getNumLadybugReports().should('equal', 3)
+    cy.getNumLadybugReports().should('equal', 4)
     cy.inIframeBody('[data-cy-debug="tableRow"]').contains('UseToStreamPipeEmptyBin').click()
     cy.selectTreeNode([
       'Pipeline UseToStreamPipe/UseToStreamPipeEmptyBin',
