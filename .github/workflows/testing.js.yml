@@ -327,7 +327,6 @@ jobs:
             ladybug-ff-test-webapp/serverStartLog.log
             frank-runner/build.properties
             frank-runner/specials/iaf-webapp/build.properties
-            ${{ env.RESOURCES_DIR }}/DeploymentSpecifics.properties
             frank-runner/build/apache-tomcat-*/conf/catalina.properties
             frank-runner/build/*/logs/*
             ladybug-ff-cypress-test/cypress/screenshots/
