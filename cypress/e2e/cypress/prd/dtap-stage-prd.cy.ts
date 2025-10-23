@@ -71,7 +71,7 @@ describe('dtap.stage=PRD', () => {
       cy.awaitLoadingSpinner()
       cy.inIframeBody('.rerun-result').should('not.exist')
       cy.inIframeBody('[data-cy-report="rerun"]').click()
-      cy.inIframeBody('.rerun-result').trimmedText().should('contain', 'success')
+      cy.inIframeBody('.rerun-result').trimmedText().should('contain', 'checkpoints')
       cy.getNumLadybugReports().should('equal', 1)
     })
   })

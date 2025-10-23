@@ -32,7 +32,7 @@ describe('With custom ToStreamPipe', () => {
       'Pipe testPipe',
       { text: 'Pipe testPipe', seq: 1 }
     ]).click()
-    cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'ByteArrayInputStream')
+    cy.inIframeBody('app-report-alert-message2').should('contain.text', 'ByteArrayInputStream')
     // TODO: It would be nice to get rid of this trim.
     cy.checkpointValueTrimmedEquals('Hello World_suffix')
   })
@@ -48,7 +48,7 @@ describe('With custom ToStreamPipe', () => {
       'Pipe testPipe',
       { text: 'Pipe testPipe', seq: 1 }
     ]).click()
-    cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'empty')
+    cy.inIframeBody('app-report-alert-message2').should('contain.text', 'empty')
     cy.checkpointValueEmpty()
   })
 
@@ -64,7 +64,7 @@ describe('With custom ToStreamPipe', () => {
       'Pipe testPipe',
       { text: 'Pipe testPipe', seq: 1 }
     ]).click()
-    cy.inIframeBody('app-edit-display app-report-alert-message').should('contain.text', 'empty')
+    cy.inIframeBody('app-report-alert-message2').should('contain.text', 'empty')
     cy.checkpointValueEmpty()
   })
 })
