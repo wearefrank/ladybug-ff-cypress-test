@@ -293,7 +293,7 @@ function checkLadybugCheckpointValue (checker: (string) => boolean, numberOfTime
     throw new Error('checkLadybugCheckpointValue number of tries exceeded')
   }
   cy.log(`Remaining number of tries: ${numberOfTimes}`).then(() => {
-    cy.inIframeBody('app-monaco-editor').then((appEditor) => {
+    cy.inIframeBody('[data-cy-element-name="checkpointEditor"]').then((appEditor) => {
       const textOfAppEditor: string = appEditor.text()
       cy.log(`Text out of scrollable element: ${trimForLog(textOfAppEditor)}`).then(() => {
         if (checker(textOfAppEditor)) {
