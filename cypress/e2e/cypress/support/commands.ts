@@ -285,6 +285,7 @@ function trimMonacoText (value: string): string {
 }
 
 Cypress.Commands.add('checkpointValueEquals', { prevSubject: false }, (expectedValue) => {
+  cy.inIframeBody('app-checkpoint-value');
   checkLadybugCheckpointValue((actualValue) => actualValue === expectedValue, 6, 1000)
 })
 
@@ -330,10 +331,12 @@ function trimForLog (value: string): string {
 }
 
 Cypress.Commands.add('checkpointValueTrimmedEquals', { prevSubject: false }, (expectedValue) => {
+  cy.inIframeBody('app-checkpoint-value');
   checkLadybugCheckpointValue((actualValue: string) => trimMonacoText(actualValue) === expectedValue, 6, 1000)
 })
 
 Cypress.Commands.add('checkpointValueEmpty', { prevSubject: false }, () => {
+  cy.inIframeBody('app-checkpoint-value');
   checkLadybugCheckpointValue((actualValue: string) => actualValue.length === 0, 6, 1000)
 })
 
