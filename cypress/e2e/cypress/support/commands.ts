@@ -285,6 +285,7 @@ function trimMonacoText (value: string): string {
 }
 
 Cypress.Commands.add('checkpointValueEquals', { prevSubject: false }, (expectedValue) => {
+  cy.inIframeBody('app-checkpoint-value');
   checkLadybugCheckpointValue((actualValue) => actualValue === expectedValue, 6, 1000)
 })
 
@@ -293,7 +294,7 @@ function checkLadybugCheckpointValue (checker: (string) => boolean, numberOfTime
     throw new Error('checkLadybugCheckpointValue number of tries exceeded')
   }
   cy.log(`Remaining number of tries: ${numberOfTimes}`).then(() => {
-    cy.inIframeBody('app-edit-display app-editor').then((appEditor) => {
+    cy.inIframeBody('[data-cy-element-name="checkpointEditor"]').then((appEditor) => {
       const textOfAppEditor: string = appEditor.text()
       cy.log(`Text out of scrollable element: ${trimForLog(textOfAppEditor)}`).then(() => {
         if (checker(textOfAppEditor)) {
@@ -330,20 +331,22 @@ function trimForLog (value: string): string {
 }
 
 Cypress.Commands.add('checkpointValueTrimmedEquals', { prevSubject: false }, (expectedValue) => {
+  cy.inIframeBody('app-checkpoint-value');
   checkLadybugCheckpointValue((actualValue: string) => trimMonacoText(actualValue) === expectedValue, 6, 1000)
 })
 
 Cypress.Commands.add('checkpointValueEmpty', { prevSubject: false }, () => {
+  cy.inIframeBody('app-checkpoint-value');
   checkLadybugCheckpointValue((actualValue: string) => actualValue.length === 0, 6, 1000)
 })
 
 Cypress.Commands.add('checkNumCheckpointValueLabels', { prevSubject: false }, (expectedNumLabels: number) => {
-  cy.inIframeBody('app-edit-display app-report-alert-message > div > div')
+  cy.inIframeBody('app-report-alert-message2 > div > div')
     .should('have.length', expectedNumLabels)
 })
 
 Cypress.Commands.add('checkpointValueLabel', { prevSubject: false }, (index: number) => {
-  cy.inIframeBody(`app-edit-display app-report-alert-message > div > div:eq(${index})`)
+  cy.inIframeBody(`app-report-alert-message2 > div > div:eq(${index})`)
 })
 
 Cypress.Commands.add('visitAsTester', { prevSubject: false }, () => {

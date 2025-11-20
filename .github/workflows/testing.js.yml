@@ -318,17 +318,5 @@ jobs:
         with:
           name: data test-app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: |
-            frankframework/ladybug/pom.xml
-            ladybug-ff-test-webapp/pom.xml
-            frank-runner/installFrankRunnerEnv.log
-            frank-runner/serverStartLog.log
-            frank-runner/specials/ladybug/buildIafWebapp.log
-            frank-runner/specials/ladybug/serverStartLog.log
-            ladybug-ff-test-webapp/serverStartLog.log
-            frank-runner/build.properties
-            frank-runner/specials/iaf-webapp/build.properties
-            ${{ env.RESOURCES_DIR }}/DeploymentSpecifics.properties
-            frank-runner/build/apache-tomcat-*/conf/catalina.properties
-            frank-runner/build/*/logs/*
             ladybug-ff-cypress-test/cypress/screenshots/
             ladybug-ff-cypress-test/cypress/videos/
