@@ -318,5 +318,6 @@ jobs:
         with:
           name: data test-app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: |
+            frank-runner/specials/ladybug/
             ladybug-ff-cypress-test/cypress/screenshots/
             ladybug-ff-cypress-test/cypress/videos/
