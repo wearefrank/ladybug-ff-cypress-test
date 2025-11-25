@@ -318,7 +318,15 @@ jobs:
         with:
           name: data test-app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: |
-            frank-runner/serverStartLog.log
             frank-runner/specials/ladybug/
+            frank-runner/build/**/apache-tomcat-1*/logs/
             ladybug-ff-cypress-test/cypress/screenshots/
             ladybug-ff-cypress-test/cypress/videos/
+      # Zip file becomes corrupt if you try to include non-existing files.
+      - name: Store logs that only exist for test webapp
+        if: ${{ failure() && matrix.test-app == 'false' }}
+        uses: actions/upload-artifact@v4.4.0
+        with:
+          name: serverStartLog.log test-app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
+          path: |
+            frank-runner/serverStartLog.log
