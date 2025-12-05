@@ -312,22 +312,21 @@ jobs:
         with:
           name: ladybug pom.xml test-app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: ladybug/pom.xml
-      - name: Store logs
+      - name: Store videos
         if: failure()
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: data test-app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
+          name: videos test-app=${{ matrix.test-app }} storage=${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: |
-            frank-runner/specials/ladybug/
-            ladybug-ff-cypress-test/cypress/screenshots/
             ladybug-ff-cypress-test/cypress/videos/
       # Zip file becomes corrupt if you try to include non-existing files.
-      - name: Store logs that only exist for test webapp
+      - name: Store logs and screenshots that only exist when test webapp is not used
         if: ${{ failure() && matrix.test-app == 'false' }}
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: logs = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
+          name: data test-app=${{ matrix.test-app }} storage=${{ matrix.storage }} dtap=${{ matrix.dtap }}
           path: |
             frank-runner/serverStartLog.log
             frank-runner/build/**/apache-tomcat-1*/logs/
-
+            frank-runner/specials/ladybug/
+            ladybug-ff-cypress-test/cypress/screenshots/
