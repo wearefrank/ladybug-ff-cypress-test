@@ -2,9 +2,11 @@ import './commands'
 
 // Ignore ResizeObserver errors
 Cypress.on('uncaught:exception', (err: any) => {
-  const errorText = err?.message || err?.toString() || '';
+  const msg = err?.message || '';
 
-  if (/ResizeObserver/i.test(errorText)) {
+  // Only ignore ResizeObserver loop errors, not all ResizeObserver strings
+  if (msg.includes('ResizeObserver loop limit exceeded') ||
+      msg.includes('ResizeObserver loop completed with undelivered notifications')) {
     return false;
   }
 
