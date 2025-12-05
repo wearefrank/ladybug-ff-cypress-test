@@ -99,11 +99,18 @@ Cypress.Commands.add('getNumLadybugReports', () => {
 })
 
 Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, message: string | undefined) => {
-  let formdata = new FormData();
-  formdata.append('configuration', config);
-  formdata.append('adapter', adapter);
-  if (message !== undefined) {
-    formdata.append('message', new Blob([message], { type: 'text/plain' }));
+  let formdata;
+  if (message === undefined) {
+    formdata = {
+      'configuration': config,
+      'adapter': adapter,
+    }
+  } else {
+    formdata = {
+      'configuration': config,
+      'adapter': adapter,
+      'message': new Blob([message], { type: 'text/plain' }),
+    }
   }
   cy.get('[data-cy-nav="adapterStatus"]', { timeout: 10000 }).click()
   cy.get('[data-cy-nav="testingRunPipeline"]').should('not.be.visible')
