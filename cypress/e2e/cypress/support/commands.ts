@@ -107,9 +107,12 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
   cy.get('[data-cy-test-pipeline="selectConfig"]').type(config + '{enter}')
   cy.get('[data-cy-test-pipeline="selectAdapter"]').type(adapter + '{enter}')
   if (message !== undefined) {
-    // In dtap.stage=PRD, a JavaScript exception comes out of Ladybug
-    // when you type a message here.
+    // Waits are an attempt to avoid that the application throws an error.
+    // Such an error should be caught by the cy.on() in e2e.ts, but that
+    // does not always work.
+    cy.wait(200);
     cy.get('[data-cy-test-pipeline="message"]').type(message)
+    cy.wait(200);
   }
   cy.get('[data-cy-test-pipeline="send"]').click()
   cy.get('[data-cy-test-pipeline="runResult"]').should('contain', 'SUCCESS')
