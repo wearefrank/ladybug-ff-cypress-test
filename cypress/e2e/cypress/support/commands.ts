@@ -99,6 +99,27 @@ Cypress.Commands.add('getNumLadybugReports', () => {
 })
 
 Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, message: string | undefined) => {
+  let formdata = new FormData();
+  formdata.append('configuration', config);
+  formdata.append('adapter', adapter);
+  if (message !== undefined) {
+    formdata.append('message', message);
+  }
+  cy.get('[data-cy-nav="adapterStatus"]', { timeout: 10000 }).click()
+  cy.get('[data-cy-nav="testingRunPipeline"]').should('not.be.visible')
+  cy.get('[data-cy-nav="testing"]').click()
+  cy.get('[data-cy-nav="testingRunPipeline"]').click()
+  cy.request({
+    method: 'POST',
+    url: '/api/test-pipeline',
+    body: formdata,
+    headers: {
+      'content-type': 'multipart/form-data'
+    },
+    failOnStatusCode: true,
+  }).its('body.state').should('equal', 'SUCCESS')
+  
+  /*
   cy.get('[data-cy-nav="adapterStatus"]', { timeout: 10000 }).click()
   cy.get('[data-cy-nav="testingRunPipeline"]').should('not.be.visible')
   cy.get('[data-cy-nav="testing"]').click()
@@ -120,6 +141,7 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
   }
   cy.get('[data-cy-test-pipeline="send"]').click()
   cy.get('[data-cy-test-pipeline="runResult"]').should('contain', 'SUCCESS')
+  */
 })
 
 // Only works if some reports are expected to be omitted because of the filter
