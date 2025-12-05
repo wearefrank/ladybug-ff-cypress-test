@@ -1,8 +1,8 @@
 import './commands'
 
-Cypress.on('uncaught:exception', (err) => {
+Cypress.on('uncaught:exception', (err: any) => {
   // Ignore ResizeObserver errors
-  if (err.message.includes('ResizeObserver')) {
+  if (err?.message?.includes('ResizeObserver')) {
     return false; // prevents Cypress from failing the test
   }
 
