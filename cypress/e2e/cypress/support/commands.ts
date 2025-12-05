@@ -103,7 +103,7 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
   formdata.append('configuration', config);
   formdata.append('adapter', adapter);
   if (message !== undefined) {
-    formdata.append('message', message);
+    formdata.append('message', new Blob([message], { type: 'text/plain' }));
   }
   cy.get('[data-cy-nav="adapterStatus"]', { timeout: 10000 }).click()
   cy.get('[data-cy-nav="testingRunPipeline"]').should('not.be.visible')
@@ -118,7 +118,9 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
     },
     form: true,
     failOnStatusCode: true,
-  }).its('body.state').should('equal', 'SUCCESS')
+  }).its('body').then((body) => {
+    cy.wrap(body.state).should('equal', 'SUCCESS')
+  })
   
   /*
   cy.get('[data-cy-nav="adapterStatus"]', { timeout: 10000 }).click()
