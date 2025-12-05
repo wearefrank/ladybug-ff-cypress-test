@@ -1,11 +1,12 @@
 import './commands'
 
+// Ignore ResizeObserver errors
 Cypress.on('uncaught:exception', (err: any) => {
-  // Ignore ResizeObserver errors
-  if (err?.message?.includes('ResizeObserver')) {
-    return false; // prevents Cypress from failing the test
+  const errorText = err?.message || err?.toString() || '';
+
+  if (/ResizeObserver/i.test(errorText)) {
+    return false;
   }
 
-  // Let other errors fail the test
   return true;
 });
