@@ -116,6 +116,7 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
     headers: {
       'content-type': 'multipart/form-data'
     },
+    form: true,
     failOnStatusCode: true,
   }).its('body.state').should('equal', 'SUCCESS')
   
