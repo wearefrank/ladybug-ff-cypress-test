@@ -111,7 +111,7 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
   cy.get('[data-cy-nav="testingRunPipeline"]').click()
   cy.request({
     method: 'POST',
-    url: '/api/test-pipeline',
+    url: '/iaf/api/test-pipeline',
     body: formdata,
     headers: {
       'content-type': 'multipart/form-data'
