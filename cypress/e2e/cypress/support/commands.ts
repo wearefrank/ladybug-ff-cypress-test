@@ -109,7 +109,7 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
   cy.get('[data-cy-nav="testingRunPipeline"]').should('not.be.visible')
   cy.get('[data-cy-nav="testing"]').click()
   cy.get('[data-cy-nav="testingRunPipeline"]').click()
-  cy.request({
+  const requestObject = {
     method: 'POST',
     url: '/iaf/api/test-pipeline',
     body: formdata,
@@ -118,7 +118,9 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
     // },
     form: true,
     failOnStatusCode: true,
-  }).its('body').then((body) => {
+  }
+  cy.log('Request config', JSON.stringify(requestObject));
+  cy.request(requestObject).its('body').then((body) => {
     cy.wrap(body.state).should('equal', 'SUCCESS')
   })
   
