@@ -110,9 +110,11 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
     // Waits are an attempt to avoid that the application throws an error.
     // Such an error should be caught by the cy.on() in e2e.ts, but that
     // does not always work.
-    cy.wait(200);
+    //
+    // Wait time also makes sure that we can see the typed message in the video
+    cy.wait(1000);
     cy.get('[data-cy-test-pipeline="message"]').type(message)
-    cy.wait(200);
+    cy.wait(1000);
   }
   cy.get('[data-cy-test-pipeline="send"]').click()
   cy.get('[data-cy-test-pipeline="runResult"]').should('contain', 'SUCCESS')
