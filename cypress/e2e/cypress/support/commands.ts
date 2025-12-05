@@ -112,9 +112,13 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
     // does not always work.
     //
     // Wait time also makes sure that we can see the typed message in the video
-    cy.wait(1000);
-    cy.get('[data-cy-test-pipeline="message"]').type(message)
-    cy.wait(1000);
+    cy.wait(200);
+    cy.get('[data-cy-test-pipeline="message"]').as('messageField');
+    cy.wait(200);
+    cy.get('@messageField').focus();
+    cy.wait(200);
+    cy.get('@messageField').type(message)
+    cy.wait(200);
   }
   cy.get('[data-cy-test-pipeline="send"]').click()
   cy.get('[data-cy-test-pipeline="runResult"]').should('contain', 'SUCCESS')
