@@ -113,9 +113,9 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
     method: 'POST',
     url: '/iaf/api/test-pipeline',
     body: formdata,
-    headers: {
-      'content-type': 'multipart/form-data'
-    },
+    // headers: {
+    //   'content-type': 'multipart/form-data'
+    // },
     form: true,
     failOnStatusCode: true,
   }).its('body').then((body) => {
