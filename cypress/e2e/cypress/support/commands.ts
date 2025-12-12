@@ -108,6 +108,7 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
   cy.get('[data-cy-test-pipeline="selectAdapter"]').type(adapter + '{enter}')
   if (message !== undefined) {
     cy.get('[data-cy=test-pipeline__message__input] .monaco-editor').click()
+    cy.wait(200)
     cy.get('[data-cy=test-pipeline__message__input] .monaco-editor').type(message)
   }
   cy.get('[data-cy-test-pipeline="send"]').click()
