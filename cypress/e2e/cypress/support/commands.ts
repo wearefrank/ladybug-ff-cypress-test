@@ -107,9 +107,8 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
   cy.get('[data-cy-test-pipeline="selectConfig"]').type(config + '{enter}')
   cy.get('[data-cy-test-pipeline="selectAdapter"]').type(adapter + '{enter}')
   if (message !== undefined) {
-    // In dtap.stage=PRD, a JavaScript exception comes out of Ladybug
-    // when you type a message here.
-    cy.get('[data-cy-test-pipeline="message"]').type(message)
+    cy.get('[data-cy=test-pipeline__message__input] .monaco-editor').click()
+    cy.get('[data-cy=test-pipeline__message__input] .monaco-editor').type(message)
   }
   cy.get('[data-cy-test-pipeline="send"]').click()
   cy.get('[data-cy-test-pipeline="runResult"]').should('contain', 'SUCCESS')
