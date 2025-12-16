@@ -99,20 +99,27 @@ Cypress.Commands.add('getNumLadybugReports', () => {
 })
 
 Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, message: string | undefined) => {
+  // TODO: Do not visit Test a Pipeline when it is not used.
   cy.get('[data-cy-nav="adapterStatus"]', { timeout: 10000 }).click()
   cy.get('[data-cy-nav="testingRunPipeline"]').should('not.be.visible')
   cy.get('[data-cy-nav="testing"]').click()
   cy.get('[data-cy-nav="testingRunPipeline"]').click()
-  cy.get('button:contains(Reset)').click()
-  cy.get('[data-cy-test-pipeline="selectConfig"]').type(config + '{enter}')
-  cy.get('[data-cy-test-pipeline="selectAdapter"]').type(adapter + '{enter}')
+
+  const formData = new FormData();
+  formData.append('configuration', config);
+  formData.append('adapter', adapter);
   if (message !== undefined) {
-    // In dtap.stage=PRD, a JavaScript exception comes out of Ladybug
-    // when you type a message here.
-    cy.get('[data-cy-test-pipeline="message"]').type(message)
+    formData.append('message', new Blob([message], { type: 'text/plain' }), 'message');
   }
-  cy.get('[data-cy-test-pipeline="send"]').click()
-  cy.get('[data-cy-test-pipeline="runResult"]').should('contain', 'SUCCESS')
+  cy.request({
+    method: 'POST',
+    url: 'api/test-pipeline',
+    body: formData,
+    form: true,
+  }).then((response) => {
+    cy.wrap(response.status).should('equal', 200);
+    cy.wrap(response.body.state).should('equal', 'SUCCESS');
+  })
 })
 
 // Only works if some reports are expected to be omitted because of the filter
