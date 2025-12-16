@@ -32,9 +32,9 @@ declare namespace Cypress {
     inIframeBody(query: string): Chainable<any>
     enterLadybug(): void
     getNumLadybugReports(): Chainable<any>
-    createReportWithTestPipelineApi(config: string, adapter: string, message: string): Chainable<any>
+    createReportWithTestPipelineApi(config: string, adapter: string, message: string, username?: string, password?: string): Chainable<any>
     getNumLadybugReportsForNameFilter(name: string): Chainable<number>
-    createReportInLadybug(config: string, adapter: string, message: string): Chainable<number>
+    createReportInLadybug(config: string, adapter: string, message: string, username?: string, password?: string): Chainable<number>
     getAllStorageIdsInTable(): Chainable<number[]>
     guardedCopyReportToTestTab(alias: string)
     checkTestTabHasReportNamed(name: string): Cypress.Chainable<any>
@@ -98,19 +98,32 @@ Cypress.Commands.add('getNumLadybugReports', () => {
   })
 })
 
-Cypress.Commands.add('createReportWithTestPipelineApi', (config: string, adapter: string, message: string | undefined) => {
+Cypress.Commands.add('createReportWithTestPipelineApi', (config: string, adapter: string, message: string | undefined, username?: string, password?: string) => {
   const formData = new FormData();
   formData.append('configuration', config);
   formData.append('adapter', adapter);
   if (message !== undefined) {
     formData.append('message', new Blob([message], { type: 'text/plain' }), 'message');
   }
+  const multipartHeader = {
+    'Content-Type': 'multipart/form-data'
+  }
+  let authorizationHeader = {}
+  if (username !== undefined) {
+    if (password === undefined) {
+      throw new Error('When you want to authorize with a username, then a password should be provided')
+    }
+    // Encode to Base64
+    const encodedCredentials = btoa(`${username}:${password}`);
+    authorizationHeader = {
+      Authorization: `Basic ${encodedCredentials}`,
+    }
+  }
+  const headers = { ...multipartHeader, ...authorizationHeader }
   cy.request({
     method: 'POST',
     url: 'iaf/api/test-pipeline',
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    },
+    headers,
     body: formData
   }).then((response) => {
     expect(response.status).to.equal(200);
@@ -137,9 +150,9 @@ Cypress.Commands.add('getNumLadybugReportsForNameFilter', (name) => {
   })
 })
 
-Cypress.Commands.add('createReportInLadybug', (config: string, adapter: string, message: string | undefined) => {
+Cypress.Commands.add('createReportInLadybug', (config: string, adapter: string, message: string | undefined, username?: string, password?: string) => {
   cy.getNumLadybugReports().then(numBefore => {
-    cy.createReportWithTestPipelineApi(config, adapter, message)
+    cy.createReportWithTestPipelineApi(config, adapter, message, username, password)
     cy.getNumLadybugReports().should('equal', numBefore + 1)
     cy.getAllStorageIdsInTable().then(storageIds => {
       const storageId = Math.max.apply(null, storageIds)
