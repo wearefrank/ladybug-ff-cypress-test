@@ -99,41 +99,37 @@ Cypress.Commands.add('getNumLadybugReports', () => {
 })
 
 Cypress.Commands.add('createReportWithTestPipelineApi', (config: string, adapter: string, message: string | undefined, username?: string, password?: string) => {
-  cy.getCookie('XSRF-TOKEN').then((cookie) => {
-    const xsrfToken = cookie.value;
-    const formData = new FormData();
-    formData.append('configuration', config);
-    formData.append('adapter', adapter);
-    if (message !== undefined) {
-      formData.append('message', new Blob([message], { type: 'text/plain' }), 'message');
+  const formData = new FormData();
+  formData.append('configuration', config);
+  formData.append('adapter', adapter);
+  if (message !== undefined) {
+    formData.append('message', new Blob([message], { type: 'text/plain' }), 'message');
+  }
+  const multipartHeader = {
+    'Content-Type': 'multipart/form-data'
+  }
+  let authorizationHeader = {}
+  if (username !== undefined) {
+    if (password === undefined) {
+      throw new Error('When you want to authorize with a username, then a password should be provided')
     }
-    const multipartHeader = {
-      'Content-Type': 'multipart/form-data'
+    // Encode to Base64
+    const encodedCredentials = btoa(`${username}:${password}`);
+    authorizationHeader = {
+      Authorization: `Basic ${encodedCredentials}`,
     }
-    let authorizationHeader = {}
-    if (username !== undefined) {
-      if (password === undefined) {
-        throw new Error('When you want to authorize with a username, then a password should be provided')
-      }
-      // Encode to Base64
-      const encodedCredentials = btoa(`${username}:${password}`);
-      authorizationHeader = {
-        Authorization: `Basic ${encodedCredentials}`,
-        'X-XSRF-TOKEN': cookie.value,
-      }
-    }
-    const headers = { ...multipartHeader, ...authorizationHeader }
-    cy.request({
-      method: 'POST',
-      url: 'iaf/api/test-pipeline',
-      headers,
-      body: formData
-    }).then((response) => {
-      expect(response.status).to.equal(200);
-      const dec = new TextDecoder();
-      const parsedResponse = JSON.parse(dec.decode(response.body));
-      expect(parsedResponse.state).to.equal('SUCCESS');
-    })
+  }
+  const headers = { ...multipartHeader, ...authorizationHeader }
+  cy.request({
+    method: 'POST',
+    url: 'iaf/api/test-pipeline',
+    headers,
+    body: formData
+  }).then((response) => {
+    expect(response.status).to.equal(200);
+    const dec = new TextDecoder();
+    const parsedResponse = JSON.parse(dec.decode(response.body));
+    expect(parsedResponse.state).to.equal('SUCCESS');
   })
 })
 
