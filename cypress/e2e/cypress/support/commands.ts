@@ -113,15 +113,17 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
   }
   cy.request({
     method: 'POST',
-    url: 'api/test-pipeline',
-    body: formData,
-    form: true,
+    url: 'iaf/api/test-pipeline',
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
+    body: formData
   }).then((response) => {
-    cy.wrap(response.status).should('equal', 200);
-    cy.wrap(response.body.state).should('equal', 'SUCCESS');
+    expect(response.status).to.equal(200);
+    const dec = new TextDecoder();
+    const parsedResponse = JSON.parse(dec.decode(response.body));
+    expect(parsedResponse.state).to.equal('SUCCESS');
   })
-  // See result in video
-  cy.wait(1000)
 })
 
 // Only works if some reports are expected to be omitted because of the filter
