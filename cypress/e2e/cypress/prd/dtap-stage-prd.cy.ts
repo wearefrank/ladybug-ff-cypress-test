@@ -15,7 +15,7 @@ describe('dtap.stage=PRD', () => {
     cy.visitAsTester()
     cy.getNumLadybugReports().then(numReports => {
       cy.wrap(numReports).should('equal', 0)
-      cy.runInTestAPipeline('Example1a', 'Adapter1a', undefined)
+      cy.createReportWithTestPipelineApi('Example1a', 'Adapter1a', 'xxx')
       cy.getNumLadybugReports().should('equal', 0)
     })
   })
@@ -28,7 +28,7 @@ describe('dtap.stage=PRD', () => {
       cy.apiDeleteAllAsTester('Test')
       cy.enterLadybug()
       cy.enableReportGenerator()
-      cy.createReportInLadybug('Example1a', 'Adapter1a', undefined)
+      cy.createReportInLadybug('Example1a', 'Adapter1a', 'xxx', 'tester', 'IbisTester')
     })
 
     const credentialsToTest: Array<{ username: string, pwd: string }> = [

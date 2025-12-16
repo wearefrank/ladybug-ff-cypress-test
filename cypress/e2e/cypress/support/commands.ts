@@ -32,9 +32,9 @@ declare namespace Cypress {
     inIframeBody(query: string): Chainable<any>
     enterLadybug(): void
     getNumLadybugReports(): Chainable<any>
-    runInTestAPipeline(config: string, adapter: string, message: string): Chainable<any>
+    createReportWithTestPipelineApi(config: string, adapter: string, message: string, username?: string, password?: string): Chainable<any>
     getNumLadybugReportsForNameFilter(name: string): Chainable<number>
-    createReportInLadybug(config: string, adapter: string, message: string): Chainable<number>
+    createReportInLadybug(config: string, adapter: string, message: string, username?: string, password?: string): Chainable<number>
     getAllStorageIdsInTable(): Chainable<number[]>
     guardedCopyReportToTestTab(alias: string)
     checkTestTabHasReportNamed(name: string): Cypress.Chainable<any>
@@ -98,21 +98,40 @@ Cypress.Commands.add('getNumLadybugReports', () => {
   })
 })
 
-Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, message: string | undefined) => {
-  cy.get('[data-cy-nav="adapterStatus"]', { timeout: 10000 }).click()
-  cy.get('[data-cy-nav="testingRunPipeline"]').should('not.be.visible')
-  cy.get('[data-cy-nav="testing"]').click()
-  cy.get('[data-cy-nav="testingRunPipeline"]').click()
-  cy.get('button:contains(Reset)').click()
-  cy.get('[data-cy-test-pipeline="selectConfig"]').type(config + '{enter}')
-  cy.get('[data-cy-test-pipeline="selectAdapter"]').type(adapter + '{enter}')
-  if (message !== undefined) {
-    // In dtap.stage=PRD, a JavaScript exception comes out of Ladybug
-    // when you type a message here.
-    cy.get('[data-cy-test-pipeline="message"]').type(message)
+// When the Test a Pipeline UI was used, the empty message was supported.
+// Now that the API endpoint is called directly, the empty message does not work.
+// An internal server error (500) was observed for that case.
+Cypress.Commands.add('createReportWithTestPipelineApi', (config: string, adapter: string, message: string, username?: string, password?: string) => {
+  const formData = new FormData();
+  formData.append('configuration', config);
+  formData.append('adapter', adapter);
+  formData.append('message', new Blob([message], { type: 'text/plain' }), 'message');
+  const multipartHeader = {
+    'Content-Type': 'multipart/form-data'
   }
-  cy.get('[data-cy-test-pipeline="send"]').click()
-  cy.get('[data-cy-test-pipeline="runResult"]').should('contain', 'SUCCESS')
+  let authorizationHeader = {}
+  if (username !== undefined) {
+    if (password === undefined) {
+      throw new Error('When you want to authorize with a username, then a password should be provided')
+    }
+    // Encode to Base64
+    const encodedCredentials = btoa(`${username}:${password}`);
+    authorizationHeader = {
+      Authorization: `Basic ${encodedCredentials}`,
+    }
+  }
+  const headers = { ...multipartHeader, ...authorizationHeader }
+  cy.request({
+    method: 'POST',
+    url: 'iaf/api/test-pipeline',
+    headers,
+    body: formData
+  }).then((response) => {
+    expect(response.status).to.equal(200);
+    const dec = new TextDecoder();
+    const parsedResponse = JSON.parse(dec.decode(response.body));
+    expect(parsedResponse.state).to.equal('SUCCESS');
+  })
 })
 
 // Only works if some reports are expected to be omitted because of the filter
@@ -132,9 +151,9 @@ Cypress.Commands.add('getNumLadybugReportsForNameFilter', (name) => {
   })
 })
 
-Cypress.Commands.add('createReportInLadybug', (config: string, adapter: string, message: string | undefined) => {
+Cypress.Commands.add('createReportInLadybug', (config: string, adapter: string, message: string, username?: string, password?: string) => {
   cy.getNumLadybugReports().then(numBefore => {
-    cy.runInTestAPipeline(config, adapter, message)
+    cy.createReportWithTestPipelineApi(config, adapter, message, username, password)
     cy.getNumLadybugReports().should('equal', numBefore + 1)
     cy.getAllStorageIdsInTable().then(storageIds => {
       const storageId = Math.max.apply(null, storageIds)

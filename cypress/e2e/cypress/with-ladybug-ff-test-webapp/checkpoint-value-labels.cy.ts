@@ -95,7 +95,7 @@ describe('Checkpoint value truncation because of ibistesttool.maxMessageLength',
     cy.apiDeleteAll('Test')
     cy.visit('')
     // Including the newlines, these are 7 * 56 = 392 characters.
-    cy.runInTestAPipeline('UseTextBlockTestPipe', 'UseTextBlockPipe', '7 55')
+    cy.createReportWithTestPipelineApi('UseTextBlockTestPipe', 'UseTextBlockPipe', '7 55')
   })
 
   const TOTAL_CHARACTERS_OF_CHECKPOINT = 7 * 56
