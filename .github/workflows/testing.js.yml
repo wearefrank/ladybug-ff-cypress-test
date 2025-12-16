@@ -200,7 +200,7 @@ jobs:
         run: cat ladybug-ff-cypress-test/.github/workflows/DeploymentSpecifics-enable-database.properties >> $RESOURCES_DIR/DeploymentSpecifics.properties
       - name: Require authentication
         if: ${{ matrix.dtap == 'PRD' }}
-        run: echo "application.security.console.authentication.type=YAML" >> $RESOURCES_DIR/DeploymentSpecifics.properties
+        run: cat ladybug-ff-cypress-test/.github/workflows/DeploymentSpecifics-authorization.properties >> $RESOURCES_DIR/DeploymentSpecifics.properties
       - name: Copy localUsers.yml
         if: ${{ matrix.dtap == 'PRD' }}
         run: cp ladybug-ff-cypress-test/.github/workflows/localUsers.yml.txt $RESOURCES_DIR/localUsers.yml
@@ -330,4 +330,10 @@ jobs:
           path: |
             frank-runner/serverStartLog.log
             frank-runner/build/**/apache-tomcat-1*/logs/
-
+      - name: Store logs that only exist for PRD
+        if: ${{ failure() && matrix.dtap == 'PRD' }}
+        uses: actions/upload-artifact@v4.4.0
+        with:
+          name: DeploymentSpecifics.properties test-app = ${{ matrix.test-app }} storage = ${{ matrix.storage }} dtap=${{ matrix.dtap }}
+          path: |
+            ${{ env.RESOURCES_DIR }}/DeploymentSpecifics.properties
