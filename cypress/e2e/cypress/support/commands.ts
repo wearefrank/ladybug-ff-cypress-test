@@ -98,13 +98,14 @@ Cypress.Commands.add('getNumLadybugReports', () => {
   })
 })
 
-Cypress.Commands.add('createReportWithTestPipelineApi', (config: string, adapter: string, message: string | undefined, username?: string, password?: string) => {
+// When the Test a Pipeline UI was used, the empty message was supported.
+// Now that the API endpoint is called directly, the empty message does not work.
+// An internal server error (500) was observed for that case.
+Cypress.Commands.add('createReportWithTestPipelineApi', (config: string, adapter: string, message: string, username?: string, password?: string) => {
   const formData = new FormData();
   formData.append('configuration', config);
   formData.append('adapter', adapter);
-  if (message !== undefined) {
-    formData.append('message', new Blob([message], { type: 'text/plain' }), 'message');
-  }
+  formData.append('message', new Blob([message], { type: 'text/plain' }), 'message');
   const multipartHeader = {
     'Content-Type': 'multipart/form-data'
   }
@@ -150,7 +151,7 @@ Cypress.Commands.add('getNumLadybugReportsForNameFilter', (name) => {
   })
 })
 
-Cypress.Commands.add('createReportInLadybug', (config: string, adapter: string, message: string | undefined, username?: string, password?: string) => {
+Cypress.Commands.add('createReportInLadybug', (config: string, adapter: string, message: string, username?: string, password?: string) => {
   cy.getNumLadybugReports().then(numBefore => {
     cy.createReportWithTestPipelineApi(config, adapter, message, username, password)
     cy.getNumLadybugReports().should('equal', numBefore + 1)

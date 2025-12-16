@@ -15,7 +15,7 @@ describe('dtap.stage=PRD', () => {
     cy.visitAsTester()
     cy.getNumLadybugReports().then(numReports => {
       cy.wrap(numReports).should('equal', 0)
-      cy.createReportWithTestPipelineApi('Example1a', 'Adapter1a', undefined)
+      cy.createReportWithTestPipelineApi('Example1a', 'Adapter1a', 'xxx')
       cy.getNumLadybugReports().should('equal', 0)
     })
   })
