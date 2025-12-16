@@ -8,7 +8,7 @@ describe('With custom ToStreamPipe', () => {
 
   it('Discarded character stream appears well in Ladybug', () => {
     cy.visit('')
-    cy.runInTestAPipeline('UseToStreamPipe', 'UseToStreamPipeChar', ' ')
+    cy.createReportWithTestPipelineApi('UseToStreamPipe', 'UseToStreamPipeChar', ' ')
     cy.getNumLadybugReports().should('equal', 1)
     cy.inIframeBody('[data-cy-debug="tableRow"]').contains('UseToStreamPipeChar').click()
     cy.selectTreeNode([
@@ -23,7 +23,7 @@ describe('With custom ToStreamPipe', () => {
 
   it('Discarded binary stream appears well in Ladybug', () => {
     cy.visit('')
-    cy.runInTestAPipeline('UseToStreamPipe', 'UseToStreamPipeBin', ' ')
+    cy.createReportWithTestPipelineApi('UseToStreamPipe', 'UseToStreamPipeBin', ' ')
     cy.getNumLadybugReports().should('equal', 2)
     cy.inIframeBody('[data-cy-debug="tableRow"]').contains('UseToStreamPipeBin').click()
     cy.selectTreeNode([
@@ -39,7 +39,7 @@ describe('With custom ToStreamPipe', () => {
 
   it('Empty character stream appears well in ladybug', () => {
     cy.visit('')
-    cy.runInTestAPipeline('UseToStreamPipe', 'UseToStreamPipeEmptyChar', ' ')
+    cy.createReportWithTestPipelineApi('UseToStreamPipe', 'UseToStreamPipeEmptyChar', ' ')
     cy.getNumLadybugReports().should('equal', 3)
     cy.inIframeBody('[data-cy-debug="tableRow"]').contains('UseToStreamPipeEmptyChar').click()
     cy.selectTreeNode([
@@ -54,7 +54,7 @@ describe('With custom ToStreamPipe', () => {
 
   it('Empty binary stream appears well in ladybug', () => {
     cy.visit('')
-    cy.runInTestAPipeline('UseToStreamPipe', 'UseToStreamPipeEmptyBin', ' ')
+    cy.createReportWithTestPipelineApi('UseToStreamPipe', 'UseToStreamPipeEmptyBin', ' ')
     // 3 not 4 because previous test is skipped
     cy.getNumLadybugReports().should('equal', 4)
     cy.inIframeBody('[data-cy-debug="tableRow"]').contains('UseToStreamPipeEmptyBin').click()

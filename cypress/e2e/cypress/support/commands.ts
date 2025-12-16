@@ -32,7 +32,7 @@ declare namespace Cypress {
     inIframeBody(query: string): Chainable<any>
     enterLadybug(): void
     getNumLadybugReports(): Chainable<any>
-    runInTestAPipeline(config: string, adapter: string, message: string): Chainable<any>
+    createReportWithTestPipelineApi(config: string, adapter: string, message: string): Chainable<any>
     getNumLadybugReportsForNameFilter(name: string): Chainable<number>
     createReportInLadybug(config: string, adapter: string, message: string): Chainable<number>
     getAllStorageIdsInTable(): Chainable<number[]>
@@ -98,13 +98,7 @@ Cypress.Commands.add('getNumLadybugReports', () => {
   })
 })
 
-Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, message: string | undefined) => {
-  // TODO: Do not visit Test a Pipeline when it is not used.
-  cy.get('[data-cy-nav="adapterStatus"]', { timeout: 10000 }).click()
-  cy.get('[data-cy-nav="testingRunPipeline"]').should('not.be.visible')
-  cy.get('[data-cy-nav="testing"]').click()
-  cy.get('[data-cy-nav="testingRunPipeline"]').click()
-
+Cypress.Commands.add('createReportWithTestPipelineApi', (config: string, adapter: string, message: string | undefined) => {
   const formData = new FormData();
   formData.append('configuration', config);
   formData.append('adapter', adapter);
@@ -145,7 +139,7 @@ Cypress.Commands.add('getNumLadybugReportsForNameFilter', (name) => {
 
 Cypress.Commands.add('createReportInLadybug', (config: string, adapter: string, message: string | undefined) => {
   cy.getNumLadybugReports().then(numBefore => {
-    cy.runInTestAPipeline(config, adapter, message)
+    cy.createReportWithTestPipelineApi(config, adapter, message)
     cy.getNumLadybugReports().should('equal', numBefore + 1)
     cy.getAllStorageIdsInTable().then(storageIds => {
       const storageId = Math.max.apply(null, storageIds)

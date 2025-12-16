@@ -2,15 +2,15 @@ describe('Basic tests', () => {
   it('Basic test', () => {
     cy.visit('')
     cy.getNumLadybugReports().then(numReports => {
-      cy.runInTestAPipeline('Example1a', 'Adapter1a', 'xxx')
+      cy.createReportWithTestPipelineApi('Example1a', 'Adapter1a', 'xxx')
       cy.getNumLadybugReports().should('equal', numReports + 1)
     })
   })
 
   it('Filter no regex', () => {
     cy.visit('')
-    cy.runInTestAPipeline('Example1a', 'Adapter1a', 'xxx')
-    cy.runInTestAPipeline('Example1b', 'Adapter1b', 'xxx')
+    cy.createReportWithTestPipelineApi('Example1a', 'Adapter1a', 'xxx')
+    cy.createReportWithTestPipelineApi('Example1b', 'Adapter1b', 'xxx')
     cy.getNumLadybugReports().should('at.least', 2).then(total => {
       cy.getNumLadybugReportsForNameFilter('Adapter1a').then(reportsA => {
         expect(reportsA).not.to.be.undefined
