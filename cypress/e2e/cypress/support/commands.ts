@@ -120,6 +120,8 @@ Cypress.Commands.add('runInTestAPipeline', (config: string, adapter: string, mes
     cy.wrap(response.status).should('equal', 200);
     cy.wrap(response.body.state).should('equal', 'SUCCESS');
   })
+  // See result in video
+  cy.wait(1000)
 })
 
 // Only works if some reports are expected to be omitted because of the filter
