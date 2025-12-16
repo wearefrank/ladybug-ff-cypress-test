@@ -24,6 +24,7 @@ describe('dtap.stage=PRD', () => {
     before(() => {
       // Implicitly logs in
       cy.visitAsTester()
+      cy.getCookie('XSRF-TOKEN').should('not.be.null')
       cy.apiDeleteAllAsTester(Cypress.env('debugStorageName') as string)
       cy.apiDeleteAllAsTester('Test')
       cy.enterLadybug()
