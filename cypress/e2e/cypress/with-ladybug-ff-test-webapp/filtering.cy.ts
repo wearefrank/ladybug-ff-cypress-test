@@ -6,10 +6,18 @@ describe('Tests with views and filtering', () => {
     cy.apiDeleteAll('Test')
     cy.visit('')
     cy.createReportWithTestPipelineApi('Example1a', 'Adapter1a', 'xxx')
+    // Waits are to prevent all reports to be created in the same second.
+    // If that would happen, filtering on end time would not reduce the
+    // number of shown report.
+    cy.wait(300)
     cy.createReportWithTestPipelineApi('Example1b', 'Adapter1b', 'xxx')
+    cy.wait(300)
     cy.createReportWithTestPipelineApi('Example1c', 'Adapter1c', 'xxxyyy')
+    cy.wait(300)
     cy.createReportWithTestPipelineApi('UseToStreamPipe', 'UseToStreamPipeChar', 'yyy')
+    cy.wait(300)
     cy.createReportWithTestPipelineApi('UseToStreamPipe', 'UseToStreamPipeBin', 'yyy')
+    cy.wait(300)
     cy.getNumLadybugReports().should('equal', 5)
   })
 
