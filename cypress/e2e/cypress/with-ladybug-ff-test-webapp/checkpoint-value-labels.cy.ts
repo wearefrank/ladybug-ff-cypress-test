@@ -1,9 +1,4 @@
-// See https://github.com/frankframework/frankframework/issues/9345 for
-// why this test is disabled.
-//
-// Do not throw this test! It is the only place where we explicitly check
-// that unwanted labels are not present.
-describe.skip('Checkpoint value labels', () => {
+describe('Checkpoint value labels', () => {
   before(() => {
     cy.apiDeleteAll(Cypress.env('debugStorageName') as string)
     cy.apiDeleteAll('Test')
@@ -19,13 +14,16 @@ describe.skip('Checkpoint value labels', () => {
       'Pipeline NullAndEmpty/NullAndEmpty',
       'Pipeline NullAndEmpty/NullAndEmpty'
     ]).click()
-    cy.checkNumCheckpointValueLabels(1)
+    cy.checkNumCheckpointValueLabels(2)
     cy.checkpointValueLabel(0)
+      .trimmedText()
+      .should('equal', 'Read only')
+    cy.checkpointValueLabel(1)
       .trimmedText()
       .should('equal', 'Message is null')
   })
 
-  it('When message is empty character stream then only label empty', () => {
+  it('When message is empty character stream then label empty', () => {
     openReport('NullAndEmpty')
     cy.selectTreeNode([
       'Pipeline NullAndEmpty/NullAndEmpty',
@@ -33,13 +31,16 @@ describe.skip('Checkpoint value labels', () => {
       'Pipe emptyCharacterStream',
       { seq: 1, text: 'Pipe emptyCharacterStream' }
     ]).click()
-    cy.checkNumCheckpointValueLabels(1)
+    cy.checkNumCheckpointValueLabels(2)
     cy.checkpointValueLabel(0)
+      .trimmedText()
+      .should('equal', 'Read only')
+    cy.checkpointValueLabel(1)
       .trimmedText()
       .should('equal', 'Message is empty string')
   })
 
-  it('When message is empty binary stream then two labels empty and encoding', () => {
+  it('When message is empty binary stream then three labels read only, empty and encoding', () => {
     openReport('NullAndEmpty')
     cy.selectTreeNode([
       'Pipeline NullAndEmpty/NullAndEmpty',
@@ -47,16 +48,19 @@ describe.skip('Checkpoint value labels', () => {
       'Pipe emptyBinaryStream',
       { seq: 1, text: 'Pipe emptyBinaryStream' }
     ]).click()
-    cy.checkNumCheckpointValueLabels(2)
+    cy.checkNumCheckpointValueLabels(3)
     cy.checkpointValueLabel(0)
       .trimmedText()
-      .should('equal', 'Message is empty string')
+      .should('equal', 'Read only')
     cy.checkpointValueLabel(1)
+      .trimmedText()
+      .should('equal', 'Message is empty string')
+    cy.checkpointValueLabel(2)
       .should('contain.text', 'encoded')
       .should('contain.text', 'UTF-8')
   })
 
-  it('When message is not-streamed string value then no labels shown', () => {
+  it('When message is not-streamed string value then no labels except read only', () => {
     openReport('NullAndEmpty')
     cy.selectTreeNode([
       'Pipeline NullAndEmpty/NullAndEmpty',
@@ -64,10 +68,13 @@ describe.skip('Checkpoint value labels', () => {
       'Pipe normal',
       { seq: 1, text: 'normal' }
     ]).click()
-    cy.checkNumCheckpointValueLabels(0)
+    cy.checkNumCheckpointValueLabels(1)
+    cy.checkpointValueLabel(0)
+      .trimmedText()
+      .should('equal', 'Read only')
   })
 
-  it('When message is non-empty character stream then no labels', () => {
+  it('When message is non-empty character stream then no labels except read only', () => {
     openReport('NullAndEmpty')
     cy.selectTreeNode([
       'Pipeline NullAndEmpty/NullAndEmpty',
@@ -75,7 +82,10 @@ describe.skip('Checkpoint value labels', () => {
       'Pipe stream',
       { seq: 1, text: 'stream' }
     ]).click()
-    cy.checkNumCheckpointValueLabels(0)
+    cy.checkNumCheckpointValueLabels(1)
+    cy.checkpointValueLabel(0)
+      .trimmedText()
+      .should('equal', 'Read only')
   })
 })
 
